@@ -1,11 +1,19 @@
 """
-measures and saves how similar the documents are irrespective of their size
-computes the tf_idf score for each document and compares those with cosine similarity
-reads "xkcd_xxx.txt" files in "data" directory
+load all the documents, clean text, create tfidf_vectors (weighted text vector)
+
+save:
+- serial_numbers for comics
+- tfidf_vectors
+- feature_names
+
+reads "xkcd_xxx.txt" files in "raw_data" directory
 saves files to:
-- "cosine_data/word_count_vector_array.npy"
-- "cosine_data/cosine_array.npy"
-- "cosine_data/label_array.npy"
+- "text_vectors/serial_numbers.npy"
+- "text_vectors/tfidf_vectors.npy"
+- "text_vectors/feature_names.npy"
+
+takes 1 min to run
+
 @author: Gati Aher
 """
 
@@ -14,79 +22,76 @@ saves files to:
 
 import os
 import re
-import string
 
 import numpy as np
-import pandas as pd
 
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_extraction.text import TfidfTransformer
+import spacy
+# NOTE: to download model, in terminal: python -m spacy download en
+from nltk.stem import SnowballStemmer
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-from sklearn.metrics.pairwise import cosine_similarity
 
-from nltk.stem.porter import PorterStemmer
+def load_documents_save_serial_numbers():
+    """
+    Load the comic word data from each comic's serially numbered file.
 
-
-# GLOBAL VARIABLES
-porter_stemmer = PorterStemmer()
-
-
-def load_documents(dir):
-    labels = []
+    return: list of strings (for each comic: title, alt-text, transcript)
+    save: list of serial_numbers in order (for each comic, uniquely identifiable)
+    """
+    dir = "raw_data"
+    serial_numbers = []
     documents = []
     for filename in os.listdir(dir):
         fn = dir + "/" + filename
         if filename.startswith("xkcd_"):
             f = open(fn)
-            text = f.read()
 
-            my_tokenizer(text)
+            text = f.read()
+            documents.append(text)
 
             # filename between "xkcd_" and ".txt"
-            labels.append(filename[5:-4])
-            documents.append(text)
+            serial_numbers.append(filename[5:-4])
             f.close
 
-    return labels, documents
+    np.save("text_vectors/serial_numbers.npy", serial_numbers)
+    return documents
 
 
+nlp = spacy.load('en_core_web_sm')
+stemmer = SnowballStemmer("english")
 def my_tokenizer(text):
     """
-    Acts like default tokenizer but also categorizes numbers and
-    stems words in order to reduce dimensions of text vector
+    Categorizes numbers and lemminize, stems, and squashes words in order to
+    reduce dimensions of text vector and count tokens in the same word family.
 
-    stem means fishes --> fish, caring --> car, cars --> car
-    #TODO: replace with lemminization
+    # NOTE: This only tokenizes words that contain only the characters [a-z] and
+    are more than 2 letters long, or contain only characters [0-9] and are tokenized
+    as '#num'
 
-    # NOTE: The default regexp selects tokens of 2 or more alphanumeric characters
-    (punctuation is completely ignored and always treated as a token separator).
+    # NOTE: "The default regexp selects tokens of 2 or more alphanumeric characters
+    (punctuation is completely ignored and always treated as a token separator)."
+
+    param: string
+    return: list of strings
     """
-    # replace newlines with single whitespace
-    text = re.sub(r'\s+', ' ', text)
-    # replace punctuation with whitespace
-    text = text.translate(str.maketrans(string.punctuation, ' '*(len(string.punctuation))))
-    # remove all non-alphabet and non-numeral characters
-    text = re.sub(r'[^a-zA-Z0-9 ]', '', text).lower()
-    # split string on white space
-    words = text.split()
-
-    tokens = []
-
-    for word in words:
-        # categorize numbers
-        if word.isnumeric():
-            tokens.append(str(len(word))+"digit")
-        # lemminization on words
-        elif word.isalpha() and len(word) >= 2:
-            tokens.append(porter_stemmer.stem(word))
-
-    return tokens
+    ret_tokens = []
+    doc = nlp(text)
+    for token in doc:
+        lem = token.lemma_.lower()
+        # if token is only letters, add lemma token to retlist
+        if len(lem) > 2 and bool(re.match(r'^[A-Za-z]+$', lem)):
+            # squash indentical consecutive letters. Ex: woooo --> wo
+            squashed = re.sub(r'([a-z])\1\1+', r'\1', lem)
+            stem = stemmer.stem(squashed)
+            ret_tokens.append(stem)
+        # if token is only numbers, add category token to retlist
+        elif bool(re.match(r'^[0-9]+$', lem)):
+            category = str(len(lem)) + "num"
+            ret_tokens.append(category)
+    return ret_tokens
 
 
-# TODO: if word occurs in more than 80% of texts, cutoff
-# TODO: if word does not occur at least 2 times, cutoff
 def save_tf_idf_vector(documents):
     """
     Convert and save a collection of raw documents to a matrix of TF-IDF features.
@@ -99,41 +104,30 @@ def save_tf_idf_vector(documents):
     and the inverse document frequency of the word across a set of documents.
     This downweights words that are common to most of the documents as those very frequent
     terms would shadow the frequencies of rarer yet more interesting terms.
+
+    This particular implementation uses my tokenizer
     """
+    # NOTE: if word occurs in more than 70% of texts, cutoff
+    # NOTE: if word does not occur in at least 2 documents, cutoff
+    tfidf_vectorizer=TfidfVectorizer(tokenizer=my_tokenizer, min_df=2, max_df=0.7)
 
-    # settings that used for count vectorizer go here
-    tfidf_vectorizer=TfidfVectorizer(tokenizer=my_tokenizer)
-
-    # send in all your documents here
+    # send in all documents, get their tfidf scores
     tfidf_vectors=tfidf_vectorizer.fit_transform(documents)
+    np.save("text_vectors/tfidf_vectors.npy", tfidf_vectors)
 
-    #########################################
-    # PRINT TFIDF VALUES FOR FIRST DOCUMENT #
-    #########################################
+    # save names of features (words that are columns for text vectors)
+    np.save("text_vectors/feature_names.npy", tfidf_vectorizer.get_feature_names())
 
-    print("*** FEATURE NAMES ***")
-
-    print(tfidf_vectorizer.get_feature_names())
+    # know how big of a vector was produced
     print(tfidf_vectors.shape)
 
 
-
 if __name__ == "__main__":
-    # """compare cosine similairity of each document's tf_idf score
-    #     save cosine similarity and labels
-    # """
-    # labels, documents = load_documents("data")
-    # tf_idf_vector = get_tf_idf_vector(documents)
-    # cos_sim = cosine_similarity(tf_idf_vector, tf_idf_vector)
-    #
-    # # save cosine similarity
-    # np.save("cosine_data/cosine_array.npy", cos_sim)
-    #
-    # # save labels
-    # label_array = np.asarray(labels)
-    # np.save("cosine_data/label_array.npy", label_array)
-
-    labels, documents = load_documents("raw_data")
+    """
+    load all the documents (comics)
+    calculate and save documents tf_idf scores
+    """
+    documents = load_documents_save_serial_numbers()
     save_tf_idf_vector(documents)
 
     print("COMPLETE")
