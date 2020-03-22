@@ -26,8 +26,6 @@ from scipy import sparse
 from sklearn.decomposition import TruncatedSVD
 from sklearn.manifold import TSNE
 
-import matplotlib.pyplot as plt
-
 if __name__ == "__main__":
 
     tfidf_vectors = sparse.load_npz("text_vectors/tfidf_vectors.npz")
@@ -43,34 +41,6 @@ if __name__ == "__main__":
     # do SVD to project into 2D space
     embedded = TSNE(n_components=2).fit_transform(reduced_tfidf_vectors)
     print("EMBEDDED SHAPE:", embedded.shape)
+    print("EMBEDDED TYPE:", type(embedded))
 
-    plt.plot(embedded[:,0], embedded[:,1], 'ro')
-    plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # # dissimilarity is 1 minus similarity
-    # dissimilarities = 1 - cosine_array
-    # # compute the embedding
-    # coord = MDS(dissimilarity='precomputed').fit_transform(dissimilarities)
-    # # save coord
-    # np.save("cosine_data/mds_coords", coord)
-    # print("MDS SHAPE: ", coord.shape)
+    np.save("document_relations/tsne.npy", embedded)

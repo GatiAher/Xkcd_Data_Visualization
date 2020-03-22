@@ -42,3 +42,6 @@ if __name__ == "__main__":
     sf = pickle.load(load_visited_subcategories_file)
     print("#### VISTED SUB ####")
     print(sf)
+
+    plt.plot(embedded[:,0], embedded[:,1], 'ro')
+    plt.show()
