@@ -1,25 +1,25 @@
 """
-Metric Multi-dimensional Scaling (MDS)
-to visualize the texts in a two dimensional space.
-MDS is computed on the pairwise cosine similarities
-it produces a set of (x, y) coordinates for each text
-based on its similarities to other texts
-MDS is a computationaly heavy step that takes a long time to run,
-so the results are saved before plotting
-reads from: "cosine_data/cosine_array.npy"
-saves to: "cosine_data/mds_coords"
+
+
+reads from: "text_vectors/tfidf_vectors.npy"
+saves to: "document_relations/tsne.npy"
+
 @author: Gati Aher
 """
 
 import numpy as np
+from scipy import sparse
+
 from sklearn.manifold import MDS
 
 if __name__ == "__main__":
-    cosine_array =  np.load("cosine_data/cosine_array.npy")
-    # dissimilarity is 1 minus similarity
-    dissimilarities = 1 - cosine_array
-    # compute the embedding
-    coord = MDS(dissimilarity='precomputed').fit_transform(dissimilarities)
-    # save coord
-    np.save("cosine_data/mds_coords", coord)
-    print("MDS SHAPE: ", coord.shape)
+
+    tfidf_vectors = sparse.load_npz("text_vectors/tfidf_vectors.npz")
+    print(tfidf_vectors.shape)
+    # # dissimilarity is 1 minus similarity
+    # dissimilarities = 1 - cosine_array
+    # # compute the embedding
+    # coord = MDS(dissimilarity='precomputed').fit_transform(dissimilarities)
+    # # save coord
+    # np.save("cosine_data/mds_coords", coord)
+    # print("MDS SHAPE: ", coord.shape)
