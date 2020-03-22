@@ -22,6 +22,13 @@ import re
 # visualize progress bar in terminal
 from tqdm import tqdm
 
+####################
+# GLOBAL VARIABLES #
+####################
+
+# latest comic + 1
+num_comics = 2283
+
 #############
 # FUNCTIONS #
 #############
@@ -88,8 +95,8 @@ def put_text_into_file(comic_number):
     file1.close()
 
 if __name__ == "__main__":
-    """record all comics in range 0-2283. record any errors"""
-    for i in tqdm(range(2283)):
+    """record all comics in range 0-num_comics. record any errors"""
+    for i in tqdm(range(num_comics)):
         try:
             put_text_into_file(i)
         except:
