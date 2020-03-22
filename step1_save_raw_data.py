@@ -50,7 +50,7 @@ def put_text_into_file(comic_number):
     #############
     title = soup.title.string.lower()
     number_string = re.search(r'\d+', title).group()
-    number_string = number_string.zfill(4)
+    number_string = number_string
     name_string = re.search(r'[a-z]([^\n-]*)', title).group()
 
     ###########
