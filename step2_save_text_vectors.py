@@ -110,9 +110,15 @@ def save_tf_idf_vector(documents):
 
     This particular implementation uses my tokenizer
     """
+
     # NOTE: if word occurs in more than 70% of texts, cutoff
     # NOTE: if word does not occur in at least 2 documents, cutoff
-    tfidf_vectorizer=TfidfVectorizer(tokenizer=my_tokenizer, min_df=2, max_df=0.7)
+    # NOTE: to use LSA in step3, sublinear scaling and inverse document frequency
+    # should be turned on (sublinear_tf=True, use_idf=True) to bring the
+    # feature values closer to a Gaussian distribution, compensating
+    # for LSA’s erroneous assumptions about textual data.
+    tfidf_vectorizer=TfidfVectorizer(tokenizer=my_tokenizer, min_df=2, max_df=0.7,
+                                    sublinear_tf=True, use_idf=True)
 
     # send in all documents, get their tfidf scores
     tfidf_vectors=tfidf_vectorizer.fit_transform(documents)
