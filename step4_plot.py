@@ -9,39 +9,48 @@ reads from: "cosine_data/mds_coords.npy" and "cosine_data/label_array.npy"
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
+import pickle
 
+import matplotlib.pyplot as plt
 
 
 if __name__ == "__main__":
 
-    mds_coords =  np.load("cosine_data/mds_coords.npy")
-    label_array =  np.load("cosine_data/label_array.npy")
+    # get TSNE embedded
+    embedded = np.load('document_relations/tsne.npy')
+    print("EMBEDDED SHAPE:", embedded.shape)
+
+    # get serial_numbers
+    serial_numbers = np.load('text_vectors/serial_numbers.npy')
+    print("SERIAL_NUMBERS LEN:", len(serial_numbers))
+    print("SERIAL_NUMBERS SHAPE:", serial_numbers.shape)
+
+    # get comic_tags
+    load_comic_tags_file = open('comic_tags/comic_tags', 'rb')
+    comic_tags = pickle.load(load_comic_tags_file)
+    print("COMIC_TAGS LEN:", len(comic_tags))
+
+    # get visited_subcategories
+    load_visited_subcategories_file = open('comic_tags/visited_subcategories', 'rb')
+    visited_subcategories = pickle.load(load_visited_subcategories_file)
+    print("VISITED SUBCATEGORIES LEN:", len(visited_subcategories))
+
+    ##########################
+    # CONNECT TAGS TO POINTS #
+    ##########################
+    tagged_serial_numbers = dict(zip(serial_numbers, [[None]]*len(serial_numbers)))
+    print(serial_numbers[1])
+    print(tagged_serial_numbers["0001"])
 
     ########
     # PLOT #
     ########
 
     # plotting
-    plt.scatter(mds_coords[:,0], mds_coords[:,1])
+    plt.scatter(embedded[:,0], embedded[:,1])
 
     # Label the points
-    for i in range(mds_coords.shape[0]):
-        plt.annotate(label_array[i], (mds_coords[i,:]))
+    for idx, point in enumerate(embedded):
+        plt.annotate(serial_numbers[idx], point)
 
-    plt.show()
-
-    ########### RESURECT ###########
-
-    load_comic_tags_file = open('comic_tags/comic_tags', 'rb')
-    ct = pickle.load(load_comic_tags_file)
-    print("#### COMIC TAG ####")
-    print(ct)
-
-    load_visited_subcategories_file = open('comic_tags/visited_subcategories', 'rb')
-    sf = pickle.load(load_visited_subcategories_file)
-    print("#### VISTED SUB ####")
-    print(sf)
-
-    plt.plot(embedded[:,0], embedded[:,1], 'ro')
     plt.show()
