@@ -9,7 +9,7 @@ save:
 reads "xkcd_xxx.txt" files in "raw_data" directory
 saves files to:
 - "text_vectors/serial_numbers.npy"
-- "text_vectors/tfidf_vectors.npy"
+- "text_vectors/tfidf_vectors.npz"
 - "text_vectors/feature_names.npy"
 
 takes 1 min to run
@@ -23,6 +23,7 @@ takes 1 min to run
 import os
 import re
 
+from scipy import sparse
 import numpy as np
 
 import spacy
@@ -54,7 +55,9 @@ def load_documents_save_serial_numbers():
             serial_numbers.append(filename[5:-4])
             f.close
 
-    np.save("text_vectors/serial_numbers.npy", serial_numbers)
+    serial_numbers_array = np.asarray(serial_numbers)
+    np.save("text_vectors/feature_names.npy", serial_numbers)
+
     return documents
 
 
@@ -113,10 +116,12 @@ def save_tf_idf_vector(documents):
 
     # send in all documents, get their tfidf scores
     tfidf_vectors=tfidf_vectorizer.fit_transform(documents)
-    np.save("text_vectors/tfidf_vectors.npy", tfidf_vectors)
+    # tfidf_vectors type is: <class 'scipy.sparse.csr.csr_matrix'>
+    sparse.save_npz("text_vectors/tfidf_vectors.npz", tfidf_vectors)
 
     # save names of features (words that are columns for text vectors)
-    np.save("text_vectors/feature_names.npy", tfidf_vectorizer.get_feature_names())
+    feature_names = np.asarray(tfidf_vectorizer.get_feature_names())
+    np.save("text_vectors/feature_names.npy", feature_names)
 
     # know how big of a vector was produced
     print(tfidf_vectors.shape)
