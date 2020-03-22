@@ -14,7 +14,7 @@ While the TruncatedSVD transformer works with any (sparse) feature matrix,
 using it on tf–idf matrices is recommended over raw frequency counts in an
 LSA/document processing setting.
 
-reads from: "text_vectors/tfidf_vectors.npy"
+reads from: "text_vectors/tfidf_vectors.npz"
 saves to: "document_relations/tsne.npy"
 
 @author: Gati Aher
