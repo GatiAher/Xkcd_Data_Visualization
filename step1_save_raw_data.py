@@ -1,9 +1,11 @@
 """
 extract and saves the text from pages on the 'explain xkcd' html pages
-for each comic, this parses the explained xkcd html file,
+for each comic, this parses the explained xkcd html file.
 saves title, alt-text, and transcript as a single line
 to a file named "raw_data/xkcd_" + comic_number + ".txt" inside of raw_data/ directory
+
 takes 20-30 minutes to run
+
 @author: Gati Aher
 """
 

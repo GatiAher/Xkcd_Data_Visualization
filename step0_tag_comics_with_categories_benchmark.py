@@ -1,5 +1,5 @@
 """
-extract and saves the categories for comics from pages on the 'explain xkcd' html pages
+extract and saves the topic categories for comics from pages on the 'explain xkcd' html pages
 
 saves to: "comic_tags/comic_tags"
 saves to: "comic_tags/visited_subcategories"
@@ -64,7 +64,7 @@ def go_into_subcategory(link, comic_tags, visited_subcategories):
 
 def get_subcategory_hrefs(soup):
     """
-    return list of subcategory hrefs on this page
+    return list of subcategory hrefs on soup current page
     """
     ret_list = []
 
@@ -81,7 +81,7 @@ def get_subcategory_hrefs(soup):
 
 def get_comic_serial_numbers(soup):
     """
-    get list of comics numbers on this page
+    get list of comics numbers on soup current page
     """
     ret_list = []
 
