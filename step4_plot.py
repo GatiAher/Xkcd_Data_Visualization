@@ -30,3 +30,15 @@ if __name__ == "__main__":
         plt.annotate(label_array[i], (mds_coords[i,:]))
 
     plt.show()
+
+    ########### RESURECT ###########
+
+    load_comic_tags_file = open('comic_tags/comic_tags', 'rb')
+    ct = pickle.load(load_comic_tags_file)
+    print("#### COMIC TAG ####")
+    print(ct)
+
+    load_visited_subcategories_file = open('comic_tags/visited_subcategories', 'rb')
+    sf = pickle.load(load_visited_subcategories_file)
+    print("#### VISTED SUB ####")
+    print(sf)

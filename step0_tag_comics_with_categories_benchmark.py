@@ -1,6 +1,9 @@
 """
 extract and saves the categories for comics from pages on the 'explain xkcd' html pages
 
+saves to: "comic_tags/comic_tags"
+saves to: "comic_tags/visited_subcategories"
+
 @author: Gati Aher
 """
 
@@ -18,6 +21,9 @@ import re
 
 # visualize progress bar in terminal
 from tqdm import tqdm
+
+# save list of lists
+import pickle
 
 ####################
 # GLOBAL VARIABLES #
@@ -40,7 +46,6 @@ def go_into_subcategory(link, comic_tags, visited_subcategories):
 
     title = soup.title.string.lower()
     tag = title[9:-15]
-    print("TAG: ", tag)
 
     if tag not in visited_subcategories:
         visited_subcategories.append(tag)
@@ -99,29 +104,13 @@ if __name__ == "__main__":
     comic_tags = [ [] for i in range(num_comics) ] # just ignore the first index, numbering works nicely
     visited_subcategories = []
     go_into_subcategory("/wiki/index.php/Category:Comics_by_topic", comic_tags, visited_subcategories)
-    # print(comic_tags)
 
-    max_idx = -1
-    max_len = -1
-    min_idx = -1
-    min_len = 200
-    for tag_idx, tag_list in enumerate(comic_tags):
-        print(tag_idx)
-        print(tag_list)
-        tag_len = len(tag_list)
-        if tag_len > max_len:
-            max_idx = tag_idx
-            max_len = tag_len
-        if tag_len < min_len:
-            min_idx = tag_idx
-            min_len = tag_len
+    # Its important to use binary mode, save comic_tags
+    comic_tags_file = open('comic_tags/comic_tags', 'ab')
+    pickle.dump(comic_tags, comic_tags_file)
+    comic_tags_file.close()
 
-    print("MAX")
-    print(comic_tags[max_idx])
-    print(max_idx, max_len)
-
-    print("MIN") # expect 0
-    print(comic_tags[min_idx])
-    print(min_idx, min_len)
-
-    print(len(visited_subcategories))
+    # Its important to use binary mode, save visited_subcategories
+    visited_subcategories_file = open('comic_tags/visited_subcategories', 'ab')
+    pickle.dump(visited_subcategories, visited_subcategories_file)
+    visited_subcategories_file.close()
