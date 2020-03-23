@@ -56,7 +56,7 @@ def load_documents_save_serial_numbers():
             f.close
 
     serial_numbers_array = np.asarray(serial_numbers)
-    np.save("text_vectors/feature_names.npy", serial_numbers)
+    np.save("text_vectors/serial_numbers.npy", serial_numbers)
 
     return documents
 
