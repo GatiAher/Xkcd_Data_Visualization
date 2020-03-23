@@ -2,7 +2,7 @@
 plot points and topic labels
 
 reads from:
-* 'document_relations/tsne.npy'
+* 'document_relations/tsne.npy' or 'document_relations/mds.npy'
 * 'text_vectors/serial_numbers.npy'
 * 'comic_tags/comic_tags'
 * 'comic_tags/visited_subcategories'
@@ -23,6 +23,9 @@ if __name__ == "__main__":
 
     # get TSNE embedded
     embedded = np.load('document_relations/tsne.npy') # shape (2282, 2)
+
+    # get MDS embedded
+    # embedded = np.load('document_relations/mds.npy') # shape (2282, 2)
 
     # get serial_numbers
     serial_numbers = np.load('text_vectors/serial_numbers.npy') # shape (2282,)
@@ -51,7 +54,7 @@ if __name__ == "__main__":
 
     # colors
     color_selected = [1, 0, 0]
-    color_unselected = [0.5, 0.5, 0.5, 0.01]
+    color_unselected = [0.5, 0.5, 0.5, 0.05]
 
     # create 225 lists of 2282 points-colors
     color_lists = [ [color_unselected]*len(embedded) for i in range(len(visited_subcategories)) ]
@@ -87,24 +90,4 @@ if __name__ == "__main__":
                                     s=marker_size)
                     axs[r, c].set_title("extra", fontsize=10)
                 counter += 1
-        fig.savefig('images/a_' + str(i) + '.jpg')
-
-
-
-
-    # plt.title(visited_subcategories[0])
-    # plt.scatter(embedded[:,0], embedded[:,1], c=color_lists[0])
-    # plt.show()
-    #
-    # plt.title(visited_subcategories[1])
-    # plt.scatter(embedded[:,0], embedded[:,1], c=color_lists[1])
-    # plt.show()
-    #
-    # plt.title(visited_subcategories[2])
-    # plt.scatter(embedded[:,0], embedded[:,1], c=color_lists[2])
-    # plt.show()
-
-
-    # # Label the points
-    # for idx, point in enumerate(embedded):
-    #     plt.annotate(serial_numbers[idx], point)
+        fig.savefig('images/tsne_' + str(i) + '.jpg')
