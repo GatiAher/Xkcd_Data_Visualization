@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
     # colors
     color_selected = [1, 0, 0]
-    color_unselected = [0.5, 0.5, 0.5, 0.1]
+    color_unselected = [0.5, 0.5, 0.5, 0.01]
 
     # create 225 lists of 2282 points-colors
     color_lists = [ [color_unselected]*len(embedded) for i in range(len(visited_subcategories)) ]
@@ -87,7 +87,7 @@ if __name__ == "__main__":
                                     s=marker_size)
                     axs[r, c].set_title("extra", fontsize=10)
                 counter += 1
-        fig.savefig('images/' + str(i) + '.jpg')
+        fig.savefig('images/a_' + str(i) + '.jpg')
 
 
 
