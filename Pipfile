@@ -6,6 +6,16 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
+beautifulsoup4 = "*"
+requests = "*"
+lxml = "*"
+tqdm = "*"
+scipy = "*"
+spacy = "*"
+nltk = "*"
+sklearn = "*"
+matplotlib = "*"
+pillow = "*"
 
 [requires]
 python_version = "3.6"
