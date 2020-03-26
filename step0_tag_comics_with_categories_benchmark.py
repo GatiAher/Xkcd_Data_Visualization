@@ -24,9 +24,14 @@ from tqdm import tqdm
 
 # save list of lists
 import pickle
+import pandas as pd
+from sklearn.preprocessing import MultiLabelBinarizer
+
 
 # get num comics
 from my_utils import get_latest_comic_num
+
+
 
 #############
 # FUNCTIONS #
@@ -98,27 +103,26 @@ if __name__ == "__main__":
 
     num_comics = get_latest_comic_num() + 1
     comic_tags = [ [] for i in range(num_comics) ] # just ignore the first index, indexing works nicely
-    print("LEN:", len(comic_tags))
     visited_subcategories = []
     go_into_subcategory("/wiki/index.php/Category:Comics_by_topic", comic_tags, visited_subcategories)
 
-    print("2200:", comic_tags[2200])
-    print("2201:", comic_tags[2201])
-    print("2283:", comic_tags[2283])
-    # Its important to use binary mode, save comic_tags
-    comic_tags_file = open('comic_tags/comic_tags', 'ab')
-    pickle.dump(comic_tags, comic_tags_file)
-    comic_tags_file.close()
+    mlb = MultiLabelBinarizer()
+    df = pd.DataFrame(mlb.fit_transform(comic_tags),columns=mlb.classes_)
+    print(df.shape)
+    pd.to_pickle(df, 'comic_tags/comic_tags_df.pkl')
 
-    # TRYING I'M NOT CRAZY
-    load_comic_tags_file = open('comic_tags/comic_tags', 'rb')
-    comic_tags2 = pickle.load(load_comic_tags_file) # len 2283
-    print()
-    print("2200:", comic_tags2[2200])
-    print("2201:", comic_tags2[2201])
-    print("2283:", comic_tags2[2283])
+    print("load")
+    df2 = pd.read_pickle("comic_tags/comic_tags_df.pkl")
+    print(df2.shape)
 
-    # Its important to use binary mode, save visited_subcategories
-    visited_subcategories_file = open('comic_tags/visited_subcategories', 'ab')
-    pickle.dump(visited_subcategories, visited_subcategories_file)
-    visited_subcategories_file.close()
+    print("LEN SUB:", len(visited_subcategories))
+
+    # # Its important to use binary mode, save comic_tags
+    # comic_tags_file = open('comic_tags/comic_tags', 'ab')
+    # pickle.dump(comic_tags, comic_tags_file)
+    # comic_tags_file.close()
+    #
+    # # Its important to use binary mode, save visited_subcategories
+    # visited_subcategories_file = open('comic_tags/visited_subcategories', 'ab')
+    # pickle.dump(visited_subcategories, visited_subcategories_file)
+    # visited_subcategories_file.close()
