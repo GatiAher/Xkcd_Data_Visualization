@@ -17,6 +17,13 @@ takes 1 min to run
 @author: Gati Aher
 """
 
+####################
+# GLOBAL VARIABLES #
+####################
+
+# latest comic + 1
+num_comics = 2283
+
 
 # IMPORTS
 
@@ -43,17 +50,13 @@ def load_documents_save_serial_numbers():
     dir = "raw_data"
     serial_numbers = []
     documents = []
-    for filename in os.listdir(dir):
-        fn = dir + "/" + filename
-        if filename.startswith("xkcd_"):
-            f = open(fn)
-
-            text = f.read()
-            documents.append(text)
-
-            # filename between "xkcd_" and ".txt"
-            serial_numbers.append(filename[5:-4])
-            f.close
+    for i in range(1, num_comics):
+        fn = dir + "/xkcd_" + str(i) + ".txt"
+        f = open(fn)
+        text = f.read()
+        documents.append(text)
+        serial_numbers.append(i)
+        f.close
 
     serial_numbers_array = np.asarray(serial_numbers)
     np.save("text_vectors/serial_numbers.npy", serial_numbers)
