@@ -8,22 +8,14 @@ save:
 
 reads "xkcd_xxx.txt" files in "raw_data" directory
 saves files to:
-- "text_vectors/serial_numbers.npy"
 - "text_vectors/tfidf_vectors.npz"
 - "text_vectors/feature_names.npy"
+- "text_vectors/tfidf_vectors_df.pkl"
 
 takes 1 min to run
 
 @author: Gati Aher
 """
-
-####################
-# GLOBAL VARIABLES #
-####################
-
-# latest comic + 1
-num_comics = 2283
-
 
 # IMPORTS
 
@@ -32,6 +24,7 @@ import re
 
 from scipy import sparse
 import numpy as np
+import pandas as pd
 
 import spacy
 # NOTE: to download model, in terminal: python -m spacy download en
@@ -43,7 +36,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from my_utils import get_latest_comic_num
 
 
-def load_documents_save_serial_numbers():
+def load_documents():
     """
     Load the comic word data from each comic's serially numbered file.
 
@@ -61,11 +54,7 @@ def load_documents_save_serial_numbers():
         f = open(fn)
         text = f.read()
         documents.append(text)
-        serial_numbers.append(i)
         f.close
-
-    serial_numbers_array = np.asarray(serial_numbers)
-    np.save("text_vectors/serial_numbers.npy", serial_numbers)
 
     return documents
 
@@ -138,6 +127,12 @@ def save_tf_idf_vector(documents):
     feature_names = np.asarray(tfidf_vectorizer.get_feature_names())
     np.save("text_vectors/feature_names.npy", feature_names)
 
+    # save as DataFrame
+    num_comics = get_latest_comic_num() + 1
+    comic_serial_numbers = [ str(i) for i in range(1, num_comics) ]
+    df = pd.DataFrame(tfidf_vectors.todense(), columns=tfidf_vectorizer.get_feature_names(), index=comic_serial_numbers)
+    pd.to_pickle(df, 'text_vectors/tfidf_vectors_df.pkl')
+
     # know how big of a vector was produced
     print(tfidf_vectors.shape)
 
@@ -147,7 +142,7 @@ if __name__ == "__main__":
     load all the documents (comics)
     calculate and save documents tf_idf scores
     """
-    documents = load_documents_save_serial_numbers()
+    documents = load_documents()
     save_tf_idf_vector(documents)
 
     print("COMPLETE")

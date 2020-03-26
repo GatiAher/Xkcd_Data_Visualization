@@ -15,16 +15,22 @@ using it on tf–idf matrices is recommended over raw frequency counts in an
 LSA/document processing setting.
 
 reads from: "text_vectors/tfidf_vectors.npz"
-saves to: "document_relations/tsne.npy"
+saves to:
+- "document_relations/tsne.npy"
+- "document_relations/tsne_df.npy"
 
 @author: Gati Aher
 """
 
 import numpy as np
 from scipy import sparse
+import pandas as pd
 
 from sklearn.decomposition import TruncatedSVD
 from sklearn.manifold import TSNE
+
+# get num comics
+from my_utils import get_latest_comic_num
 
 if __name__ == "__main__":
 
@@ -40,7 +46,14 @@ if __name__ == "__main__":
 
     # do SVD to project into 2D space
     embedded = TSNE(n_components=2).fit_transform(reduced_tfidf_vectors)
-    print("EMBEDDED SHAPE:", embedded.shape)
-    print("EMBEDDED TYPE:", type(embedded))
 
+    # save coord
     np.save("document_relations/tsne.npy", embedded)
+    print("TSNE SHAPE:", embedded.shape)
+    print("TSNE TYPE:", type(embedded))
+
+    # save coords as dataframe
+    num_comics = get_latest_comic_num() + 1
+    comic_serial_numbers = [ str(i) for i in range(1, num_comics) ]
+    df = pd.DataFrame(embedded, columns=['x', 'y'], index=comic_serial_numbers)
+    pd.to_pickle(df, "document_relations/tsne_df.npy")
