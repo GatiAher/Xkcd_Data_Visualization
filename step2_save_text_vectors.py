@@ -39,6 +39,9 @@ from nltk.stem import SnowballStemmer
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 
+# get num comics
+from my_utils import get_latest_comic_num
+
 
 def load_documents_save_serial_numbers():
     """
@@ -47,6 +50,9 @@ def load_documents_save_serial_numbers():
     return: list of strings (for each comic: title, alt-text, transcript)
     save: list of serial_numbers in order (for each comic, uniquely identifiable)
     """
+
+    num_comics = get_latest_comic_num() + 1
+
     dir = "raw_data"
     serial_numbers = []
     documents = []

@@ -25,12 +25,8 @@ from tqdm import tqdm
 # save list of lists
 import pickle
 
-####################
-# GLOBAL VARIABLES #
-####################
-
-# latest comic + 1
-num_comics = 2283
+# get num comics
+from my_utils import get_latest_comic_num
 
 #############
 # FUNCTIONS #
@@ -52,7 +48,7 @@ def go_into_subcategory(link, comic_tags, visited_subcategories):
 
         serial_numbers = get_comic_serial_numbers(soup)
         for num in serial_numbers:
-                if num < num_comics:
+                if num < len(comic_tags):
                     comic_tags[num].append(tag)
                 else:
                     print("*****COMIC NUM", num)
@@ -100,15 +96,27 @@ def get_comic_serial_numbers(soup):
 
 if __name__ == "__main__":
 
-    # working with 1-2282 comics
-    comic_tags = [ [] for i in range(num_comics) ] # just ignore the first index, numbering works nicely
+    num_comics = get_latest_comic_num() + 1
+    comic_tags = [ [] for i in range(num_comics) ] # just ignore the first index, indexing works nicely
+    print("LEN:", len(comic_tags))
     visited_subcategories = []
     go_into_subcategory("/wiki/index.php/Category:Comics_by_topic", comic_tags, visited_subcategories)
 
+    print("2200:", comic_tags[2200])
+    print("2201:", comic_tags[2201])
+    print("2283:", comic_tags[2283])
     # Its important to use binary mode, save comic_tags
     comic_tags_file = open('comic_tags/comic_tags', 'ab')
     pickle.dump(comic_tags, comic_tags_file)
     comic_tags_file.close()
+
+    # TRYING I'M NOT CRAZY
+    load_comic_tags_file = open('comic_tags/comic_tags', 'rb')
+    comic_tags2 = pickle.load(load_comic_tags_file) # len 2283
+    print()
+    print("2200:", comic_tags2[2200])
+    print("2201:", comic_tags2[2201])
+    print("2283:", comic_tags2[2283])
 
     # Its important to use binary mode, save visited_subcategories
     visited_subcategories_file = open('comic_tags/visited_subcategories', 'ab')
