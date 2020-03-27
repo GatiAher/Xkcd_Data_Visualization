@@ -17,7 +17,7 @@ LSA/document processing setting.
 reads from: "text_vectors/tfidf_vectors.npz"
 saves to:
 - "document_relations/tsne.npy"
-- "document_relations/tsne_df.npy"
+- "document_relations/tsne_df.pkl"
 
 @author: Gati Aher
 """
@@ -56,4 +56,4 @@ if __name__ == "__main__":
     num_comics = get_latest_comic_num() + 1
     comic_serial_numbers = [ str(i) for i in range(1, num_comics) ]
     df = pd.DataFrame(embedded, columns=['x', 'y'], index=comic_serial_numbers)
-    pd.to_pickle(df, "document_relations/tsne_df.npy")
+    pd.to_pickle(df, "document_relations/tsne_df.pkl")
