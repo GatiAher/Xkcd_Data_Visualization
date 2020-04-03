@@ -2,8 +2,8 @@
 plot points and topic labels interactivly
 
 reads from:
-* 'document_relations/tsne.npy' or 'document_relations/mds.npy'
-* 'text_vectors/serial_numbers.npy'
+* 'document_relations/tsne_df.pkl'
+* 'document_relations/mds_df.pkl'
 * 'comic_tags/comic_tags_df.pkl'
 
 saves to:
@@ -12,166 +12,273 @@ saves to:
 @author: Gati Aher
 """
 
+import json
+
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+from dash.dependencies import Input, Output
+
 import pandas as pd
+import numpy as np
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
-df = pd.read_csv('https://plotly.github.io/datasets/country_indicators.csv')
-print(df.head())
+styles = {
+    'pre': {
+        'border': 'thin lightgrey solid',
+        'overflowX': 'scroll'
+    }
+}
 
-available_indicators = df['Indicator Name'].unique()
-
+tsne = pd.read_pickle('document_relations/tsne_df.pkl')
+mds = pd.read_pickle('document_relations/mds_df.pkl')
 
 app.layout = html.Div([
-    html.Div([
+
+    # dcc.Graph(
+    #     id='basic-interactions',
+    #     figure={
+    #         'data': [
+    #             {
+    #                 'x': tsne['x'],
+    #                 'y': tsne['y'],
+    #                 'text': tsne.index.values,
+    #                 'customdata': tsne.index.values,
+    #                 'mode': 'markers',
+    #                 'marker': {'size': 12}
+    #             },
+    #         ],
+    #         'layout': {
+    #             'clickmode': 'event+select'
+    #         }
+    #     }
+    # ),
+
+    ##############
+    # TSNE GRAPH #
+    ##############
+
+    dcc.Graph(
+        id='tsne',
+        figure={
+            'data': [
+                {
+                    'x': tsne['x'],
+                    'y': tsne['y'],
+                    'text': tsne.index,
+                    'customdata': tsne.index,
+                    'mode': 'markers',
+                    'marker': {'size': 12}
+                },
+            ],
+            'layout': {
+                'clickmode': 'event+select',
+                'width': 1,
+                'height': 1
+            }
+        }
+    ),
+
+    ##############
+    # TSNE GRAPH #
+    ##############
+
+    dcc.Graph(
+        id='mds',
+        figure={
+            'data': [
+                {
+                    'x': mds['x'],
+                    'y': mds['y'],
+                    'text': mds.index,
+                    'customdata': mds.index,
+                    'mode': 'markers',
+                    'marker': {'size': 12}
+                },
+            ],
+            'layout': {
+                'clickmode': 'event+select',
+                'width': 1,
+                'height': 1
+            }
+        }
+    ),
+
+
+    html.Div(className='row', children=[
+
+        ########
+        # TSNE #
+        ########
 
         html.Div([
-            dcc.Dropdown(
-                id='crossfilter-xaxis-column',
-                options=[{'label': i, 'value': i} for i in available_indicators],
-                value='Fertility rate, total (births per woman)'
-            ),
-            dcc.RadioItems(
-                id='crossfilter-xaxis-type',
-                options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
-                value='Linear',
-                labelStyle={'display': 'inline-block'}
-            )
-        ],
-        style={'width': '49%', 'display': 'inline-block'}),
+            dcc.Markdown("""
+                **Click Data TSNE**
+
+                Click on points in the graph.
+            """),
+            html.Pre(id='click-data-tsne', style=styles['pre']),
+        ], className='three columns'),
 
         html.Div([
-            dcc.Dropdown(
-                id='crossfilter-yaxis-column',
-                options=[{'label': i, 'value': i} for i in available_indicators],
-                value='Life expectancy at birth, total (years)'
-            ),
-            dcc.RadioItems(
-                id='crossfilter-yaxis-type',
-                options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
-                value='Linear',
-                labelStyle={'display': 'inline-block'}
-            )
-        ], style={'width': '49%', 'float': 'right', 'display': 'inline-block'})
-    ], style={
-        'borderBottom': 'thin lightgrey solid',
-        'backgroundColor': 'rgb(250, 250, 250)',
-        'padding': '10px 5px'
-    }),
+            dcc.Markdown("""
+                **Selection Data TSNE**
 
-    html.Div([
-        dcc.Graph(
-            id='crossfilter-indicator-scatter',
-            hoverData={'points': [{'customdata': 'Japan'}]}
-        )
-    ], style={'width': '49%', 'display': 'inline-block', 'padding': '0 20'}),
-    html.Div([
-        dcc.Graph(id='x-time-series'),
-        dcc.Graph(id='y-time-series'),
-    ], style={'display': 'inline-block', 'width': '49%'}),
+                Choose the lasso or rectangle tool in the graph's menu
+                bar and then select points in the graph.
 
-    html.Div(dcc.Slider(
-        id='crossfilter-year--slider',
-        min=df['Year'].min(),
-        max=df['Year'].max(),
-        value=df['Year'].max(),
-        marks={str(year): str(year) for year in df['Year'].unique()},
-        step=None
-    ), style={'width': '49%', 'padding': '0px 20px 20px 20px'})
+                Note that if `layout.clickmode = 'event+select'`, selection data also
+                accumulates (or un-accumulates) selected data if you hold down the shift
+                button while clicking.
+            """),
+            html.Pre(id='selected-data-tsne', style=styles['pre']),
+        ], className='three columns'),
+
+        #######
+        # MDS #
+        #######
+
+        html.Div([
+            dcc.Markdown("""
+                **Click Data MDS**
+
+                Click on points in the graph.
+            """),
+            html.Pre(id='click-data-mds', style=styles['pre']),
+        ], className='three columns'),
+
+        html.Div([
+            dcc.Markdown("""
+                **Selection Data MDS**
+
+                Choose the lasso or rectangle tool in the graph's menu
+                bar and then select points in the graph.
+
+                Note that if `layout.clickmode = 'event+select'`, selection data also
+                accumulates (or un-accumulates) selected data if you hold down the shift
+                button while clicking.
+            """),
+            html.Pre(id='selected-data-mds', style=styles['pre']),
+        ], className='three columns'),
+
+    ])
 ])
 
+##################
+# TSNE CALLBACKS #
+##################
 
 @app.callback(
-    dash.dependencies.Output('crossfilter-indicator-scatter', 'figure'),
-    [dash.dependencies.Input('crossfilter-xaxis-column', 'value'),
-     dash.dependencies.Input('crossfilter-yaxis-column', 'value'),
-     dash.dependencies.Input('crossfilter-xaxis-type', 'value'),
-     dash.dependencies.Input('crossfilter-yaxis-type', 'value'),
-     dash.dependencies.Input('crossfilter-year--slider', 'value')])
-def update_graph(xaxis_column_name, yaxis_column_name,
-                 xaxis_type, yaxis_type,
-                 year_value):
-    dff = df[df['Year'] == year_value]
+    Output('click-data-tsne', 'children'),
+    [Input('tsne', 'clickData')])
+def display_click_data(clickData):
+    return json.dumps(clickData, indent=2)
+
+@app.callback(
+    Output('selected-data-tsne', 'children'),
+    [Input('tsne', 'selectedData')])
+def display_selected_data(selectedData):
+    return json.dumps(selectedData, indent=2)
+
+#################
+# MDS CALLBACKS #
+#################
+
+@app.callback(
+    Output('click-data-mds', 'children'),
+    [Input('mds', 'clickData')])
+def display_click_data(clickData):
+    return json.dumps(clickData, indent=2)
+
+@app.callback(
+    Output('selected-data-mds', 'children'),
+    [Input('mds', 'selectedData')])
+def display_selected_data(selectedData):
+    return json.dumps(selectedData, indent=2)
+
+#########
+# OTHER #
+#########
+
+#################################################
+# RETURN GRAPHS WITH ALL COMMON POINTS SELECTED #
+#################################################
+
+def get_figure(df, x_col, y_col, selectedpoints, selectedpoints_local):
+
+    # if selectedpoints_local and selectedpoints_local['range']:
+    #     ranges = selectedpoints_local['range']
+    #     selection_bounds = {'x0': ranges['x'][0], 'x1': ranges['x'][1],
+    #                         'y0': ranges['y'][0], 'y1': ranges['y'][1]}
+    # else:
+    #     selection_bounds = {'x0': np.min(df[x_col]), 'x1': np.max(df[x_col]),
+    #                         'y0': np.min(df[y_col]), 'y1': np.max(df[y_col])}
+
+    # set which points are selected with the `selectedpoints` property
+    # and style those points with the `selected` and `unselected`
+    # attribute. see
+    # https://medium.com/@plotlygraphs/notes-from-the-latest-plotly-js-release-b035a5b43e21
+    # for an explanation
+    print(selectedpoints)
 
     return {
-        'data': [dict(
-            x=dff[dff['Indicator Name'] == xaxis_column_name]['Value'],
-            y=dff[dff['Indicator Name'] == yaxis_column_name]['Value'],
-            text=dff[dff['Indicator Name'] == yaxis_column_name]['Country Name'],
-            customdata=dff[dff['Indicator Name'] == yaxis_column_name]['Country Name'],
-            mode='markers',
-            marker={
-                'size': 15,
-                'opacity': 0.5,
-                'line': {'width': 0.5, 'color': 'white'}
+        'data': [{
+            'x': df[x_col],
+            'y': df[y_col],
+            'text': df.index,
+            'textposition': 'top',
+            'selectedpoints': selectedpoints,
+            'customdata': df.index,
+            'type': 'scatter',
+            'mode': 'markers+text',
+            'marker': { 'color': 'rgba(0, 116, 217, 0.7)', 'size': 12 },
+            'unselected': {
+                'marker': { 'opacity': 0.3 },
+                # make text transparent when not selected
+                'textfont': { 'color': 'rgba(0, 0, 0, 0)' }
             }
-        )],
-        'layout': dict(
-            xaxis={
-                'title': xaxis_column_name,
-                'type': 'linear' if xaxis_type == 'Linear' else 'log'
-            },
-            yaxis={
-                'title': yaxis_column_name,
-                'type': 'linear' if yaxis_type == 'Linear' else 'log'
-            },
-            margin={'l': 40, 'b': 30, 't': 10, 'r': 0},
-            height=450,
-            hovermode='closest'
-        )
-    }
-
-
-def create_time_series(dff, axis_type, title):
-    return {
-        'data': [dict(
-            x=dff['Year'],
-            y=dff['Value'],
-            mode='lines+markers'
-        )],
+        }],
+        # 'layout': {
+        #     'margin': {'l': 20, 'r': 0, 'b': 15, 't': 5},
+        #     'dragmode': 'select',
+        #     'hovermode': False,
+        #     # Display a rectangle to highlight the previously selected region
+        #     'shapes': [dict({
+        #         'type': 'rect',
+        #         'line': { 'width': 1, 'dash': 'dot', 'color': 'darkgrey' }
+        #     }, **selection_bounds
+        #     )]
+        # }
         'layout': {
-            'height': 225,
-            'margin': {'l': 20, 'b': 30, 'r': 10, 't': 10},
-            'annotations': [{
-                'x': 0, 'y': 0.85, 'xanchor': 'left', 'yanchor': 'bottom',
-                'xref': 'paper', 'yref': 'paper', 'showarrow': False,
-                'align': 'left', 'bgcolor': 'rgba(255, 255, 255, 0.5)',
-                'text': title
-            }],
-            'yaxis': {'type': 'linear' if axis_type == 'Linear' else 'log'},
-            'xaxis': {'showgrid': False}
+            'clickmode': 'event+select',
+            'width': 1,
+            'height': 1
         }
     }
 
 
 @app.callback(
-    dash.dependencies.Output('x-time-series', 'figure'),
-    [dash.dependencies.Input('crossfilter-indicator-scatter', 'hoverData'),
-     dash.dependencies.Input('crossfilter-xaxis-column', 'value'),
-     dash.dependencies.Input('crossfilter-xaxis-type', 'value')])
-def update_y_timeseries(hoverData, xaxis_column_name, axis_type):
-    country_name = hoverData['points'][0]['customdata']
-    dff = df[df['Country Name'] == country_name]
-    dff = dff[dff['Indicator Name'] == xaxis_column_name]
-    title = '<b>{}</b><br>{}'.format(country_name, xaxis_column_name)
-    return create_time_series(dff, axis_type, title)
+    [Output('tsne', 'figure'),
+     Output('mds', 'figure')],
+    [Input('tsne', 'selectedData'),
+     Input('mds', 'selectedData')]
+)
+def callback(selection_tsne, selection_mds):
+    selectedpoints = tsne.index
 
+    for selected_data in [selection_tsne, selection_mds]:
+        if selected_data and selected_data['points']:
+            # Return the sorted, unique values that are in both of the input arrays.
+            # selectedpoints = np.intersect1d(selectedpoints,
+            #     [str(int(p['customdata'])-1) for p in selected_data['points']])
+            selectedpoints = np.intersect1d(selectedpoints,
+                [str(p['pointIndex']) for p in selected_data['points']])
 
-@app.callback(
-    dash.dependencies.Output('y-time-series', 'figure'),
-    [dash.dependencies.Input('crossfilter-indicator-scatter', 'hoverData'),
-     dash.dependencies.Input('crossfilter-yaxis-column', 'value'),
-     dash.dependencies.Input('crossfilter-yaxis-type', 'value')])
-def update_x_timeseries(hoverData, yaxis_column_name, axis_type):
-    dff = df[df['Country Name'] == hoverData['points'][0]['customdata']]
-    dff = dff[dff['Indicator Name'] == yaxis_column_name]
-    return create_time_series(dff, axis_type, yaxis_column_name)
-
+    return [get_figure(tsne, "x", "y", selectedpoints, selection_tsne),
+            get_figure(mds, "x", "y", selectedpoints, selection_mds)]
 
 if __name__ == '__main__':
     app.run_server(debug=True)
