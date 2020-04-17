@@ -35,27 +35,9 @@ styles = {
 
 tsne = pd.read_pickle('document_relations/tsne_df.pkl')
 mds = pd.read_pickle('document_relations/mds_df.pkl')
+display_info = pd.read_pickle("comic_tags/titles_and_image_urls.pkl")
 
 app.layout = html.Div([
-
-    # dcc.Graph(
-    #     id='basic-interactions',
-    #     figure={
-    #         'data': [
-    #             {
-    #                 'x': tsne['x'],
-    #                 'y': tsne['y'],
-    #                 'text': tsne.index.values,
-    #                 'customdata': tsne.index.values,
-    #                 'mode': 'markers',
-    #                 'marker': {'size': 12}
-    #             },
-    #         ],
-    #         'layout': {
-    #             'clickmode': 'event+select'
-    #         }
-    #     }
-    # ),
 
     ##############
     # TSNE GRAPH #
@@ -106,6 +88,11 @@ app.layout = html.Div([
             }
         }
     ),
+
+    html.Div(id='images', children=[
+        html.Img(id='image', src="https://imgs.xkcd.com/comics/close_to_you.png")
+
+    ]),
 
 
     html.Div(className='row', children=[
@@ -199,24 +186,11 @@ def display_click_data(clickData):
 def display_selected_data(selectedData):
     return json.dumps(selectedData, indent=2)
 
-#########
-# OTHER #
-#########
-
 #################################################
 # RETURN GRAPHS WITH ALL COMMON POINTS SELECTED #
 #################################################
 
 def get_figure(df, x_col, y_col, selectedpoints, selectedpoints_local):
-
-    # if selectedpoints_local and selectedpoints_local['range']:
-    #     ranges = selectedpoints_local['range']
-    #     selection_bounds = {'x0': ranges['x'][0], 'x1': ranges['x'][1],
-    #                         'y0': ranges['y'][0], 'y1': ranges['y'][1]}
-    # else:
-    #     selection_bounds = {'x0': np.min(df[x_col]), 'x1': np.max(df[x_col]),
-    #                         'y0': np.min(df[y_col]), 'y1': np.max(df[y_col])}
-
     # set which points are selected with the `selectedpoints` property
     # and style those points with the `selected` and `unselected`
     # attribute. see
@@ -241,24 +215,12 @@ def get_figure(df, x_col, y_col, selectedpoints, selectedpoints_local):
                 'textfont': { 'color': 'rgba(0, 0, 0, 0)' }
             }
         }],
-        # 'layout': {
-        #     'margin': {'l': 20, 'r': 0, 'b': 15, 't': 5},
-        #     'dragmode': 'select',
-        #     'hovermode': False,
-        #     # Display a rectangle to highlight the previously selected region
-        #     'shapes': [dict({
-        #         'type': 'rect',
-        #         'line': { 'width': 1, 'dash': 'dot', 'color': 'darkgrey' }
-        #     }, **selection_bounds
-        #     )]
-        # }
         'layout': {
             'clickmode': 'event+select',
             'width': 1,
             'height': 1
         }
     }
-
 
 @app.callback(
     [Output('tsne', 'figure'),
@@ -272,13 +234,42 @@ def callback(selection_tsne, selection_mds):
     for selected_data in [selection_tsne, selection_mds]:
         if selected_data and selected_data['points']:
             # Return the sorted, unique values that are in both of the input arrays.
-            # selectedpoints = np.intersect1d(selectedpoints,
-            #     [str(int(p['customdata'])-1) for p in selected_data['points']])
             selectedpoints = np.intersect1d(selectedpoints,
                 [str(p['pointIndex']) for p in selected_data['points']])
 
     return [get_figure(tsne, "x", "y", selectedpoints, selection_tsne),
             get_figure(mds, "x", "y", selectedpoints, selection_mds)]
+
+#####################################
+# FOR SELECTED POINTS RETURN IMAGES #
+#####################################
+@app.callback(
+    Output('images', 'children'),
+    [Input('tsne', 'selectedData'),
+     Input('mds', 'selectedData')]
+)
+def callback(selection_tsne, selection_mds):
+    selectedpoints = tsne.index
+
+    for selected_data in [selection_tsne, selection_mds]:
+        if selected_data and selected_data['points']:
+            # Return the sorted, unique values that are in both of the input arrays.
+            selectedpoints = np.intersect1d(selectedpoints,
+                [str(p['pointIndex']) for p in selected_data['points']])
+
+    list_images = []
+    for point in selectedpoints:
+        list_images.append(display_info.iloc(point['pointIndex'])[])
+
+    return [get_figure(tsne, "x", "y", selectedpoints, selection_tsne),
+            get_figure(mds, "x", "y", selectedpoints, selection_mds)]
+
+
+
+
+########
+# MAIN #
+########
 
 if __name__ == '__main__':
     app.run_server(debug=True)
