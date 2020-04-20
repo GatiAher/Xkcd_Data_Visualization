@@ -9,8 +9,13 @@
 
 <body>
   <title>Xkcd Data Visualization</title>
-  <h1 align="center"><u> Visualizing Xkcd Comic Relationships Using An Interactive Dashboard</u></h1>
-  <p align="center"> This is an application with a backend written in python (Flask) and a front end developed using d3.</p>
+  <h1 align="center">
+    <u> Visualizing Xkcd Comic Relationships Using An Interactive Dashboard</u>
+  </h1>
+  <p align="center">
+    This is an application with a backend written in python (Flask)
+    and a front end developed using d3.
+  </p>
 
   <div id="graphDiv"></div>
 
@@ -24,65 +29,154 @@
     // DATA //
     //////////
 
-    // access the data sent from backend to frontend using jinja
-    var graphData = {{ data.chart_data | safe }}
-    // check that all the data is there
-    // document.getElementById("jsonListPre").textContent = JSON.stringify(graphData, undefined, 2);
+    var data = {{ return_chart_data.chart_data | safe }};
 
-    ///////////
-    // GRAPH //
-    ///////////
+    //////////////
+    // TOOL TIP //
+    //////////////
 
-    // define svg with margins
-    // d3.csv() function, parse input dataset
-    // build x and y scale using linear scale
-    // add points by appending circle to svg
+    var tooltip = d3.select("#graphDiv").append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
 
-    // set the dimensions and margins of the graph
-    var margin = {top: 10, right: 30, bottom: 30, left: 60},
-      width = 460 - margin.left - margin.right,
-      height = 400 - margin.top - margin.bottom;
+    //////////////////////////////
+    // SVG AND GRAPH DIMENSIONS //
+    //////////////////////////////
 
-      // append the svg object to the body of the page
-    var svg = d3.select("#graphDiv")
-      .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+    var margin = { top: 20, right: 20, bottom: 30, left: 30 };
+    width = 900 - margin.left - margin.right,
+    height = 480 - margin.top - margin.bottom;
+
+    var svg = d3.select("#graphDiv").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
       .append("g")
-        .attr("transform",
-              "translate(" + margin.left + "," + margin.top + ")");
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    /////////////////
-    // DATA DRIVEN //
-    /////////////////
-    
-    // Add X axis
+    ///////////////////
+    // AXES AND CLIP //
+    ///////////////////
+
     var x = d3.scaleLinear()
-      .domain([-50, 50])
-      .range([ 0, width ]);
-    svg.append("g")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x));
+      .range([0, width])
+      .domain(d3.extent(data, function (d) { return d.x; })).nice()
+      .nice();
 
-    // Add Y axis
     var y = d3.scaleLinear()
-      .domain([-50, 50])
-      .range([ height, 0]);
+      .domain(d3.extent(data, function (d) { return d.y; })).nice()
+      .range([height, 0]);
+
+    var xAxis = d3.axisBottom(x).ticks(12);
+    var yAxis = d3.axisLeft(y).ticks(12 * height / width);
+
+    // x axis
     svg.append("g")
-      .call(d3.axisLeft(y));
+      .attr("class", "x axis")
+      .attr('id', "axis--x")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
 
-    // Add dots
-    svg.append('g')
-      .selectAll("dot")
-      .data(graphData)
-      .enter()
-      .append("circle")
-        .attr("cx", function (d) { return x(d.tsne_x); } )
-        .attr("cy", function (d) { return y(d.tsne_y); } )
-        .attr("r", 1.5)
-        .style("fill", "#69b3a2")
+    svg.append("text")
+      .style("text-anchor", "end")
+      .attr("x", width)
+      .attr("y", height - 8)
+      .text("X Label");
 
-    // })
+    // y axis
+    svg.append("g")
+      .attr("class", "y axis")
+      .attr('id', "axis--y")
+      .call(yAxis);
+
+    svg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", "1em")
+      .style("text-anchor", "end")
+      .text("Y Label");
+
+    var clip = svg.append("defs").append("svg:clipPath")
+      .attr("id", "clip")
+      .append("svg:rect")
+      .attr("width", width )
+      .attr("height", height )
+      .attr("x", 0)
+      .attr("y", 0);
+
+    ///////////////////////
+    // BRUSH AND SCATTER //
+    ///////////////////////
+
+    var scatter = svg.append("g")
+      .attr("id", "scatterplot")
+      .attr("clip-path", "url(#clip)");
+
+    scatter.selectAll(".dot")
+      .data(data)
+      .enter().append("circle")
+      .attr("class", "dot")
+      .attr("r", 4)
+      .attr("cx", function (d) { return x(d.x); })
+      .attr("cy", function (d) { return y(d.y); })
+      .attr("opacity", 0.5)
+      .style("fill", "#4292c6");
+
+    var brush = d3.brush()
+      .extent([[0, 0], [width, height]])
+      .on("end", brushended);
+
+    var idleTimeout,
+    idleDelay = 350;
+
+    scatter.append("g")
+      .attr("class", "brush")
+      .call(brush);
+
+    function brushended() {
+
+        var s = d3.event.selection;
+
+        var s2 = Array.from(s);
+
+        scatter.selectAll(".dot").classed("selected", function(d){
+          return isBrushed(s2, x(d.x), y(d.y))
+        });
+        var my_selection = scatter.selectAll(".selected");
+        document.getElementById("jsonListPre").textContent = JSON.stringify(my_selection, undefined, 2);
+
+        // if (!s) {
+        //     if (!idleTimeout) return idleTimeout = setTimeout(idled, idleDelay);
+        //     x.domain(d3.extent(data, function (d) { return d.x; })).nice();
+        //     y.domain(d3.extent(data, function (d) { return d.y; })).nice();
+        // } else {
+        //     x.domain([s[0][0], s[1][0]].map(x.invert, x));
+        //     y.domain([s[1][1], s[0][1]].map(y.invert, y));
+        //     scatter.select(".brush").call(brush.move, null);
+        // }
+        // zoom();
+    }
+
+    function isBrushed(brush_coords, cx, cy) {
+       var x0 = brush_coords[0][0],
+           x1 = brush_coords[1][0],
+           y0 = brush_coords[0][1],
+           y1 = brush_coords[1][1];
+      // This return TRUE or FALSE depending on if the points is in the selected area
+      return x0 <= cx && cx <= x1 && y0 <= cy && cy <= y1;
+    }
+
+    function idled() {
+        idleTimeout = null;
+    }
+
+    function zoom() {
+        var tr = scatter.transition().duration(750);
+        svg.select("#axis--x").transition(tr).call(xAxis);
+        svg.select("#axis--y").transition(tr).call(yAxis);
+        scatter.selectAll("circle").transition(tr)
+        .attr("cx", function (d) { return x(d.x); })
+        .attr("cy", function (d) { return y(d.y); });
+    }
 
   </script>
 

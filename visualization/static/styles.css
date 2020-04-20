@@ -6,6 +6,14 @@ body {
   color: red;
 }
 
+.selected {
+  opacity: 1 !important;
+  stroke: red;
+  stroke-width: 8px;
+  fill: #eb4c34;
+}
+
+
 /* path {
   stroke-width: 2;
   fill: none;

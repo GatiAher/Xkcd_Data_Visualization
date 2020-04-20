@@ -21,7 +21,7 @@ tsne_conv = tsne.astype(float)
 comic_serial_nums = [ str(i) for i in range(1, titles.shape[0] + 1) ]
 
 df = pd.DataFrame(data = [titles, image_urls, tsne_conv[:, 0], tsne_conv[:, 1]],
-                index=["titles", "image_urls", "tsne_x", "tsne_y"],
+                index=["titles", "image_urls", "x", "y"],
                 columns=comic_serial_nums
                 ).T # transpose to make rows comics and columns categories'
 
@@ -44,7 +44,7 @@ def homepage():
     chart_data = df.to_dict(orient='records')
     chart_data = json.dumps(chart_data, indent=2)
     return_chart_data = {'chart_data': chart_data}
-    return render_template('index.html', data=return_chart_data)
+    return render_template('index.html', return_chart_data=return_chart_data)
 
 ########
 # MAIN #
