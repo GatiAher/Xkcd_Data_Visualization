@@ -23,9 +23,14 @@
   <div id="tooltipDiv" align="center"></div>
   <div id="graphDiv" align="center"></div>
 
-  <div id="buttonDiv" align="center"></div>
+  <!-- <div id="buttonDiv" align="center"></div> -->
 
   <div id="pictureDiv" align="center"></div>
+
+    <p id="xkcdImageTitle" align="center"> 221: Random Number </p>
+
+    <img id="xkcdImage" class="marginauto" alt="221: Random Number"
+      src="https://www.explainxkcd.com/wiki/images/f/fe/random_number.png">
 
   <div id="jsonList">
     <pre id="jsonListPre"></pre>
@@ -49,15 +54,16 @@
 
     // Three function that change the tooltip when user hover / move / leave a cell
     var mouseover = function(d) {
+      tooltip
+        .html("comic  |  " + d.title)
       d3.select(this)
         .classed("highlighted", true);
     }
 
     var mousemove = function(d) {
-      tooltip
-        .html("comic  |  " + d.title)
-        // .style("left", (d3.mouse(this)[0]) + "px")
-        // .style("top", (d3.mouse(this)[1]) + "px")
+      //  UNEEDED
+      // tooltip
+      //   .html("comic  |  " + d.title)
     }
 
     var mouseleave = function(d) {
@@ -67,6 +73,24 @@
         .classed("highlighted", false);
     }
 
+    ///////////////
+    // SET IMAGE //
+    ///////////////
+
+    var click = function(d) {
+
+      scatter.selectAll(".dot").classed("clicked", false);
+
+      d3.select(this)
+        .classed("clicked", true);
+
+      d3.select("#xkcdImage")
+        .attr("src", d.imageUrl)
+        .attr("alt", d.title);
+
+      document.getElementById("xkcdImageTitle").textContent = d.title;
+    }
+
     //////////////////////////////
     // SVG AND GRAPH DIMENSIONS //
     //////////////////////////////
@@ -74,7 +98,7 @@
     // make sure to change on viewbox property as well
     // to preserve aspect ratio of plot
     var svgWidth = 900,
-    svgHeight = 600;
+    svgHeight = 850;
 
     var margin = { top: 20, right: 20, bottom: 30, left: 30 };
     width = svgWidth - margin.left - margin.right,
@@ -90,11 +114,6 @@
      .attr("viewBox", "0 0 " + svgWidth + " " + svgHeight)
       // Class to make it responsive.
      .classed("svg-content-responsive", true)
-
-      // .attr("width", width + margin.left + margin.right)
-      // .attr("height", height + margin.top + margin.bottom)
-      // .append("g")
-      // .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     ///////////////////
     // AXES AND CLIP //
@@ -173,6 +192,7 @@
       .on("mouseover", mouseover)
       .on("mousemove", mousemove)
       .on("mouseleave", mouseleave)
+      .on("click", click)
 
     var idleTimeout,
     idleDelay = 350;
