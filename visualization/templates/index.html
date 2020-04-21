@@ -79,7 +79,7 @@
 
     var click = function(d) {
 
-      scatter.selectAll(".dot").classed("clicked", false);
+      scatter.selectAll(".clicked").classed("clicked", false);
 
       d3.select(this)
         .classed("clicked", true);
@@ -213,9 +213,7 @@
             scatter.selectAll(".dot").classed("selected", function(d){
               return isBrushed(s, x(d.x), y(d.y))
             });
-            var my_selection = scatter.selectAll(".dot").filter(function(d){
-              return isBrushed(s, x(d.x), y(d.y))
-            });
+            var my_selection = scatter.selectAll(".selected");
             document.getElementById("jsonListPre").textContent = JSON.stringify(my_selection, undefined, 2);
 
             // zoom
