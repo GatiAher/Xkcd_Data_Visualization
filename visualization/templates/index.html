@@ -3,25 +3,34 @@
 
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="static/styles.css">
   <script src="https://d3js.org/d3.v4.min.js"></script>
+  <title>Xkcd Data Visualization</title>
 </head>
 
 <body>
-  <title>Xkcd Data Visualization</title>
-  <h1 align="center">
-    <u> Visualizing Xkcd Comic Relationships Using An Interactive Dashboard</u>
-  </h1>
-  <p align="center">
-    This is an application with a backend written in python (Flask)
-    and a front end developed using d3.
-  </p>
+  <div id="headerDiv" align="center">
+    <h1 align="center">
+      <u> Visualizing Xkcd Comic Relationships Using An Interactive Dashboard</u>
+    </h1>
+    <p align="center">
+      This is an application with a backend written in python (Flask)
+      and a front end developed using d3.
+    </p>
+  </div>
 
-  <div id="graphDiv"></div>
+  <div id="tooltipDiv" align="center"></div>
+  <div id="graphDiv" align="center"></div>
+
+  <div id="buttonDiv" align="center"></div>
+
+  <div id="pictureDiv" align="center"></div>
 
   <div id="jsonList">
     <pre id="jsonListPre"></pre>
   </div>
+
 
   <script>
 
@@ -35,23 +44,57 @@
     // TOOL TIP //
     //////////////
 
-    var tooltip = d3.select("#graphDiv").append("div")
+    var tooltip = d3.select("#tooltipDiv").append("div")
       .attr("class", "tooltip")
-      .style("opacity", 0);
+
+    // Three function that change the tooltip when user hover / move / leave a cell
+    var mouseover = function(d) {
+      d3.select(this)
+        .classed("highlighted", true);
+    }
+
+    var mousemove = function(d) {
+      tooltip
+        .html("comic  |  " + d.title)
+        // .style("left", (d3.mouse(this)[0]) + "px")
+        // .style("top", (d3.mouse(this)[1]) + "px")
+    }
+
+    var mouseleave = function(d) {
+      tooltip
+        .html("comic  |  ")
+      d3.select(this)
+        .classed("highlighted", false);
+    }
 
     //////////////////////////////
     // SVG AND GRAPH DIMENSIONS //
     //////////////////////////////
 
-    var margin = { top: 20, right: 20, bottom: 30, left: 30 };
-    width = 900 - margin.left - margin.right,
-    height = 480 - margin.top - margin.bottom;
+    // make sure to change on viewbox property as well
+    // to preserve aspect ratio of plot
+    var svgWidth = 900,
+    svgHeight = 600;
 
-    var svg = d3.select("#graphDiv").append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    var margin = { top: 20, right: 20, bottom: 30, left: 30 };
+    width = svgWidth - margin.left - margin.right,
+    height = svgHeight - margin.top - margin.bottom;
+
+    var svg = d3.select("#graphDiv")
+      .append("div")
+      // Container class to make it responsive.
+      .classed("svg-container", true)
+      .append("svg")
+      // Responsive SVG needs these 2 attributes and no width and height attr.
+     .attr("preserveAspectRatio", "xMinYMin meet")
+     .attr("viewBox", "0 0 " + svgWidth + " " + svgHeight)
+      // Class to make it responsive.
+     .classed("svg-content-responsive", true)
+
+      // .attr("width", width + margin.left + margin.right)
+      // .attr("height", height + margin.top + margin.bottom)
+      // .append("g")
+      // .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     ///////////////////
     // AXES AND CLIP //
@@ -111,6 +154,15 @@
       .attr("id", "scatterplot")
       .attr("clip-path", "url(#clip)");
 
+    var brush = d3.brush()
+      .extent([[0, 0], [width, height]])
+      .on("end", brushended);
+
+    // append brush before points so tooltips work
+    scatter.append("g")
+      .attr("class", "brush")
+      .call(brush);
+
     scatter.selectAll(".dot")
       .data(data)
       .enter().append("circle")
@@ -118,42 +170,40 @@
       .attr("r", 4)
       .attr("cx", function (d) { return x(d.x); })
       .attr("cy", function (d) { return y(d.y); })
-      .attr("opacity", 0.5)
-      .style("fill", "#4292c6");
-
-    var brush = d3.brush()
-      .extent([[0, 0], [width, height]])
-      .on("end", brushended);
+      .on("mouseover", mouseover)
+      .on("mousemove", mousemove)
+      .on("mouseleave", mouseleave)
 
     var idleTimeout,
     idleDelay = 350;
-
-    scatter.append("g")
-      .attr("class", "brush")
-      .call(brush);
 
     function brushended() {
 
         var s = d3.event.selection;
 
-        var s2 = Array.from(s);
+        if (!s) {
 
-        scatter.selectAll(".dot").classed("selected", function(d){
-          return isBrushed(s2, x(d.x), y(d.y))
-        });
-        var my_selection = scatter.selectAll(".selected");
-        document.getElementById("jsonListPre").textContent = JSON.stringify(my_selection, undefined, 2);
+            // reset zoom
+            if (!idleTimeout) return idleTimeout = setTimeout(idled, idleDelay);
+            x.domain(d3.extent(data, function (d) { return d.x; })).nice();
+            y.domain(d3.extent(data, function (d) { return d.y; })).nice();
+        } else {
 
-        // if (!s) {
-        //     if (!idleTimeout) return idleTimeout = setTimeout(idled, idleDelay);
-        //     x.domain(d3.extent(data, function (d) { return d.x; })).nice();
-        //     y.domain(d3.extent(data, function (d) { return d.y; })).nice();
-        // } else {
-        //     x.domain([s[0][0], s[1][0]].map(x.invert, x));
-        //     y.domain([s[1][1], s[0][1]].map(y.invert, y));
-        //     scatter.select(".brush").call(brush.move, null);
-        // }
-        // zoom();
+            // selection, do before zoom changes range of chart
+            scatter.selectAll(".dot").classed("selected", function(d){
+              return isBrushed(s, x(d.x), y(d.y))
+            });
+            var my_selection = scatter.selectAll(".dot").filter(function(d){
+              return isBrushed(s, x(d.x), y(d.y))
+            });
+            document.getElementById("jsonListPre").textContent = JSON.stringify(my_selection, undefined, 2);
+
+            // zoom
+            x.domain([ x.invert(s[0][0]), x.invert(s[1][0]) ]);
+            y.domain([ y.invert(s[1][1]), y.invert(s[0][1]) ]);
+            scatter.select(".brush").call(brush.move, null);
+        }
+        zoom();
     }
 
     function isBrushed(brush_coords, cx, cy) {
@@ -173,6 +223,7 @@
         var tr = scatter.transition().duration(750);
         svg.select("#axis--x").transition(tr).call(xAxis);
         svg.select("#axis--y").transition(tr).call(yAxis);
+
         scatter.selectAll("circle").transition(tr)
         .attr("cx", function (d) { return x(d.x); })
         .attr("cy", function (d) { return y(d.y); });

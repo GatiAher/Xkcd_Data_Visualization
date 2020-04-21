@@ -1,32 +1,51 @@
 /* whenever this changes, make sure to clean browser cache */
 
 body {
-  /* font: 12px Arial; */
-  background-color: black;
+  background-color: white;
+  padding: 20px;
   color: red;
 }
 
+.dot {
+  opacity: 0.5;
+  fill: #4292c6
+}
+
 .selected {
-  opacity: 1 !important;
-  stroke: red;
-  stroke-width: 8px;
   fill: #eb4c34;
 }
 
-
-/* path {
-  stroke-width: 2;
-  fill: none;
+.highlighted {
+  opacity: 1;
+  fill: yellow;
 }
 
-.axis path, .axis line {
-  fill: none;
-  stroke: grey;
-  stroke-width: 1;
-  shape-rendering: crispEdges;
+.tooltip {
+  opacity: 1;
+  background-color: white;
+  padding: 5px;
+  border: solid;
+  border-width: 2px;
+  border-radius: 5px;
+  margin: 10px;
+  position: relative;
+  top: 10px;
+  left: 10px;
+  font: 12px sans-serif;
+  text-align: left;
 }
 
-.area {
-  fill: #F0F8FF;
-  stroke-width: 0;
-} */
+.svg-container {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%; /* aspect ratio */
+  vertical-align: top;
+  overflow: hidden;
+}
+.svg-content-responsive {
+  display: inline-block;
+  position: absolute;
+  top: 10px;
+  left: 0;
+}

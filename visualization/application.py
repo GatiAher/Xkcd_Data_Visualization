@@ -21,7 +21,7 @@ tsne_conv = tsne.astype(float)
 comic_serial_nums = [ str(i) for i in range(1, titles.shape[0] + 1) ]
 
 df = pd.DataFrame(data = [titles, image_urls, tsne_conv[:, 0], tsne_conv[:, 1]],
-                index=["titles", "image_urls", "x", "y"],
+                index=["title", "image_url", "x", "y"],
                 columns=comic_serial_nums
                 ).T # transpose to make rows comics and columns categories'
 
