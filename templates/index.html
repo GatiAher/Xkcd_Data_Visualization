@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="static/styles.css">
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <title>Xkcd Data Visualization</title>
+</head>
+
+<body>
+  <div id="headerDiv" class="box">
+    <h1>
+      Visualizing Xkcd Comic Relationships Using An Interactive Dashboard
+    </h1>
+    <p>
+      Backend: python (Flask),
+      Frontend: javascript (D3.js)
+    </p>
+  </div>
+
+  <div id="tooltipDiv" class="box" style="display: flex" style="flex-direction: column">
+
+    <div id="tooltip" class="tooltip" style="order: 1">hover |<br><br> </div>
+
+    <div style="order: 2">
+      <label id="inputPickLabel" for="inputPick">pick:</label>
+      <input type="number" id="inputPick" name="inputPick" min="1" step="1">
+
+    </div>
+
+  </div>
+
+  <div id="graphDiv" class="box"></div>
+
+  <div id="wordDiv" class="box">
+    word info:
+  </div>
+
+  <div id="pictureDiv" class="box">
+    pick: info
+    <p id="xkcdImageTitle"> 221: Random Number </p>
+    <img id="xkcdImage" class="marginauto" alt="221: Random Number"
+      src="https://www.explainxkcd.com/wiki/images/f/fe/random_number.png">
+  </div>
+
+  <div id="jsonList" class="box">
+    <pre id="jsonListPre"></pre>
+  </div>
+
+
+  <script>
+
+    ////////////////////////////////////
+    // DATA AND PARAMETERS FROM FLASK //
+    ////////////////////////////////////
+
+    // to prevent users from inputPick out of range comic serial number
+    d3.select("#inputPick")
+      .attr("max", parseInt({{ max_serial_num }}, 10));
+
+    d3.select("#inputPickLabel")
+      .html("pick: 1-" + parseInt({{ max_serial_num }}, 10));
+
+    var data = {{ return_chart_data.chart_data | safe }};
+
+    ////////////////
+    // HOVER DATA //
+    ////////////////
+
+    var tooltip = d3.select("#tooltip")
+
+    // Three function that change the tooltip when user hover / move / leave a cell
+    var mouseover = function(d) {
+      tooltip
+        .html("hover |<br>  " + d.title)
+      d3.select(this)
+        .classed("hovered", true);
+    }
+
+    var mouseleave = function(d) {
+      tooltip
+        .html("hover |<br><br>")
+      d3.select(this)
+        .classed("hovered", false);
+    }
+
+    //////////////////
+    // PICKED DATA //
+    //////////////////
+
+    var click = function(d) {
+
+      scatter.selectAll(".picked").classed("picked", false);
+
+      d3.select(this)
+        .classed("picked", true);
+
+      generalPick(d.title, d.imageUrl, d.sn)
+
+    }
+
+    // attack listner to inputPick
+    d3.select("#inputPick").on("change", function () {
+
+      var inputData = d3.select(this).property('value');
+
+      var pickedPoint = d3.selectAll(".dot")
+        .filter(function(d) { return d.sn == inputData });
+
+      scatter.selectAll(".picked").classed("picked", false);
+
+      pickedPoint
+        .classed("picked", true);
+
+      generalPick(pickedPoint.datum().title, pickedPoint.datum().imageUrl, inputData)
+
+    })
+
+    function generalPick(title, imageUrl, sn) {
+
+      d3.select("#xkcdImage")
+        .attr("src", imageUrl)
+        .attr("alt", title);
+
+      document.getElementById("xkcdImageTitle")
+        .textContent = title;
+
+      d3.select("#inputPick")
+        .attr('value', sn);
+    }
+
+    //////////////////////////////
+    // SVG AND GRAPH DIMENSIONS //
+    //////////////////////////////
+
+    // make sure to change on viewbox property as well
+    // to preserve aspect ratio of plot
+    var svgWidth = 900,
+    svgHeight = 850;
+
+    var margin = { top: 20, right: 20, bottom: 30, left: 30 };
+    width = svgWidth - margin.left - margin.right,
+    height = svgHeight - margin.top - margin.bottom;
+
+    var svg = d3.select("#graphDiv")
+      .append("div")
+      // Container class to make it responsive.
+      .classed("svg-container", true)
+      .append("svg")
+      // Responsive SVG needs these 2 attributes and no width and height attr.
+      .attr("preserveAspectRatio", "xMidYMid none")
+      .attr("viewBox", "0 0 " + svgWidth + " " + svgHeight)
+      // Class to make it responsive.
+      .classed("svg-content-responsive", true)
+
+    ///////////////////
+    // AXES AND CLIP //
+    ///////////////////
+
+    var x = d3.scaleLinear()
+      .range([0, width])
+      .domain(d3.extent(data, function (d) { return d.x; })).nice()
+      .nice();
+
+    var y = d3.scaleLinear()
+      .range([height, 0])
+      .domain(d3.extent(data, function (d) { return d.y; })).nice()
+      .nice();
+
+    var xAxis = d3.axisBottom(x).ticks(10);
+    var yAxis = d3.axisLeft(y).ticks(10);
+
+    // x axis
+    svg.append("g")
+      .attr("class", "x axis")
+      .attr('id', "axis--x")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+    svg.append("text")
+      .style("text-anchor", "end")
+      .attr("x", width)
+      .attr("y", height - 8)
+      .text("X Axis");
+
+    // y axis
+    svg.append("g")
+      .attr("class", "y axis")
+      .attr('id', "axis--y")
+      // offset to right so ticks are not covered
+      .attr("transform", "translate(30,0)")
+      .call(yAxis);
+
+    svg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", "1em")
+      .style("text-anchor", "end")
+      .text("Y Axis");
+
+    var clip = svg.append("defs").append("svg:clipPath")
+      .attr("id", "clip")
+      .append("svg:rect")
+      .attr("width", width )
+      .attr("height", height )
+      .attr("x", 0)
+      .attr("y", 0);
+
+    ///////////////////////
+    // BRUSH AND SCATTER //
+    ///////////////////////
+
+    var scatter = svg.append("g")
+      .attr("id", "scatterplot")
+      .attr("clip-path", "url(#clip)");
+
+    var brush = d3.brush()
+      .extent([[0, 0], [width, height]])
+      .on("end", brushended);
+
+    // append brush before points so tooltips work
+    scatter.append("g")
+      .attr("class", "brush")
+      .call(brush);
+
+    scatter.selectAll(".dot")
+      .data(data)
+      .enter().append("circle")
+      .attr("class", "dot")
+      .attr("r", 8)
+      .attr("cx", function (d) { return x(d.x); })
+      .attr("cy", function (d) { return y(d.y); })
+      .attr('sn', function(d) { return d.sn })
+      .on("mouseover", mouseover)
+      .on("mouseleave", mouseleave)
+      .on("click", click)
+
+    var idleTimeout,
+    idleDelay = 350;
+
+    function brushended() {
+
+        var s = d3.event.selection;
+
+        if (!s) {
+
+            // reset zoom
+            if (!idleTimeout) return idleTimeout = setTimeout(idled, idleDelay);
+            x.domain(d3.extent(data, function (d) { return d.x; })).nice();
+            y.domain(d3.extent(data, function (d) { return d.y; })).nice();
+        } else {
+
+            // selection, do before zoom changes range of chart
+            scatter.selectAll(".dot").classed("selected", function(d){
+              return isBrushed(s, x(d.x), y(d.y))
+            });
+
+            // get list of sn of selected comics
+            var my_selection = [];
+            scatter.selectAll(".selected")
+              .each(function(d) {
+                my_selection.push(d.sn);
+              });
+            document.getElementById("jsonList").innerHTML = my_selection;
+
+            // zoom
+            x.domain([ x.invert(s[0][0]), x.invert(s[1][0]) ]);
+            y.domain([ y.invert(s[1][1]), y.invert(s[0][1]) ]);
+            scatter.select(".brush").call(brush.move, null);
+        }
+        zoom();
+    }
+
+    function isBrushed(brush_coords, cx, cy) {
+       var x0 = brush_coords[0][0],
+           x1 = brush_coords[1][0],
+           y0 = brush_coords[0][1],
+           y1 = brush_coords[1][1];
+      // This return TRUE or FALSE depending on if the points is in the selected area
+      return x0 <= cx && cx <= x1 && y0 <= cy && cy <= y1;
+    }
+
+    function idled() {
+        idleTimeout = null;
+    }
+
+    function zoom() {
+        var tr = scatter.transition().duration(750);
+        svg.select("#axis--x").transition(tr).call(xAxis);
+        svg.select("#axis--y").transition(tr).call(yAxis);
+
+        scatter.selectAll("circle").transition(tr)
+        .attr("cx", function (d) { return x(d.x); })
+        .attr("cy", function (d) { return y(d.y); });
+    }
+
+  </script>
+
+</body>
+
+</html>
