@@ -10,85 +10,118 @@
 </head>
 
 <body>
-  <div id="headerDiv" align="center">
-    <h1 align="center">
-      <u> Visualizing Xkcd Comic Relationships Using An Interactive Dashboard</u>
+  <div id="headerDiv" class="box">
+    <h1>
+      Visualizing Xkcd Comic Relationships Using An Interactive Dashboard
     </h1>
-    <p align="center">
-      This is an application with a backend written in python (Flask)
-      and a front end developed using d3.
+    <p>
+      Backend: python (Flask),
+      Frontend: javascript (D3.js)
     </p>
   </div>
 
-  <div id="tooltipDiv" align="center"></div>
-  <div id="graphDiv" align="center"></div>
+  <div id="tooltipDiv" class="box" style="display: flex" style="flex-direction: column">
 
-  <!-- <div id="buttonDiv" align="center"></div> -->
+    <div id="tooltip" class="tooltip" style="order: 1">hover |<br><br> </div>
 
-  <div id="pictureDiv" align="center"></div>
+    <div style="order: 2">
+      <label for="inputPick">pick (serial number):</label>
+      <input type="number" id="inputPick" name="inputPick" min="1" step="1">
 
-    <p id="xkcdImageTitle" align="center"> 221: Random Number </p>
+    </div>
 
+  </div>
+
+  <div id="graphDiv" class="box"></div>
+
+  <div id="pictureDiv" class="box">
+    pick: info
+    <p id="xkcdImageTitle"> 221: Random Number </p>
     <img id="xkcdImage" class="marginauto" alt="221: Random Number"
       src="https://www.explainxkcd.com/wiki/images/f/fe/random_number.png">
+  </div>
 
-  <div id="jsonList">
+  <div id="jsonList" class="box">
     <pre id="jsonListPre"></pre>
   </div>
 
 
   <script>
 
-    //////////
-    // DATA //
-    //////////
+    ////////////////////////////////////
+    // DATA AND PARAMETERS FROM FLASK //
+    ////////////////////////////////////
+
+    // to prevent users from inputPick out of range comic serial number
+    d3.select("#inputPick")
+      .attr("max", parseInt({{ max_serial_num }}, 10));
 
     var data = {{ return_chart_data.chart_data | safe }};
 
-    //////////////
-    // TOOL TIP //
-    //////////////
+    ////////////////
+    // HOVER DATA //
+    ////////////////
 
-    var tooltip = d3.select("#tooltipDiv").append("div")
-      .attr("class", "tooltip")
+    var tooltip = d3.select("#tooltip")
 
     // Three function that change the tooltip when user hover / move / leave a cell
     var mouseover = function(d) {
       tooltip
-        .html("comic  |  " + d.title)
+        .html("hover |<br>  " + d.title)
       d3.select(this)
-        .classed("highlighted", true);
-    }
-
-    var mousemove = function(d) {
-      //  UNEEDED
-      // tooltip
-      //   .html("comic  |  " + d.title)
+        .classed("hovered", true);
     }
 
     var mouseleave = function(d) {
       tooltip
-        .html("comic  |  ")
+        .html("hover |<br><br>")
       d3.select(this)
-        .classed("highlighted", false);
+        .classed("hovered", false);
     }
 
-    ///////////////
-    // SET IMAGE //
-    ///////////////
+    //////////////////
+    // PICKED DATA //
+    //////////////////
 
     var click = function(d) {
 
-      scatter.selectAll(".clicked").classed("clicked", false);
+      scatter.selectAll(".picked").classed("picked", false);
 
       d3.select(this)
-        .classed("clicked", true);
+        .classed("picked", true);
+
+      generalPick(d.title, d.imageUrl, d.sn)
+
+    }
+
+    // attack listner to inputPick
+    d3.select("#inputPick").on("change", function () {
+
+      var inputData = d3.select(this).property('value');
+
+      var pickedPoint = d3.selectAll(".dot")
+        .filter(function(d) { return d.sn == inputData });
+
+      scatter.selectAll(".picked").classed("picked", false);
+
+      pickedPoint
+        .classed("picked", true);
+
+      generalPick(pickedPoint.datum().title, pickedPoint.datum().imageUrl, inputData)
+
+    })
+
+    function generalPick(title, imageUrl, sn) {
 
       d3.select("#xkcdImage")
-        .attr("src", d.imageUrl)
-        .attr("alt", d.title);
+        .attr("src", imageUrl)
+        .attr("alt", title);
 
-      document.getElementById("xkcdImageTitle").textContent = d.title;
+      document.getElementById("xkcdImageTitle")
+        .textContent = title;
+
+      d3.select("#inputPick")
+        .attr('value', sn);
     }
 
     //////////////////////////////
@@ -110,10 +143,10 @@
       .classed("svg-container", true)
       .append("svg")
       // Responsive SVG needs these 2 attributes and no width and height attr.
-     .attr("preserveAspectRatio", "xMinYMin meet")
-     .attr("viewBox", "0 0 " + svgWidth + " " + svgHeight)
+      .attr("preserveAspectRatio", "xMidYMid none")
+      .attr("viewBox", "0 0 " + svgWidth + " " + svgHeight)
       // Class to make it responsive.
-     .classed("svg-content-responsive", true)
+      .classed("svg-content-responsive", true)
 
     ///////////////////
     // AXES AND CLIP //
@@ -125,11 +158,12 @@
       .nice();
 
     var y = d3.scaleLinear()
+      .range([height, 0])
       .domain(d3.extent(data, function (d) { return d.y; })).nice()
-      .range([height, 0]);
+      .nice();
 
-    var xAxis = d3.axisBottom(x).ticks(12);
-    var yAxis = d3.axisLeft(y).ticks(12 * height / width);
+    var xAxis = d3.axisBottom(x).ticks(10);
+    var yAxis = d3.axisLeft(y).ticks(10);
 
     // x axis
     svg.append("g")
@@ -142,12 +176,14 @@
       .style("text-anchor", "end")
       .attr("x", width)
       .attr("y", height - 8)
-      .text("X Label");
+      .text("X Axis");
 
     // y axis
     svg.append("g")
       .attr("class", "y axis")
       .attr('id', "axis--y")
+      // offset to right so ticks are not covered
+      .attr("transform", "translate(30,0)")
       .call(yAxis);
 
     svg.append("text")
@@ -155,7 +191,7 @@
       .attr("y", 6)
       .attr("dy", "1em")
       .style("text-anchor", "end")
-      .text("Y Label");
+      .text("Y Axis");
 
     var clip = svg.append("defs").append("svg:clipPath")
       .attr("id", "clip")
@@ -186,11 +222,11 @@
       .data(data)
       .enter().append("circle")
       .attr("class", "dot")
-      .attr("r", 4)
+      .attr("r", 8)
       .attr("cx", function (d) { return x(d.x); })
       .attr("cy", function (d) { return y(d.y); })
+      .attr('sn', function(d) { return d.sn })
       .on("mouseover", mouseover)
-      .on("mousemove", mousemove)
       .on("mouseleave", mouseleave)
       .on("click", click)
 
