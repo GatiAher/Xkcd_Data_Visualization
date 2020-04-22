@@ -256,8 +256,14 @@
             scatter.selectAll(".dot").classed("selected", function(d){
               return isBrushed(s, x(d.x), y(d.y))
             });
-            var my_selection = scatter.selectAll(".selected");
-            document.getElementById("jsonListPre").textContent = JSON.stringify(my_selection, undefined, 2);
+
+            // get list of sn of selected comics
+            var my_selection = [];
+            scatter.selectAll(".selected")
+              .each(function(d) {
+                my_selection.push(d.sn);
+              });
+            document.getElementById("jsonList").innerHTML = my_selection;
 
             // zoom
             x.domain([ x.invert(s[0][0]), x.invert(s[1][0]) ]);
