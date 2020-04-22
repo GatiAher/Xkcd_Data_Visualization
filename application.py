@@ -3,6 +3,9 @@
 # IMPORT #
 ##########
 
+# for Heroku
+import os
+
 from flask import Flask, render_template, request
 import numpy as np
 
@@ -62,4 +65,9 @@ if __name__ == "__main__":
     # print(df)
     # print(df.shape)
 
-    app.run(debug=True)
+    # app.run(debug=True)
+
+    # Make Heroku Use 0.0.0.0, and read the port number from an environment variable
+    HOST = '0.0.0.0' if 'PORT' in os.environ else '127.0.0.1'
+    PORT = int(os.environ.get('PORT', 5000))
+    app.run(host=HOST, port=PORT)
