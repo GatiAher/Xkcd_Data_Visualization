@@ -13,7 +13,7 @@ import json
 # DATA #
 ########
 
-root_dir = "../"
+root_dir = "./"
 titles = np.load(root_dir + "comic_tags/titles.npy")
 image_urls = np.load(root_dir + "comic_tags/image_urls.npy")
 tsne = np.load(root_dir + "document_relations/tsne.npy")
