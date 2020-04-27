@@ -2,9 +2,9 @@
 extract and saves the title and image URL from pages on the 'explain xkcd' html pages
 
 saves to:
-- "comic_tags/titles.npy"
-- "comic_tags/image_urls.npy"
-- "comic_tags/titles_and_image_urls.pkl"
+- "../data/comic_tags/titles.npy"
+- "../data/comic_tags/image_urls.npy"
+- "../data/comic_tags/titles_and_image_urls.pkl"
 
 takes about 30 min to run
 
@@ -81,20 +81,20 @@ if __name__ == "__main__":
             image_urls.append(image_url)
         except:
             # record errors
-            f = open("comic_tags/ERROR_" + str(i) + ".txt","w")
+            f = open("../data/comic_tags/ERROR_" + str(i) + ".txt","w")
             f.write("*** (" + str(i) + ") An exception occurred ***")
             f.close()
 
     # save as individual numpy arrays
     titles_array = np.asarray(titles)
-    np.save("comic_tags/titles.npy", titles_array)
+    np.save("../data/comic_tags/titles.npy", titles_array)
     image_urls_array = np.asarray(image_urls)
-    np.save("comic_tags/image_urls.npy", image_urls_array)
+    np.save("../data/comic_tags/image_urls.npy", image_urls_array)
 
     # save as DataFrame
     comic_serial_numbers = [ str(i) for i in range(1, num_comics) ]
     d = {"title":titles, "image":image_urls}
     df = pd.DataFrame(d, columns=["title", "image"], index=comic_serial_numbers)
-    pd.to_pickle(df, "comic_tags/titles_and_image_urls.pkl")
+    pd.to_pickle(df, "../data/comic_tags/titles_and_image_urls.pkl")
 
     print(df.shape)

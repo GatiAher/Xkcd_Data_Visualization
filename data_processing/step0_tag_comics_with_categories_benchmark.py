@@ -1,7 +1,7 @@
 """
 extract and saves the topic categories for comics from pages on the 'explain xkcd' html pages
 
-saves to: 'comic_tags/comic_tags_df.pkl'
+saves to: '../data/comic_tags/comic_tags_df.pkl'
 
 @author: Gati Aher
 """
@@ -113,4 +113,4 @@ if __name__ == "__main__":
                                         index=comic_serial_numbers)
     # take out 0 index because it is empty
     df.drop('0', axis=0, inplace=True)
-    pd.to_pickle(df, 'comic_tags/comic_tags_df.pkl')
+    pd.to_pickle(df, '../data/comic_tags/comic_tags_df.pkl')

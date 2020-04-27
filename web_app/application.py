@@ -3,6 +3,9 @@
 # IMPORT #
 ##########
 
+# for Heroku
+import os
+
 from flask import Flask, render_template, request
 import numpy as np
 
@@ -13,10 +16,10 @@ import json
 # DATA #
 ########
 
-root_dir = "../"
-titles = np.load(root_dir + "comic_tags/titles.npy")
-image_urls = np.load(root_dir + "comic_tags/image_urls.npy")
-tsne = np.load(root_dir + "document_relations/tsne.npy")
+root_dir = "./"
+titles = np.load(root_dir + "../data/comic_tags/titles.npy")
+image_urls = np.load(root_dir + "../data/comic_tags/image_urls.npy")
+tsne = np.load(root_dir + "../data/document_relations/tsne.npy")
 tsne_conv = tsne.astype(float)
 
 comic_serial_nums = [ str(i) for i in range(1, titles.shape[0] + 1) ]
@@ -63,3 +66,8 @@ if __name__ == "__main__":
     # print(df.shape)
 
     app.run(debug=True)
+
+    # Make Heroku Use 0.0.0.0, and read the port number from an environment variable
+    # HOST = '0.0.0.0' if 'PORT' in os.environ else '127.0.0.1'
+    # PORT = int(os.environ.get('PORT', 5000))
+    # app.run(host=HOST, port=PORT)

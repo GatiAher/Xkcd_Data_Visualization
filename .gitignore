@@ -1,2 +1,2 @@
-raw_data/xkcd*
-text_vectors/tfidf_vectors_df.pkl
+data/raw_data/*
+data/text_vectors/*

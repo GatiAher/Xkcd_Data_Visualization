@@ -14,10 +14,10 @@ While the TruncatedSVD transformer works with any (sparse) feature matrix,
 using it on tf–idf matrices is recommended over raw frequency counts in an
 LSA/document processing setting.
 
-reads from: "text_vectors/tfidf_vectors.npz"
+reads from: "../data/text_vectors/tfidf_vectors.npz"
 saves to:
-- "document_relations/tsne.npy"
-- "document_relations/tsne_df.pkl"
+- "../data/document_relations/tsne.npy"
+- "../data/document_relations/tsne_df.pkl"
 
 @author: Gati Aher
 """
@@ -34,7 +34,7 @@ from my_utils import get_latest_comic_num
 
 if __name__ == "__main__":
 
-    tfidf_vectors = sparse.load_npz("text_vectors/tfidf_vectors.npz")
+    tfidf_vectors = sparse.load_npz("../data/text_vectors/tfidf_vectors.npz")
 
     # do Truncated SVD to reduce dimensionality
     svd = TruncatedSVD(n_components=50, n_iter=7, random_state=42)
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     embedded = TSNE(n_components=2).fit_transform(reduced_tfidf_vectors)
 
     # save coord
-    np.save("document_relations/tsne.npy", embedded)
+    np.save("../data/document_relations/tsne.npy", embedded)
     print("TSNE SHAPE:", embedded.shape)
     print("TSNE TYPE:", type(embedded))
 
@@ -56,4 +56,4 @@ if __name__ == "__main__":
     num_comics = get_latest_comic_num() + 1
     comic_serial_numbers = [ str(i) for i in range(1, num_comics) ]
     df = pd.DataFrame(embedded, columns=['x', 'y'], index=comic_serial_numbers)
-    pd.to_pickle(df, "document_relations/tsne_df.pkl")
+    pd.to_pickle(df, "../data/document_relations/tsne_df.pkl")
