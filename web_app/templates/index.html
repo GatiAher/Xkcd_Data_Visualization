@@ -94,18 +94,16 @@
     // DATA AND PARAMETERS FROM FLASK //
     ////////////////////////////////////
 
-    var data = {{ return_chart_data.chart_data | safe }};
+    // never changes
+    var comic_data = {{ return_comic_data.comic_data | safe }};
 
-    console.log("LOGGING HERE")
-    console.log(data)
-
-    ////////////////
-    // HOVER DATA //
-    ////////////////
+    ////////////////////////////
+    // HOVER DATA AND TOOLTIP //
+    ////////////////////////////
 
     var tooltip = d3.select("#tooltip")
 
-    // Three function that change the tooltip when user hover / move / leave a cell
+    // change the tooltip and circle when user hover over a circle
     var mouseover = function(d) {
       tooltip
         .html("hover |<br>  " + d.title)
@@ -113,6 +111,7 @@
         .classed("hovered", true);
     }
 
+    // change the tooltip and circle when user leave a circle
     var mouseleave = function(d) {
       tooltip
         .html("hover |<br><br>")
@@ -124,43 +123,38 @@
     // PICKED DATA //
     //////////////////
 
+    // change when user clicks a circle
     var click = function(d) {
-
+      // clear previously picked point
       scatter.selectAll(".picked").classed("picked", false);
-
+      // pick new point
       d3.select(this)
         .classed("picked", true);
-
+      // update dependant values
       generalPick(d.title, d.imageUrl, d.sn)
-
     }
 
-    // attack listner to inputPick
+    // attach listner to inputPick
     d3.select("#inputPick").on("change", function () {
-
       var inputData = d3.select(this).property('value');
-
-      var pickedPoint = d3.selectAll(".dot")
-        .filter(function(d) { return d.sn == inputData });
-
+      // clear previously picked point
       scatter.selectAll(".picked").classed("picked", false);
-
-      pickedPoint
+      // pick new point
+      var pickedPoint = d3.selectAll(".dot")
+        .filter(function(d) { return d.sn == inputData })
         .classed("picked", true);
-
+      // update dependant values
       generalPick(pickedPoint.datum().title, pickedPoint.datum().imageUrl, inputData)
 
     })
 
+    // general update values when new point is picked
     function generalPick(title, imageUrl, sn) {
-
       d3.select("#xkcdImage")
         .attr("src", imageUrl)
         .attr("alt", title);
-
       document.getElementById("xkcdImageTitle")
         .textContent = title;
-
       d3.select("#inputPick")
         .attr('value', sn);
     }
@@ -184,23 +178,23 @@
       .classed("svg-container", true)
       .append("svg")
       // Responsive SVG needs these 2 attributes and no width and height attr.
-      .attr("preserveAspectRatio", "xMidYMid none")
+      // .attr("preserveAspectRatio", "xMidYMid none")
       .attr("viewBox", "0 0 " + svgWidth + " " + svgHeight)
       // Class to make it responsive.
       .classed("svg-content-responsive", true)
 
-    ///////////////////
-    // AXES AND CLIP //
-    ///////////////////
+    //////////
+    // AXES //
+    //////////
 
     var x = d3.scaleLinear()
       .range([0, width])
-      .domain(d3.extent(data, function (d) { return d.x; })).nice()
+      .domain(d3.extent(comic_data, function (d) { return d.x; })).nice()
       .nice();
 
     var y = d3.scaleLinear()
       .range([height, 0])
-      .domain(d3.extent(data, function (d) { return d.y; })).nice()
+      .domain(d3.extent(comic_data, function (d) { return d.y; })).nice()
       .nice();
 
     var xAxis = d3.axisBottom(x).ticks(10);
@@ -234,6 +228,10 @@
       .style("text-anchor", "end")
       .text("Y Axis");
 
+    ////////////////////////////////
+    // BRUSH AND CLIP AND SCATTER //
+    ////////////////////////////////
+
     var clip = svg.append("defs").append("svg:clipPath")
       .attr("id", "clip")
       .append("svg:rect")
@@ -241,10 +239,6 @@
       .attr("height", height )
       .attr("x", 0)
       .attr("y", 0);
-
-    ///////////////////////
-    // BRUSH AND SCATTER //
-    ///////////////////////
 
     var scatter = svg.append("g")
       .attr("id", "scatterplot")
@@ -259,8 +253,9 @@
       .attr("class", "brush")
       .call(brush);
 
+    // append points
     scatter.selectAll(".dot")
-      .data(data)
+      .data(comic_data)
       .enter().append("circle")
       .attr("class", "dot")
       .attr("r", 8)
@@ -279,14 +274,13 @@
         var s = d3.event.selection;
 
         if (!s) {
-
-            // reset zoom
+            // if nothing selected, reset axes
             if (!idleTimeout) return idleTimeout = setTimeout(idled, idleDelay);
-            x.domain(d3.extent(data, function (d) { return d.x; })).nice();
-            y.domain(d3.extent(data, function (d) { return d.y; })).nice();
-        } else {
+            x.domain(d3.extent(comic_data, function (d) { return d.x; })).nice();
+            y.domain(d3.extent(comic_data, function (d) { return d.y; })).nice();
 
-            // selection, do before zoom changes range of chart
+        } else {
+            // make the selection, do before zoom changes range of chart
             scatter.selectAll(".dot").classed("selected", function(d){
               return isBrushed(s, x(d.x), y(d.y))
             });
@@ -299,7 +293,7 @@
               });
             document.getElementById("jsonList").innerHTML = my_selection;
 
-            // zoom
+            // adjust axes to selected data
             x.domain([ x.invert(s[0][0]), x.invert(s[1][0]) ]);
             y.domain([ y.invert(s[1][1]), y.invert(s[0][1]) ]);
             scatter.select(".brush").call(brush.move, null);

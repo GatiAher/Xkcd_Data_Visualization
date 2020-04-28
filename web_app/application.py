@@ -16,7 +16,7 @@ import json
 # DATA #
 ########
 
-data = pd.read_csv("final_data/data.csv")
+comic_data_df = pd.read_csv("final_data/data.csv")
 
 #######
 # APP #
@@ -26,12 +26,12 @@ app = Flask(__name__)
 
 @app.route('/')
 def homepage():
-    chart_data = data.to_dict(orient='records')
-    chart_data = json.dumps(chart_data, indent=2)
-    return_chart_data = {'chart_data': chart_data}
+    comic_data = comic_data_df.to_dict(orient='records')
+    comic_data = json.dumps(comic_data, indent=2)
+    return_comic_data = {'comic_data': comic_data}
     return render_template('index.html',
-            return_chart_data=return_chart_data,
-            max_serial_num=data.shape[0])
+            return_comic_data=return_comic_data,
+            max_serial_num=comic_data_df.shape[0])
 
 ########
 # MAIN #
