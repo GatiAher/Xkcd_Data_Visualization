@@ -30,14 +30,6 @@ df = pd.DataFrame(data = [titles, image_urls, tsne_conv[:, 0], tsne_conv[:, 1], 
                 index=["title", "imageUrl", "x", "y", "sn"]
                 ).T # transpose to make rows comics and columns categories'
 
-# class DataStore():
-#     comic_serial_nums = None
-#     titles=None
-#     image_urls=None
-#     tsne_x= None
-#     tsne_y= None
-# data_store=DataStore()
-
 #######
 # APP #
 #######
