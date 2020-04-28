@@ -1,4 +1,3 @@
-
 ##########
 # IMPORT #
 ##########
@@ -25,6 +24,8 @@ comic_data_df = pd.read_csv("final_data/data.csv")
 app = Flask(__name__)
 
 @app.route('/')
+@app.route('/index')
+@app.route('/home')
 def homepage():
     comic_data = comic_data_df.to_dict(orient='records')
     comic_data = json.dumps(comic_data, indent=2)
@@ -32,6 +33,11 @@ def homepage():
     return render_template('index.html',
             return_comic_data=return_comic_data,
             max_serial_num=comic_data_df.shape[0])
+
+@app.route('/picked-word-data')
+def picked_word_data():
+    
+
 
 ########
 # MAIN #

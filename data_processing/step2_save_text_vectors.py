@@ -10,7 +10,6 @@ reads "xkcd_xxx.txt" files in "raw_data" directory
 saves files to:
 - "../data/text_vectors/tfidf_vectors.npz"
 - "../data/text_vectors/feature_names.npy"
-- "../data/text_vectors/tfidf_vectors_df.pkl"
 
 takes 1 min to run
 
@@ -127,11 +126,11 @@ def save_tf_idf_vector(documents):
     feature_names = np.asarray(tfidf_vectorizer.get_feature_names())
     np.save("../data/text_vectors/feature_names.npy", feature_names)
 
-    # save as DataFrame
-    num_comics = get_latest_comic_num() + 1
-    comic_serial_numbers = [ str(i) for i in range(1, num_comics) ]
-    df = pd.DataFrame(tfidf_vectors.todense(), columns=tfidf_vectorizer.get_feature_names(), index=comic_serial_numbers)
-    pd.to_pickle(df, '../data/text_vectors/tfidf_vectors_df.pkl')
+    # # save as DataFrame
+    # num_comics = get_latest_comic_num() + 1
+    # comic_serial_numbers = [ str(i) for i in range(1, num_comics) ]
+    # df = pd.DataFrame(tfidf_vectors.todense(), columns=tfidf_vectorizer.get_feature_names(), index=comic_serial_numbers)
+    # pd.to_pickle(df, '../data/text_vectors/tfidf_vectors_df.pkl')
 
     # know how big of a vector was produced
     print(tfidf_vectors.shape)
