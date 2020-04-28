@@ -2,14 +2,13 @@
 load all the documents, clean text, create tfidf_vectors (weighted text vector)
 
 save:
-- serial_numbers for comics
 - tfidf_vectors
 - feature_names
 
 reads "xkcd_xxx.txt" files in "raw_data" directory
 saves files to:
 - "../data/text_vectors/tfidf_vectors.npz"
-- "../data/text_vectors/feature_names.npy"
+- "../data/text_vectors/tfidf_feature_names.npy"
 
 takes 1 min to run
 
@@ -124,7 +123,7 @@ def save_tf_idf_vector(documents):
 
     # save names of features (words that are columns for text vectors)
     feature_names = np.asarray(tfidf_vectorizer.get_feature_names())
-    np.save("../data/text_vectors/feature_names.npy", feature_names)
+    np.save("../data/text_vectors/tfidf_feature_names.npy", feature_names)
 
     # # save as DataFrame
     # num_comics = get_latest_comic_num() + 1

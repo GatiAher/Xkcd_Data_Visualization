@@ -15,7 +15,7 @@ import json
 # DATA #
 ########
 
-comic_data_df = pd.read_csv("final_data/data.csv")
+comic_data_df = pd.read_csv("final_data/comic_data.csv")
 
 #######
 # APP #
@@ -36,7 +36,7 @@ def homepage():
 
 @app.route('/picked-word-data')
 def picked_word_data():
-    
+
 
 
 ########
