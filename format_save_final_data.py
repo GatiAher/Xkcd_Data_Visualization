@@ -13,14 +13,16 @@ saves to:
 - "web_app/final_data/comic_data.csv"
 
 - "web_app/final_data/tfidf_vectors.npz"
-- "web_app/final_data/feature_names.npy"
+- "web_app/final_data/tfidf_feature_names.txt"
 
 @author: Gati Aher
 """
+import pandas as pd
+
 from scipy import sparse
 import numpy as np
 
-import pandas as pd
+import json
 
 def save_comic_data():
     root_dir = "./"
@@ -35,17 +37,20 @@ def save_comic_data():
 
     dict = {"sn": comic_serial_nums, "title": titles, "imageUrl": image_urls, "x": tsne_conv[:, 0], "y":tsne_conv[:, 1]}
     df = pd.DataFrame(dict)
-    df.to_csv("web_app/final_data/data.csv")
+    df.to_csv("web_app/final_data/comic_data.csv")
 
 def save_word_data():
     # tfidf_vectors type is: <class 'scipy.sparse.csr.csr_matrix'> -- good for row splicing
     tfidf_vectors = sparse.load_npz("data/text_vectors/tfidf_vectors.npz")
     sparse.save_npz("web_app/final_data/tfidf_vectors.npz", tfidf_vectors)
 
-    feature_names = np.load("data/text_vectors/tfidf_feature_names.npy")
-    np.save("web_app/final_data/tfidf_feature_names.npy", feature_names)
+    # open output file for reading
+    tfidf_feature_names = None
+    with open('data/text_vectors/tfidf_feature_names.txt', 'r') as filehandle:
+        tfidf_feature_names = json.load(filehandle)
+    with open('web_app/final_data/tfidf_feature_names.txt', 'w') as f:
+        json.dump(tfidf_feature_names, f)
 
 if __name__ == "__main__":
-
     save_comic_data()
     save_word_data()

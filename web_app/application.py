@@ -8,14 +8,20 @@ import os
 from flask import Flask, render_template, request, jsonify
 import numpy as np
 
-import pandas as pd
+from scipy import sparse
 import json
+
+import pandas as pd
 
 ########
 # DATA #
 ########
 
 comic_data_df = pd.read_csv("final_data/comic_data.csv")
+
+tfidf_vectors = sparse.load_npz("final_data/tfidf_vectors.npz")
+with open("final_data/tfidf_feature_names.txt", 'r') as filehandle:
+    tfidf_feature_names = json.load(filehandle)
 
 #######
 # APP #
@@ -36,6 +42,7 @@ def homepage():
 
 @app.route('/picked-word-data')
 def picked_word_data():
+    return jsonify(text=tfidf_feature_names, text2=tfidf_feature_names)
 
 
 

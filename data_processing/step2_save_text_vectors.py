@@ -5,10 +5,10 @@ save:
 - tfidf_vectors
 - feature_names
 
-reads "xkcd_xxx.txt" files in "raw_data" directory
+reads "xkcd_xxx.txt" files in "../data/raw_data" directory
 saves files to:
 - "../data/text_vectors/tfidf_vectors.npz"
-- "../data/text_vectors/tfidf_feature_names.npy"
+- "../data/text_vectors/tfidf_feature_names.txt"
 
 takes 1 min to run
 
@@ -22,7 +22,7 @@ import re
 
 from scipy import sparse
 import numpy as np
-import pandas as pd
+import json
 
 import spacy
 # NOTE: to download model, in terminal: python -m spacy download en
@@ -44,7 +44,7 @@ def load_documents():
 
     num_comics = get_latest_comic_num() + 1
 
-    dir = "raw_data"
+    dir = "../data/raw_data"
     serial_numbers = []
     documents = []
     for i in range(1, num_comics):
@@ -122,14 +122,11 @@ def save_tf_idf_vector(documents):
     sparse.save_npz("../data/text_vectors/tfidf_vectors.npz", tfidf_vectors)
 
     # save names of features (words that are columns for text vectors)
-    feature_names = np.asarray(tfidf_vectorizer.get_feature_names())
-    np.save("../data/text_vectors/tfidf_feature_names.npy", feature_names)
-
-    # # save as DataFrame
-    # num_comics = get_latest_comic_num() + 1
-    # comic_serial_numbers = [ str(i) for i in range(1, num_comics) ]
-    # df = pd.DataFrame(tfidf_vectors.todense(), columns=tfidf_vectorizer.get_feature_names(), index=comic_serial_numbers)
-    # pd.to_pickle(df, '../data/text_vectors/tfidf_vectors_df.pkl')
+    feature_names = tfidf_vectorizer.get_feature_names()
+    with open('../data/text_vectors/tfidf_feature_names.txt', 'w') as f:
+        json.dump(feature_names, f)
+    # feature_names = np.asarray(tfidf_vectorizer.get_feature_names())
+    # np.save("../data/text_vectors/tfidf_feature_names.npy", feature_names)
 
     # know how big of a vector was produced
     print(tfidf_vectors.shape)
