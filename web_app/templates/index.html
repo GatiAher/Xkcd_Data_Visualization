@@ -166,8 +166,7 @@
 
     // make sure to change on viewbox property as well
     // to preserve aspect ratio of plot
-    var svgWidth = 900,
-    svgHeight = 850;
+    var svgWidth = 900, svgHeight = 850;
 
     var margin = { top: 20, right: 20, bottom: 30, left: 30 };
     width = svgWidth - margin.left - margin.right,
@@ -190,12 +189,12 @@
 
     var x = d3.scaleLinear()
       .range([0, width])
-      .domain(d3.extent(comic_data, function (d) { return d.x; })).nice()
+      // .domain(d3.extent(comic_data, function (d) { return d.x; })).nice()
       .nice();
 
     var y = d3.scaleLinear()
       .range([height, 0])
-      .domain(d3.extent(comic_data, function (d) { return d.y; })).nice()
+      // .domain(d3.extent(comic_data, function (d) { return d.y; })).nice()
       .nice();
 
     var xAxis = d3.axisBottom(x).ticks(10);
@@ -249,23 +248,7 @@
       .extent([[0, 0], [width, height]])
       .on("end", brushended);
 
-    // append brush before points so tooltips work
-    scatter.append("g")
-      .attr("class", "brush")
-      .call(brush);
-
-    // append points
-    scatter.selectAll(".dot")
-      .data(comic_data)
-      .enter().append("circle")
-      .attr("class", "dot")
-      .attr("r", 8)
-      .attr("cx", function (d) { return x(d.x); })
-      .attr("cy", function (d) { return y(d.y); })
-      .attr('sn', function(d) { return d.sn })
-      .on("mouseover", mouseover)
-      .on("mouseleave", mouseleave)
-      .on("click", click)
+    drawScatterplot(comic_data)
 
     var idleTimeout,
     idleDelay = 350;
@@ -323,6 +306,32 @@
         scatter.selectAll("circle").transition(tr)
         .attr("cx", function (d) { return x(d.x); })
         .attr("cy", function (d) { return y(d.y); });
+    }
+
+    function drawScatterplot(data) {
+        // data dependant code
+        
+        // first set domain based off of data domain
+        x.domain(d3.extent(comic_data, function (d) { return d.x; })).nice()
+        y.domain(d3.extent(comic_data, function (d) { return d.y; })).nice()
+
+        // append brush before points so tooltips work
+        scatter.append("g")
+          .attr("class", "brush")
+          .call(brush);
+
+        // append points
+        scatter.selectAll(".dot")
+          .data(data)
+          .enter().append("circle")
+          .attr("class", "dot")
+          .attr("r", 8)
+          .attr("cx", function (d) { return x(d.x); })
+          .attr("cy", function (d) { return y(d.y); })
+          .attr('sn', function(d) { return d.sn })
+          .on("mouseover", mouseover)
+          .on("mouseleave", mouseleave)
+          .on("click", click)
     }
 
   </script>
