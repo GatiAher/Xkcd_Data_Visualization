@@ -34,8 +34,8 @@
     <div id="tooltip" class="tooltip" style="order: 1">hover |<br><br> </div>
 
     <div style="order: 2">
-      <label id="inputPickLabel" for="inputPick">pick:</label>
-      <input type="number" id="inputPick" name="inputPick" min="1" step="1">
+      <label id="inputPickLabel" for="inputPick">pick: 1-{{ max_serial_num }}</label>
+      <input type="number" id="inputPick" name="inputPick" min="1" max={{max_serial_num}} step="1">
 
     </div>
 
@@ -64,7 +64,7 @@
       (xkcd slogan). These comics are licensed under a Creative Commons
       Attribution-NonCommercial 2.5 License, and their transcripts are available
       on www.explainxkcd.com (xkcd comic's wiki). This web application uses
-      the first 2283 comics as data source.
+      the first {{max_serial_num}} comics as data source.
     </p>
     <h6>
       Methodology
@@ -94,14 +94,10 @@
     // DATA AND PARAMETERS FROM FLASK //
     ////////////////////////////////////
 
-    // to prevent users from inputPick out of range comic serial number
-    d3.select("#inputPick")
-      .attr("max", parseInt({{ max_serial_num }}, 10));
-
-    d3.select("#inputPickLabel")
-      .html("pick: 1-" + parseInt({{ max_serial_num }}, 10));
-
     var data = {{ return_chart_data.chart_data | safe }};
+
+    console.log("LOGGING HERE")
+    console.log(data)
 
     ////////////////
     // HOVER DATA //

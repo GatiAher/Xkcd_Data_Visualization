@@ -32,8 +32,8 @@ if __name__ == "__main__":
     comic_serial_nums = np.asarray(comic_serial_nums)
     comic_serial_nums = np.transpose(comic_serial_nums)
 
-    df = pd.DataFrame(data = [titles, image_urls, tsne_conv[:, 0], tsne_conv[:, 1], comic_serial_nums],
-                    index=["title", "imageUrl", "x", "y", "sn"]
-                    ).T # transpose to make rows comics and columns categories'
+    dict = {"sn": comic_serial_nums, "title": titles, "imageUrl": image_urls, "x": tsne_conv[:, 0], "y":tsne_conv[:, 1]}
+
+    df = pd.DataFrame(dict)
 
     df.to_csv("web_app/final_data/data.csv")
