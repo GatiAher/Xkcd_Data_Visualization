@@ -48,14 +48,26 @@ def picked_word_data():
     # myvalue = request.sn
     if request.method == 'POST':
         picked_idx = request.json['index_num']
-        return jsonify(data=picked_idx)
+        barchart_data = get_barchart_data(picked_idx)
+        return barchart_data
 
-def get_barchart_data(idx):
-    pass
+def get_barchart_data(comic_idx):
+    # get row
+    word_data = tfidf_vectors[comic_idx, :]
+    # transform 'numpy.matrix' to 'numpy.ndarray'
+    word_data = np.array(word_data.todense()).ravel()
+    top_5_word_idxs = np.argpartition(word_data, -5)[-5:]
+    top_5_word_idxs = top_5_word_idxs[np.argsort(word_data[top_5_word_idxs])]
+    top_5_word_idxs = top_5_word_idxs[::-1]
 
+    top_5_word_vals = word_data[top_5_word_idxs]
+    top_5_words = [tfidf_feature_names[i] for i in top_5_word_idxs]
+    labels = ["word", "tfidf"]
+    tfidf_zipped = zip(top_5_words, top_5_word_vals)
+    tfidf_dict = [dict(zip(labels, row)) for row in tfidf_zipped]
 
-
-
+    barchart_data = json.dumps([tfidf_dict])
+    return barchart_data
 
 ########
 # MAIN #
