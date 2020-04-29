@@ -157,7 +157,16 @@
         .textContent = title;
       d3.select("#inputPick")
         .attr('value', sn);
-      // TODO: post sn of picked here
+      // send picked index_num to backend
+      let index_num = sn-1;
+      d3.json("/picked-data")
+        .header("Content-Type", "application/json")
+        .post(
+            JSON.stringify({index_num:index_num}),
+            function(err, res) {
+              console.log("POST", res)
+      });
+
     }
 
     //////////////////////////////
@@ -310,7 +319,7 @@
 
     function drawScatterplot(data) {
         // data dependant code
-        
+
         // first set domain based off of data domain
         x.domain(d3.extent(comic_data, function (d) { return d.x; })).nice()
         y.domain(d3.extent(comic_data, function (d) { return d.y; })).nice()

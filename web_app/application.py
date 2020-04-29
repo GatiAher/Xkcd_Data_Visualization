@@ -23,6 +23,8 @@ tfidf_vectors = sparse.load_npz("final_data/tfidf_vectors.npz")
 with open("final_data/tfidf_feature_names.txt", 'r') as filehandle:
     tfidf_feature_names = json.load(filehandle)
 
+myvalue = 5
+
 #######
 # APP #
 #######
@@ -40,9 +42,18 @@ def homepage():
             return_comic_data=return_comic_data,
             max_serial_num=comic_data_df.shape[0])
 
-@app.route('/picked-word-data')
+
+@app.route('/picked-data', methods=['POST'])
 def picked_word_data():
-    return jsonify(text=tfidf_feature_names, text2=tfidf_feature_names)
+    # myvalue = request.sn
+    if request.method == 'POST':
+        picked_idx = request.json['index_num']
+        return jsonify(data=picked_idx)
+
+def get_barchart_data(idx):
+    pass
+
+
 
 
 
@@ -51,12 +62,9 @@ def picked_word_data():
 ########
 
 if __name__ == "__main__":
-    # print("comic_serial_nums: ", comic_serial_nums.shape)
-    # print("titles: ", titles.shape)
-    # print("image_urls: ", image_urls.shape)
-    # print("tsne: ", tsne.shape)
-    # print(df)
-    # print(df.shape)
+    print("comic_data_df: ", comic_data_df.shape)
+    print("tfidf_vectors: ", tfidf_vectors.shape)
+    print("tfidf_feature_names: ", len(tfidf_feature_names))
 
     app.run(debug=True)
 
