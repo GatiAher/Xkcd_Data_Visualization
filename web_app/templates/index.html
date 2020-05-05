@@ -30,15 +30,11 @@
   </div>
 
   <div id="tooltipDiv" class="box" style="display: flex" style="flex-direction: column">
-
     <div id="tooltip" class="tooltip" style="order: 1">hover |<br><br> </div>
-
     <div style="order: 2">
       <label id="inputPickLabel" for="inputPick">pick: 1-{{ max_serial_num }}</label>
       <input type="number" id="inputPick" name="inputPick" min="1" max={{max_serial_num}} step="1">
-
     </div>
-
   </div>
 
   <div id="graphDiv" class="box"></div>
@@ -47,7 +43,8 @@
     picked: comic
     <p id="xkcdImageTitle"> 221: Random Number </p>
     <img id="xkcdImage" class="marginauto" alt="221: Random Number"
-      src="https://www.explainxkcd.com/wiki/images/f/fe/random_number.png">
+      src="https://www.explainxkcd.com/wiki/images/f/fe/random_number.png"
+      style='height: 100%; width: 100%; object-fit: contain'>
   </div>
 
   <div id="jsonList" class="box">
