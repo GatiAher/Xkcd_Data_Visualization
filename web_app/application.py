@@ -62,7 +62,8 @@ def get_barchart_data(comic_idx):
 
     top_5_word_vals = word_data[top_5_word_idxs]
     top_5_words = [tfidf_feature_names[i] for i in top_5_word_idxs]
-    labels = ["word", "tfidf"]
+    # labels = ["word", "tfidf"]
+    labels = ["name", "value"]
     tfidf_zipped = zip(top_5_words, top_5_word_vals)
     tfidf_dict = [dict(zip(labels, row)) for row in tfidf_zipped]
 

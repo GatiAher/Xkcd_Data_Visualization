@@ -37,7 +37,9 @@
     </div>
   </div>
 
-  <div id="graphDiv" class="box"></div>
+  <div id="scatterplotDiv" class="box"></div>
+
+  <div id="barchartDiv" class="box"></div>
 
   <div id="pictureDiv" class="box">
     picked: comic
@@ -52,7 +54,7 @@
     <pre id="jsonListPre"></pre>
   </div>
 
-  <div align="left" class="box">
+  <div id="explanationDiv" align="left" class="box">
     <h6>
       Background Information on Xkcd Comics
     </h6>
@@ -78,7 +80,7 @@
     </p>
   </div>
 
-  <div align="left" class="box">
+  <div id="footerDiv" align="left" class="box">
     <p>
       Gati Aher, April 2020 |
       <a href="https://github.com/GatiAher/Xkcd_Data_Visualization">GitHub Repo</a>
@@ -86,13 +88,6 @@
   </div>
 
   <script>
-
-    ////////////////////////////////////
-    // DATA AND PARAMETERS FROM FLASK //
-    ////////////////////////////////////
-
-    // never changes
-    var comic_data = {{ return_comic_data.comic_data | safe }};
 
     ////////////////////////////
     // HOVER DATA AND TOOLTIP //
@@ -160,10 +155,7 @@
         .header("Content-Type", "application/json")
         .post(
             JSON.stringify({index_num:index_num}),
-            function(err, res) {
-              console.log("POST", res)
-      });
-
+            drawBarChart);
     }
 
     //////////////////////////////
@@ -178,7 +170,7 @@
     width = svgWidth - margin.left - margin.right,
     height = svgHeight - margin.top - margin.bottom;
 
-    var svg = d3.select("#graphDiv")
+    var svg = d3.select("#scatterplotDiv")
       .append("div")
       // Container class to make it responsive.
       .classed("svg-container", true)
@@ -195,12 +187,10 @@
 
     var x = d3.scaleLinear()
       .range([0, width])
-      // .domain(d3.extent(comic_data, function (d) { return d.x; })).nice()
       .nice();
 
     var y = d3.scaleLinear()
       .range([height, 0])
-      // .domain(d3.extent(comic_data, function (d) { return d.y; })).nice()
       .nice();
 
     var xAxis = d3.axisBottom(x).ticks(10);
@@ -254,10 +244,20 @@
       .extent([[0, 0], [width, height]])
       .on("end", brushended);
 
+    ////////////////////////////////////
+    // DATA AND PARAMETERS FROM FLASK //
+    ////////////////////////////////////
+
+    // never changes
+    var comic_data = {{ return_comic_data.comic_data | safe }};
     drawScatterplot(comic_data)
 
     var idleTimeout,
     idleDelay = 350;
+
+    //////////////////////
+    // HELPER FUNCTIONS //
+    //////////////////////
 
     function brushended() {
 
@@ -339,6 +339,98 @@
           .on("mouseleave", mouseleave)
           .on("click", click)
     }
+
+    ///////////////
+    // BAR CHART //
+    ///////////////
+
+    tfidf_data = null;
+
+    var drawBarChart = function(err, chart_data) {
+
+      data = []
+      for(let i=0; i<5; i++) {
+        data.push({"name" : chart_data[0][i].name, "value" : chart_data[0][i].value})
+      }
+
+      console.log("POST", data)
+
+      data.forEach(function(d) {
+        d.value = +d.value;
+      });
+
+      x_barchart.domain([0, d3.max(data, function (d) { return d.value; })]);
+      y_barchart.domain(data.map(function (d) {return d.name; }));
+
+      var bars = svg_barchart.selectAll(".bar")
+        .remove()
+        .exit()
+        .data(data)
+        .enter().append("rect")
+        .attr("class", "bar")
+        .attr("y", function (d) { return y_barchart(d.name); })
+        .attr("height", y_barchart.bandwidth())
+        .attr("x", 50)
+        .attr("width", function (d) { return x_barchart(d.value); })
+        .attr("fill", "rgb(251,180,174)");
+
+      // add a value label to the right of each bar
+      bars.append("text")
+        .attr("class", "label")
+        //y position of the label is halfway down the bar
+        .attr("y", function (d) {
+            return y_barchart(d.name) + y_barchart.bandwidth() / 2 + 4;
+        })
+        //x position is 3 pixels to the right of the bar
+        .attr("x", function (d) {
+            return x_barchart(d.value) + 3;
+        })
+        .text(function (d) {
+            return d.value;
+        });
+
+        svg_barchart.select("#axis--y_barchart").call(yAxis_barchart)
+    }
+
+    //set up svg using margin conventions - we'll need plenty of room on the left for labels
+    var margin_barchart = {
+        top: 15,
+        right: 25,
+        bottom: 15,
+        left: 60
+    };
+
+    var width_barchart = 960 - margin_barchart.left - margin_barchart.right,
+        height_barchart = 500 - margin_barchart.top - margin_barchart.bottom;
+
+    var svg_barchart = d3.select("#barchartDiv").append("svg")
+        .attr("width", width_barchart + margin_barchart.left + margin_barchart.right)
+        .attr("height", height_barchart + margin_barchart.top + margin_barchart.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin_barchart.left + "," + margin_barchart.top + ")");
+
+    var x_barchart = d3.scaleLinear()
+        .range([0, width_barchart])
+
+    var y_barchart = d3.scaleBand()
+        .rangeRound([height_barchart, 0])
+        .padding(0.1);
+
+    var yAxis_barchart = d3.axisLeft(y_barchart).ticks(0);
+
+    svg_barchart.append("g")
+      .attr("class", "y_axis_barchart")
+      .attr('id', "axis--y_barchart")
+      // offset to right so ticks are not covered
+      .attr("transform", "translate(30,0)")
+      .call(yAxis_barchart);
+
+    svg_barchart.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", "1em")
+      .style("text-anchor", "end")
+      .text("Y Axis");
 
   </script>
 
