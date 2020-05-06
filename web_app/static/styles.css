@@ -77,3 +77,13 @@ body {
   opacity: 1;
   fill: red;
 }
+
+svg text.label {
+  fill: white;
+  font-size: 40px;
+  font-weight: bold;
+}
+
+.bar {
+  fill: red;
+}

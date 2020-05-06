@@ -58,7 +58,6 @@ def get_barchart_data(comic_idx):
     word_data = np.array(word_data.todense()).ravel()
     top_5_word_idxs = np.argpartition(word_data, -5)[-5:]
     top_5_word_idxs = top_5_word_idxs[np.argsort(word_data[top_5_word_idxs])]
-    top_5_word_idxs = top_5_word_idxs[::-1]
 
     top_5_word_vals = word_data[top_5_word_idxs]
     top_5_words = [tfidf_feature_names[i] for i in top_5_word_idxs]
