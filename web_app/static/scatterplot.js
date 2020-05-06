@@ -1,72 +1,3 @@
-////////////////////////////
-// HOVER DATA AND TOOLTIP //
-////////////////////////////
-
-var tooltip = d3.select("#tooltip")
-
-// change the tooltip and circle when user hover over a circle
-var mouseover = function(d) {
-  tooltip
-    .html("hover |<br>  " + d.title)
-  d3.select(this)
-  .classed("hovered", true);
-}
-
-// change the tooltip and circle when user leave a circle
-var mouseleave = function(d) {
-  tooltip
-    .html("hover |<br><br>")
-  d3.select(this)
-    .classed("hovered", false);
-}
-
-//////////////////
-// PICKED DATA //
-//////////////////
-
-// change when user clicks a circle
-var click = function(d) {
-  // clear previously picked point
-  scatter.selectAll(".picked").classed("picked", false);
-  // pick new point
-  d3.select(this)
-    .classed("picked", true);
-  // update dependant values
-  generalPick(d.title, d.imageUrl, d.sn)
-}
-
-// attach listner to inputPick
-d3.select("#inputPick").on("change", function () {
-  var inputData = d3.select(this).property('value');
-  // clear previously picked point
-  scatter.selectAll(".picked").classed("picked", false);
-  // pick new point
-  var pickedPoint = d3.selectAll(".dot")
-    .filter(function(d) { return d.sn == inputData })
-    .classed("picked", true);
-  // update dependant values
-  generalPick(pickedPoint.datum().title, pickedPoint.datum().imageUrl, inputData)
-
-})
-
-// general update values when new point is picked
-function generalPick(title, imageUrl, sn) {
-  d3.select("#xkcdImage")
-    .attr("src", imageUrl)
-    .attr("alt", title);
-  document.getElementById("xkcdImageTitle")
-    .textContent = title;
-  d3.select("#inputPick")
-    .attr('value', sn);
-  // send picked index_num to backend
-  let index_num = sn-1;
-  d3.json("/picked-data")
-    .header("Content-Type", "application/json")
-    .post(
-        JSON.stringify({index_num:index_num}),
-        drawBarChartPicked);
-}
-
 //////////////////////////////
 // SVG AND GRAPH DIMENSIONS //
 //////////////////////////////
@@ -76,7 +7,7 @@ function generalPick(title, imageUrl, sn) {
 var svgWidth = 900, svgHeight = 850;
 
 var margin = { top: 20, right: 20, bottom: 30, left: 30 };
-width = svgWidth - margin.left - margin.right,
+var width = svgWidth - margin.left - margin.right,
 height = svgHeight - margin.top - margin.bottom;
 
 var svg = d3.select("#scatterplotDiv")
@@ -133,9 +64,41 @@ svg.append("text")
   .style("text-anchor", "end")
   .text("Y Axis");
 
-////////////////////////////////
-// BRUSH AND CLIP AND SCATTER //
-////////////////////////////////
+///////////////////////////
+// DATA DEPENDANT UPDATE //
+///////////////////////////
+
+function drawScatterplot(data) {
+    // data dependant code
+
+    // first set domain based off of data domain
+    x.domain(d3.extent(comic_data, function (d) { return d.x; })).nice()
+    y.domain(d3.extent(comic_data, function (d) { return d.y; })).nice()
+
+    // append brush before points so tooltips work
+    scatter.append("g")
+      .attr("class", "brush")
+      .call(brush);
+
+    // append points
+    scatter.selectAll(".dot")
+      .data(data)
+      .enter().append("circle")
+      .attr("class", "dot")
+      .attr("r", 8)
+      .attr("cx", function (d) { return x(d.x); })
+      .attr("cy", function (d) { return y(d.y); })
+      .attr('sn', function(d) { return d.sn })
+      .on("mouseover", mouseover)
+      .on("mouseleave", mouseleave)
+      .on("click", click)
+}
+
+/////////////////////////////
+// USER INTERACTION UPDATE //
+/////////////////////////////
+
+// BRUSH AND CLIP AND SCATTER
 
 var clip = svg.append("defs").append("svg:clipPath")
   .attr("id", "clip")
@@ -153,20 +116,8 @@ var brush = d3.brush()
   .extent([[0, 0], [width, height]])
   .on("end", brushended);
 
-//////////////////
-// IDLE TIMEOUT //
-//////////////////
-
 var idleTimeout,
 idleDelay = 350;
-
-function idled() {
-    idleTimeout = null;
-}
-
-//////////////////////
-// HELPER FUNCTIONS //
-//////////////////////
 
 function brushended() {
 
@@ -200,6 +151,10 @@ function brushended() {
     zoom();
 }
 
+function idled() {
+    idleTimeout = null;
+}
+
 function isBrushed(brush_coords, cx, cy) {
    var x0 = brush_coords[0][0],
        x1 = brush_coords[1][0],
@@ -219,28 +174,48 @@ function zoom() {
     .attr("cy", function (d) { return y(d.y); });
 }
 
-function drawScatterplot(data) {
-    // data dependant code
+// HOVER DATA ON SCATTERPLOT
 
-    // first set domain based off of data domain
-    x.domain(d3.extent(comic_data, function (d) { return d.x; })).nice()
-    y.domain(d3.extent(comic_data, function (d) { return d.y; })).nice()
+var tooltip = d3.select("#tooltip")
 
-    // append brush before points so tooltips work
-    scatter.append("g")
-      .attr("class", "brush")
-      .call(brush);
-
-    // append points
-    scatter.selectAll(".dot")
-      .data(data)
-      .enter().append("circle")
-      .attr("class", "dot")
-      .attr("r", 8)
-      .attr("cx", function (d) { return x(d.x); })
-      .attr("cy", function (d) { return y(d.y); })
-      .attr('sn', function(d) { return d.sn })
-      .on("mouseover", mouseover)
-      .on("mouseleave", mouseleave)
-      .on("click", click)
+// change the tooltip and circle when user hover over a circle
+var mouseover = function(d) {
+  tooltip
+    .html("hover |<br>  " + d.title)
+  d3.select(this)
+  .classed("hovered", true);
 }
+
+// change the tooltip and circle when user leave a circle
+var mouseleave = function(d) {
+  tooltip
+    .html("hover |<br><br>")
+  d3.select(this)
+    .classed("hovered", false);
+}
+
+// PICKED DATA ON SCATTERPLOT
+
+// change when user clicks a circle
+var click = function(d) {
+  // clear previously picked point
+  scatter.selectAll(".picked").classed("picked", false);
+  // pick new point
+  d3.select(this)
+    .classed("picked", true);
+  // update dependant values
+  generalPick(d.title, d.imageUrl, d.sn)
+}
+
+// attach listner to inputPick
+d3.select("#inputPick").on("change", function () {
+  var inputData = d3.select(this).property('value');
+  // clear previously picked point
+  scatter.selectAll(".picked").classed("picked", false);
+  // pick new point
+  var pickedPoint = d3.selectAll(".dot")
+    .filter(function(d) { return d.sn == inputData })
+    .classed("picked", true);
+  // update dependant values
+  generalPick(pickedPoint.datum().title, pickedPoint.datum().imageUrl, inputData)
+})
