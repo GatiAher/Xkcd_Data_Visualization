@@ -81,12 +81,12 @@ var drawBarchartPicked = function(chart_data) {
   x_barchart_picked.domain([0, d3.max(data, function (d) { return d.value; })]);
   y_barchart_picked.domain(data.map(function (d) {return d.name; }));
 
-  var bars = svg_barchart_picked.selectAll(".bar")
+  var bars = svg_barchart_picked.selectAll(".bar_picked")
     .remove()
     .exit()
     .data(data)
     .enter().append("rect")
-    .attr("class", "bar")
+    .attr("class", "bar_picked")
     .attr("y", function (d) { return y_barchart_picked(d.name); })
     .attr("height", y_barchart_picked.bandwidth())
     .attr("x", 50)

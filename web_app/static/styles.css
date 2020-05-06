@@ -84,6 +84,10 @@ svg text.label {
   font-weight: bold;
 }
 
-.bar {
+.bar_picked {
   fill: red;
+}
+
+.bar_selected {
+  fill: #f71cff;
 }

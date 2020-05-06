@@ -141,6 +141,7 @@ function brushended() {
           .each(function(d) {
             my_selection.push(d.sn);
           });
+        sendSelected(my_selection)
         document.getElementById("jsonList").innerHTML = my_selection;
 
         // adjust axes to selected data
