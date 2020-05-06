@@ -17,7 +17,12 @@ function generalPick(title, imageUrl, sn) {
     .header("Content-Type", "application/json")
     .post(
         JSON.stringify({index_num:index_num}),
-        drawBarChartPicked);
+        redrawBarCharts);
+}
+
+function redrawBarCharts(err, chart_data) {
+  drawBarchartPicked(chart_data)
+  drawBarchartSelected(chart_data)
 }
 
 // TODO: initial state code -- start with drawn barchart and picked point
