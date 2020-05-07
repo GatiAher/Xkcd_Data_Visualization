@@ -10,7 +10,7 @@ function generalPick(title, imageUrl, sn) {
   document.getElementById("xkcdImageTitle")
     .textContent = title;
   d3.select("#inputPick")
-    .attr('value', sn);
+    .property('value', parseInt(sn));
   // send picked sn_num to backend
   sendPicked(parseInt(sn))
 }
@@ -20,7 +20,7 @@ function sendPicked(sn) {
     .header("Content-Type", "application/json")
     .post(
         JSON.stringify({sn_num:sn}),
-        redrawBarCharts);
+        redrawBarchartPicked);
 }
 
 function sendSelected(sn_nums) {
@@ -28,16 +28,15 @@ function sendSelected(sn_nums) {
     .header("Content-Type", "application/json")
     .post(
         JSON.stringify({sn_nums:sn_nums}),
-        placeholder);
+        redrawBarchartSelected);
 }
 
-function redrawBarCharts(err, chart_data) {
+function redrawBarchartPicked(err, chart_data) {
   drawBarchartPicked(chart_data)
-  // drawBarchartSelected(chart_data)
 }
 
 // TODO: ensure data passed successfully
-function placeholder(err, result) {
+function redrawBarchartSelected(err, result) {
   drawBarchartSelected(result)
 }
 
