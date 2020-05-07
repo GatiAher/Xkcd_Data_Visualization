@@ -57,8 +57,18 @@ def load_documents():
     return documents
 
 
-nlp = spacy.load('en_core_web_sm')
+# import spacy (lemminizer) library
+spacy_nlp = spacy.load('en_core_web_sm')
+# # check pre-defined stop words
+# spacy_stopwords = spacy.lang.en.stop_words.STOP_WORDS
+# add custom stop_words
+f = open("custom_stop_words.txt")
+for word in f:
+    spacy_nlp.vocab[word.strip()].is_stop = True
+f.close()
+
 stemmer = SnowballStemmer("english")
+
 def my_tokenizer(text):
     """
     Categorizes numbers and lemminize, stems, and squashes words in order to
@@ -75,19 +85,19 @@ def my_tokenizer(text):
     return: list of strings
     """
     ret_tokens = []
-    doc = nlp(text)
-    for token in doc:
-        lem = token.lemma_.lower()
-        # if token is only letters, add lemma token to retlist
+    doc = spacy_nlp(text)
+
+    # remove stop words
+    tokens = [token.text for token in doc if not token.is_stop]
+
+    for token in tokens:
+        lem = token.lower() #token.lemma_.lower()
+        # if token is only letters, consider adding lemma token to retlist
         if len(lem) > 2 and bool(re.match(r'^[A-Za-z]+$', lem)):
             # squash indentical consecutive letters. Ex: woooo --> wo
             squashed = re.sub(r'([a-z])\1\1+', r'\1', lem)
             stem = stemmer.stem(squashed)
             ret_tokens.append(stem)
-        # if token is only numbers, add category token to retlist
-        elif bool(re.match(r'^[0-9]+$', lem)):
-            category = str(len(lem)) + "num"
-            ret_tokens.append(category)
     return ret_tokens
 
 
