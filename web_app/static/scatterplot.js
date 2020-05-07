@@ -121,7 +121,7 @@ idleDelay = 350;
 
 function brushended() {
 
-    var s = d3.event.selection;
+    let s = d3.event.selection;
 
     if (!s) {
         // if nothing selected, reset axes
@@ -136,7 +136,7 @@ function brushended() {
         });
 
         // get list of sn of selected comics
-        var my_selection = [];
+        let my_selection = [];
         scatter.selectAll(".selected")
           .each(function(d) {
             my_selection.push(d.sn);
@@ -157,7 +157,7 @@ function idled() {
 }
 
 function isBrushed(brush_coords, cx, cy) {
-   var x0 = brush_coords[0][0],
+   let x0 = brush_coords[0][0],
        x1 = brush_coords[1][0],
        y0 = brush_coords[0][1],
        y1 = brush_coords[1][1];
@@ -166,7 +166,7 @@ function isBrushed(brush_coords, cx, cy) {
 }
 
 function zoom() {
-    var tr = scatter.transition().duration(750);
+    let tr = scatter.transition().duration(750);
     svg.select("#axis--x").transition(tr).call(xAxis);
     svg.select("#axis--y").transition(tr).call(yAxis);
 

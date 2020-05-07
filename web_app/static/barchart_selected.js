@@ -81,7 +81,7 @@ var drawBarchartSelected = function(chart_data) {
   x_barchart_selected.domain([0, d3.max(data, function (d) { return d.value; })]);
   y_barchart_selected.domain(data.map(function (d) {return d.name; }));
 
-  var bars = svg_barchart_selected.selectAll(".bar_selected")
+  bars = svg_barchart_selected.selectAll(".bar_selected")
     .remove()
     .exit()
     .data(data)

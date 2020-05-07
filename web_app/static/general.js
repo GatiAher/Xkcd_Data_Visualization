@@ -35,12 +35,9 @@ function redrawBarchartPicked(err, chart_data) {
   drawBarchartPicked(chart_data)
 }
 
-// TODO: ensure data passed successfully
 function redrawBarchartSelected(err, result) {
   drawBarchartSelected(result)
 }
 
-var picked_data_tfidf = null;
-var selected_data_tfidf = null;
-
-// TODO: initial state code -- start with drawn barchart and picked point
+// var picked_data_tfidf = null;
+// var selected_data_tfidf = null;
