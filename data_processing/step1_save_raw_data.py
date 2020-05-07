@@ -4,6 +4,13 @@ for each comic, this parses the explained xkcd html file.
 saves title, alt-text, and transcript as a single line
 to a file named "../data/raw_data/xkcd_" + comic_number + ".txt" inside of raw_data/ directory
 
+saves to:
+- "../data/raw_data/xkcd_" + comic_number + ".txt"
+
+- "../data/comic_tags/titles.npy"
+- "../data/comic_tags/alt_text.npy"
+- "../data/comic_tags/image_urls.npy"
+
 takes 20-30 minutes to run
 
 @author: Gati Aher
@@ -26,6 +33,9 @@ from tqdm import tqdm
 
 # get num comics
 from my_utils import get_latest_comic_num
+
+# saving display data
+import numpy as np
 
 #############
 # FUNCTIONS #
@@ -92,16 +102,45 @@ def put_text_into_file(comic_number):
     file1.write(save_string)
     file1.close()
 
+    ####################
+    # GET DISPLAY DATA #
+    ####################
+
+    display_title = soup.title.string[:-15]
+
+    display_alt_text = alt_string
+
+    image = soup.find("a", {"class": "image"}).find("img")
+    display_image_url = "https://www.explainxkcd.com" + image['src']
+
+    return display_title, display_alt_text, display_image_url
+
+
 if __name__ == "__main__":
     """record all comics in range 0-num_comics. record any errors"""
 
     num_comics = get_latest_comic_num() + 1
 
+    display_title_list = []
+    display_alt_text_list = []
+    display_image_url_list = []
+
     for i in tqdm(range(num_comics)):
         try:
-            put_text_into_file(i)
+            display_title, display_alt_text, display_image_url = put_text_into_file(i)
+            display_title_list.append(display_title)
+            display_alt_text_list.append(display_alt_text)
+            display_image_url_list.append(display_image_url)
         except:
             # record errors
             f = open("../data/raw_data/ERROR_" + str(i) + ".txt","w")
             f.write("*** (" + str(i) + ") An exception occurred ***")
             f.close()
+
+    # save as display individual numpy arrays
+    display_title_array = np.asarray(display_title_list)
+    np.save("../data/comic_tags/titles.npy", display_title_array)
+    display_alt_text_array = np.asarray(display_alt_text_list)
+    np.save("../data/comic_tags/alt_text.npy", display_alt_text_array)
+    display_image_url_array = np.asarray(display_image_url_list)
+    np.save("../data/comic_tags/image_urls.npy", display_image_url_array)

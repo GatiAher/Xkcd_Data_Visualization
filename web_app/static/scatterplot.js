@@ -205,7 +205,7 @@ var click = function(d) {
   d3.select(this)
     .classed("picked", true);
   // update dependant values
-  generalPick(d.title, d.imageUrl, d.sn)
+  generalPick(d.title, d.altText, d.imageUrl, d.sn)
 }
 
 // attach listner to inputPick
@@ -218,5 +218,5 @@ d3.select("#inputPick").on("change", function () {
     .filter(function(d) { return d.sn == inputData })
     .classed("picked", true);
   // update dependant values
-  generalPick(pickedPoint.datum().title, pickedPoint.datum().imageUrl, inputData)
+  generalPick(pickedPoint.datum().title, pickedPoint.datum().altText, pickedPoint.datum().imageUrl, inputData)
 })

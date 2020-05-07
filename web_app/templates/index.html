@@ -40,11 +40,14 @@
 
   <div id="barchartSelectedDiv" class="box"></div>
 
-  <div id="barchartPickedDiv" class="box"></div>
+  <div id="barchartPickedDiv" class="box">
+    <p id="xkcdBarChartPickedTitle"> 221: Random Number </p>
+  </div>
 
   <div id="pictureDiv" class="box">
     picked: comic
     <p id="xkcdImageTitle"> 221: Random Number </p>
+    <p id="xkcdImageAltText"> Alt Text </p>
     <img id="xkcdImage" class="marginauto" alt="221: Random Number"
       src="https://www.explainxkcd.com/wiki/images/f/fe/random_number.png"
       style='height: 100%; width: 100%; object-fit: contain'>
@@ -94,10 +97,10 @@
   <script src="static/barchart_selected.js"></script>
   <script src="static/general.js"></script>
   <script>
-  var comic_data = {{ return_comic_data.comic_data | safe }};
-  drawScatterplot(comic_data)
-  generalPick("221: Random Number", "https://www.explainxkcd.com/wiki/images/f/fe/random_number.png", 221)
-  sendSelected([])
+    var comic_data = {{ return_comic_data.comic_data | safe }};
+    drawScatterplot(comic_data)
+    generalPick("221: Random Number", "Initial Placeholder", "https://www.explainxkcd.com/wiki/images/f/fe/random_number.png", 221)
+    sendSelected([])
   </script>
 
 </body>

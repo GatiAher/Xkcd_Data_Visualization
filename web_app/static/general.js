@@ -3,14 +3,19 @@
 /////////////////////////
 
 // general update values when new point is picked
-function generalPick(title, imageUrl, sn) {
+function generalPick(title, altText, imageUrl, sn) {
+  d3.select("#inputPick")
+    .property('value', parseInt(sn));
   d3.select("#xkcdImage")
     .attr("src", imageUrl)
     .attr("alt", title);
   document.getElementById("xkcdImageTitle")
     .textContent = title;
-  d3.select("#inputPick")
-    .property('value', parseInt(sn));
+  document.getElementById("xkcdImageAltText")
+    .textContent = altText;
+
+  document.getElementById("xkcdBarChartPickedTitle")
+    .textContent = title;
   // send picked sn_num to backend
   sendPicked(parseInt(sn))
 }

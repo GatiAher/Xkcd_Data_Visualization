@@ -3,6 +3,7 @@ saves data to to csv
 
 reads from:
 - "data/comic_tags/titles.npy"
+- "data/comic_tags/alt_text.npy"
 - "data/comic_tags/image_urls.npy"
 - "data/document_relations/tsne.npy"
 
@@ -27,6 +28,10 @@ import json
 def save_comic_data():
     root_dir = "./"
     titles = np.load(root_dir + "data/comic_tags/titles.npy")
+    alt_text = np.load(root_dir + "data/comic_tags/alt_text.npy", allow_pickle=True)
+    print("ALT TEXT: ", alt_text)
+
+
     image_urls = np.load(root_dir + "data/comic_tags/image_urls.npy")
     tsne = np.load(root_dir + "data/document_relations/tsne.npy")
     tsne_conv = tsne.astype(float)
@@ -35,7 +40,7 @@ def save_comic_data():
     comic_serial_nums = np.asarray(comic_serial_nums)
     comic_serial_nums = np.transpose(comic_serial_nums)
 
-    dict = {"sn": comic_serial_nums, "title": titles, "imageUrl": image_urls, "x": tsne_conv[:, 0], "y":tsne_conv[:, 1]}
+    dict = {"sn": comic_serial_nums, "title": titles, "altText": alt_text, "imageUrl": image_urls, "x": tsne_conv[:, 0], "y":tsne_conv[:, 1]}
     df = pd.DataFrame(dict)
     df.to_csv("web_app/final_data/comic_data.csv")
 

@@ -30,7 +30,6 @@ from my_utils import get_latest_comic_num
 
 # saving
 import numpy as np
-import pandas as pd
 
 #############
 # FUNCTIONS #
