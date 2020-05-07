@@ -104,7 +104,6 @@ var drawBarchartPicked = function(chart_data) {
     .attr("y", function (d) { return y_barchart_picked(d.name) + y_barchart_picked.bandwidth() / 2 + 4; })
     //x position is at end of bar - boundary box of text
     .attr("x", function (d) {
-      console.log("BBOX", this.getBBox().width);
       return x_barchart_picked(d.value) - this.getBBox().width;
     });
 

@@ -12,7 +12,7 @@ function generalPick(title, imageUrl, sn) {
   d3.select("#inputPick")
     .attr('value', sn);
   // send picked sn_num to backend
-  sendPicked(sn)
+  sendPicked(parseInt(sn))
 }
 
 function sendPicked(sn) {
