@@ -79,10 +79,16 @@ def selected_word_data():
         return barchart_data
 
 def get_barchart_selected_data(comic_idx):
-    # get row
-    word_data = tfidf_vectors[comic_idx, :] # type: 'scipy.sparse.csr.csr_matrix'
+
+    if len(comic_idx) == 0:
+        word_data = tfidf_vectors
+    else:
+        word_data = tfidf_vectors[comic_idx, :]
+
+    # word_data type: 'scipy.sparse.csr.csr_matrix'
     # sum word data so total tfidf value for word
-    word_data = word_data.sum(axis=0) # type: 'numpy.matrix'
+    # word_data type: 'numpy.matrix'
+    word_data = word_data.sum(axis=0)
 
     # transform 'numpy.matrix' to 'numpy.ndarray'
     word_data = np.squeeze(np.asarray(word_data))

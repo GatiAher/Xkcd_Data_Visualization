@@ -38,9 +38,9 @@
 
   <div id="scatterplotDiv" class="box"></div>
 
-  <div id="barchartPickedDiv" class="box"></div>
-
   <div id="barchartSelectedDiv" class="box"></div>
+
+  <div id="barchartPickedDiv" class="box"></div>
 
   <div id="pictureDiv" class="box">
     picked: comic
@@ -97,6 +97,7 @@
   var comic_data = {{ return_comic_data.comic_data | safe }};
   drawScatterplot(comic_data)
   generalPick("221: Random Number", "https://www.explainxkcd.com/wiki/images/f/fe/random_number.png", 221)
+  sendSelected([])
   </script>
 
 </body>
