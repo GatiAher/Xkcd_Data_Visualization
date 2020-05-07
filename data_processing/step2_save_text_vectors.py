@@ -123,7 +123,7 @@ def save_tf_idf_vector(documents):
     # should be turned on (sublinear_tf=True, use_idf=True) to bring the
     # feature values closer to a Gaussian distribution, compensating
     # for LSA’s erroneous assumptions about textual data.
-    tfidf_vectorizer=TfidfVectorizer(tokenizer=my_tokenizer, min_df=2, max_df=0.7,
+    tfidf_vectorizer=TfidfVectorizer(tokenizer=my_tokenizer, min_df=3, max_df=0.5,
                                     sublinear_tf=True, use_idf=True)
 
     # send in all documents, get their tfidf scores
