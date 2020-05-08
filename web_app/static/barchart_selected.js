@@ -65,23 +65,74 @@ svg_barchart_selected.append("text")
 // DATA DEPENDANT UPDATE //
 ///////////////////////////
 
-var drawBarchartSelected = function(chart_data) {
+// var drawBarchartSelected = function(chart_data) {
+//
+//   data = []
+//   for(let i=0; i<5; i++) {
+//     data.push({"name" : chart_data[0][i].name, "value" : chart_data[0][i].value})
+//   }
+//
+//   console.log("POST", data)
+//
+//   data.forEach(function(d) {
+//     d.value = +d.value;
+//   });
+//
+//   x_barchart_selected.domain([0, d3.max(data, function (d) { return d.value; })]);
+//   y_barchart_selected.domain(data.map(function (d) {return d.name; }));
+//
+//   bars = svg_barchart_selected.selectAll(".bar_selected")
+//     .remove()
+//     .exit()
+//     .data(data)
+//     .enter().append("rect")
+//     .attr("class", "bar_selected")
+//     .attr("y", function (d) { return y_barchart_selected(d.name); })
+//     .attr("height", y_barchart_selected.bandwidth())
+//     .attr("x", 50)
+//     .attr("width", function (d) { return x_barchart_selected(d.value); })
+//
+//
+//   // add value label to end of each bar
+//   svg_barchart_selected.selectAll(".text")
+//     .data(data)
+//     .enter()
+//     .append("text")
+//     .attr("class","label")
+//     .text(function (d) { return d.name; })
+//     //y position of the label is halfway down the bar
+//     .attr("y", function (d) { return y_barchart_selected(d.name) + y_barchart_selected.bandwidth() / 2 + 4; })
+//     //x position is at end of bar - boundary box of text
+//     .attr("x", function (d) {
+//       return x_barchart_selected(d.value) - this.getBBox().width;
+//     });
+//
+//   svg_barchart_selected.select("#axis--y_barchart_selected").call(yAxis_barchart_selected)
+//   svg_barchart_selected.select("#axis--x_barchart_selected").call(xAxis_barchart_selected)
+// }
 
-  data = []
+
+var drawBarchartSelected2 = function(chart_data) {
+
+  let data = []
   for(let i=0; i<5; i++) {
-    data.push({"name" : chart_data[0][i].name, "value" : chart_data[0][i].value})
+    let arr = chart_data[0][i]
+    data.push({"name":arr.name, "selected":arr.value[0], "picked":arr.value[1]})
   }
 
-  console.log("POST", data)
-
   data.forEach(function(d) {
-    d.value = +d.value;
+    d.picked = +d.picked;
+    d.selected = +d.selected;
+    // TODO implement with keys
+    // console.log("LOG1: ", d.picked)
+    // console.log("LOG2: ", d["picked"])
   });
 
-  x_barchart_selected.domain([0, d3.max(data, function (d) { return d.value; })]);
+  x_barchart_selected.domain([0, d3.max(data, function (d) { return d.selected + d.picked; })]);
   y_barchart_selected.domain(data.map(function (d) {return d.name; }));
 
-  bars = svg_barchart_selected.selectAll(".bar_selected")
+
+  svg_barchart_selected.selectAll(".bar_selected")
     .remove()
     .exit()
     .data(data)
@@ -90,11 +141,24 @@ var drawBarchartSelected = function(chart_data) {
     .attr("y", function (d) { return y_barchart_selected(d.name); })
     .attr("height", y_barchart_selected.bandwidth())
     .attr("x", 50)
-    .attr("width", function (d) { return x_barchart_selected(d.value); })
+    .attr("width", function (d) { return x_barchart_selected(d.selected); });
 
+  svg_barchart_selected.selectAll(".bar_picked")
+    .remove()
+    .exit()
+    .data(data)
+    .enter().append("rect")
+    .attr("class", "bar_picked")
+    .attr("y", function (d) { return y_barchart_selected(d.name); })
+    .attr("height", y_barchart_selected.bandwidth())
+    .attr("x", function (d) { return 50 + x_barchart_selected(d.selected); })
+    .attr("width", function (d) { return x_barchart_selected(d.picked); });
 
+  // SAVE
   // add value label to end of each bar
-  svg_barchart_selected.selectAll(".text")
+  svg_barchart_selected.selectAll(".label")
+    .remove()
+    .exit()
     .data(data)
     .enter()
     .append("text")
@@ -104,7 +168,7 @@ var drawBarchartSelected = function(chart_data) {
     .attr("y", function (d) { return y_barchart_selected(d.name) + y_barchart_selected.bandwidth() / 2 + 4; })
     //x position is at end of bar - boundary box of text
     .attr("x", function (d) {
-      return x_barchart_selected(d.value) - this.getBBox().width;
+      return x_barchart_selected(d.selected) + x_barchart_selected(d.picked) - this.getBBox().width;
     });
 
   svg_barchart_selected.select("#axis--y_barchart_selected").call(yAxis_barchart_selected)

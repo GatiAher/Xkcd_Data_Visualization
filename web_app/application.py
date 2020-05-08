@@ -23,7 +23,10 @@ tfidf_vectors = sparse.load_npz("final_data/tfidf_vectors.npz")
 with open("final_data/tfidf_feature_names.txt", 'r') as filehandle:
     tfidf_feature_names = json.load(filehandle)
 
-myvalue = 5
+class DataStore():
+    picked_idx=[221]
+    selected_idx=[]
+dataStore=DataStore()
 
 #######
 # APP #
@@ -46,40 +49,26 @@ def homepage():
 @app.route('/picked-data', methods=['POST'])
 def picked_word_data():
     if request.method == 'POST':
-        picked_idx = request.json['sn_num'] - 1
-        barchart_data = get_barchart_picked_data(picked_idx)
+        comic_idx = [request.json['sn_num'] - 1]
+        dataStore.picked_idx = comic_idx
+
+        barchart_data = get_barchart_data(dataStore.picked_idx)
         return barchart_data
 
-def get_barchart_picked_data(comic_idx):
-    # get row
-    word_data = tfidf_vectors[comic_idx, :] # type: 'scipy.sparse.csr.csr_matrix'
-
-    # transform 'scipy.sparse.csr.csr_matrix' to 'numpy.ndarray'
-    word_data = np.array(word_data.todense()).ravel()
-    top_5_word_idxs = np.argpartition(word_data, -5)[-5:]
-    top_5_word_idxs = top_5_word_idxs[np.argsort(word_data[top_5_word_idxs])]
-
-    top_5_word_vals = word_data[top_5_word_idxs]
-    top_5_words = [tfidf_feature_names[i] for i in top_5_word_idxs]
-    # labels = ["word", "tfidf"]
-    labels = ["name", "value"]
-    tfidf_zipped = zip(top_5_words, top_5_word_vals)
-    tfidf_dict = [dict(zip(labels, row)) for row in tfidf_zipped]
-
-    barchart_data = json.dumps([tfidf_dict])
-    return barchart_data
 
 @app.route('/selected-data', methods=['POST'])
 def selected_word_data():
     if request.method == 'POST':
-        picked_idx = request.json['sn_nums']
-        picked_idx = [num - 1 for num in picked_idx]
-        # get_barchart_selected_data(picked_idx)
-        barchart_data = get_barchart_selected_data(picked_idx)
+        comic_idx = request.json['sn_nums']
+        comic_idx = [num - 1 for num in comic_idx]
+        dataStore.selected_idx = comic_idx
+
+        # barchart_data = get_barchart_data(dataStore.selected_idx)
+        barchart_data = get_barchart_data2(dataStore.selected_idx, dataStore.picked_idx)
         return barchart_data
 
-def get_barchart_selected_data(comic_idx):
 
+def get_barchart_data(comic_idx):
     if len(comic_idx) == 0:
         word_data = tfidf_vectors
     else:
@@ -104,6 +93,54 @@ def get_barchart_selected_data(comic_idx):
 
     barchart_data = json.dumps([tfidf_dict])
     return barchart_data
+
+###########
+# TESTING #
+###########
+
+def get_barchart_data2(a_idx, b_idx):
+    """
+    Get top words and vales based off of a_idx
+    Then for those words get values for b_idx
+
+    word_data type: 'scipy.sparse.csr.csr_matrix'
+    sum word data so total tfidf value for word
+    word_data type: 'numpy.matrix'
+    transform 'numpy.matrix' to 'numpy.ndarray'
+    """
+    if len(a_idx) == 0:
+        word_data_a = tfidf_vectors
+    else:
+        word_data_a = tfidf_vectors[a_idx, :]
+
+    if len(b_idx) == 0:
+        word_data_b = tfidf_vectors
+    else:
+        word_data_b = tfidf_vectors[b_idx, :]
+
+    word_data_a = word_data_a.sum(axis=0)
+    word_data_b = word_data_b.sum(axis=0)
+
+    word_data_a = np.squeeze(np.asarray(word_data_a))
+    word_data_b = np.squeeze(np.asarray(word_data_b))
+
+    top_5_word_idxs_a = np.argpartition(word_data_a, -5)[-5:]
+    top_5_word_idxs_a = top_5_word_idxs_a[np.argsort(word_data_a[top_5_word_idxs_a])]
+
+    top_5_word_vals_a = word_data_a[top_5_word_idxs_a]
+    top_5_word_vals_b = word_data_b[top_5_word_idxs_a]
+    top_5_words = [tfidf_feature_names[i] for i in top_5_word_idxs_a]
+
+    # labels = ["word", "tfidf"]
+    labels = ["name", "value"]
+    top_5_word_vals = zip(top_5_word_vals_a, top_5_word_vals_b)
+    tfidf_zipped = zip(top_5_words, top_5_word_vals)
+    tfidf_dict = [dict(zip(labels, row)) for row in tfidf_zipped]
+
+    barchart_data = json.dumps([tfidf_dict])
+    print("BARCHART_DATA: ", barchart_data)
+    return barchart_data
+
 
 ########
 # MAIN #

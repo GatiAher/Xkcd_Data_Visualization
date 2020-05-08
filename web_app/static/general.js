@@ -41,7 +41,8 @@ function redrawBarchartPicked(err, chart_data) {
 }
 
 function redrawBarchartSelected(err, result) {
-  drawBarchartSelected(result)
+  // TODO: change to drawBarchartSelected2
+  drawBarchartSelected2(result)
 }
 
 // var picked_data_tfidf = null;
