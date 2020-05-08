@@ -10,9 +10,9 @@
 
 <body>
   <div id="headerDiv" class="box">
-    <h2>
+    <h1>
       Xkcd Comic Relationships
-    </h2>
+    </h1>
     <p>
       Similar comics are clustered together!
     </p>
@@ -28,34 +28,31 @@
     </div>
   </div>
 
-  <div id="tooltipDiv" class="box" style="display: flex" style="flex-direction: column">
-    <div id="tooltip" class="tooltip" style="order: 1">hover |<br><br> </div>
-    <div style="order: 2">
+  <div id="scatterplotDiv" class="box">
+    <h3>Scatterplot of TSNE Relations</h3>
+    <div id="tooltip" class="tooltip">hover |<br><br> </div>
+    <div text-align="left">
       <label id="inputPickLabel" for="inputPick">pick: 1-{{ max_serial_num }}</label>
       <input type="number" id="inputPick" name="inputPick" min="1" max={{max_serial_num}} step="1" value="2">
     </div>
   </div>
 
-  <div id="scatterplotDiv" class="box"></div>
-
-  <div id="barchartSelectedDiv" class="box"></div>
+  <div id="barchartSelectedDiv" class="box">
+    <h3>Bar Chart of TFIDF for Top 5 Words in Selected Comics</h3>
+  </div>
 
   <div id="barchartPickedDiv" class="box">
+    <h3>Bar Chart of TFIDF for Top 5 Words in Picked Comic</h3>
     <p id="xkcdBarChartPickedTitle"> 221: Random Number </p>
   </div>
 
   <div id="pictureDiv" class="box">
-    picked: comic
+    <h3>Picked Comic</h3>
     <p id="xkcdImageTitle"> 221: Random Number </p>
-    <p id="xkcdImageAltText"> Alt Text </p>
     <img id="xkcdImage" class="marginauto" alt="221: Random Number"
       src="https://www.explainxkcd.com/wiki/images/f/fe/random_number.png"
       style='height: 100%; width: 100%; object-fit: contain'>
-  </div>
-
-  <div id="jsonList" class="box">
-    selected: serial numbers
-    <pre id="jsonListPre"></pre>
+    <p id="xkcdImageAltText"> Alt Text </p>
   </div>
 
   <div id="explanationDiv" align="left" class="box">
@@ -70,7 +67,7 @@
       the first {{max_serial_num}} comics as data source.
     </p>
     <h6>
-      Methodology
+      Process
     </h6>
     <p>
       <ol>
@@ -99,7 +96,7 @@
   <script>
     var comic_data = {{ return_comic_data.comic_data | safe }};
     drawScatterplot(comic_data)
-    generalPick("221: Random Number", "Initial Placeholder", "https://www.explainxkcd.com/wiki/images/f/fe/random_number.png", 221)
+    generalPick("221: Random Number", "RFC 1149.5 specifies 4 as the standard IEEE-vetted random number.", "https://www.explainxkcd.com/wiki/images/f/fe/random_number.png", 221)
     sendSelected([])
   </script>
 

@@ -54,7 +54,7 @@ svg.append("g")
   .attr("class", "y axis")
   .attr('id', "axis--y")
   // offset to right so ticks are not covered
-  .attr("transform", "translate(30,0)")
+  .attr("transform", "translate(0,0)")
   .call(yAxis);
 
 svg.append("text")
@@ -142,7 +142,6 @@ function brushended() {
             my_selection.push(d.sn);
           });
         sendSelected(my_selection)
-        document.getElementById("jsonList").innerHTML = my_selection;
 
         // adjust axes to selected data
         x.domain([ x.invert(s[0][0]), x.invert(s[1][0]) ]);

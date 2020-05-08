@@ -72,7 +72,7 @@ var drawBarchartPicked = function(chart_data) {
     data.push({"name" : chart_data[0][i].name, "value" : chart_data[0][i].value})
   }
 
-  console.log("POST", data)
+  // console.log("POST", data)
 
   data.forEach(function(d) {
     d.value = +d.value;
@@ -95,6 +95,8 @@ var drawBarchartPicked = function(chart_data) {
 
   // add value label to end of each bar
   svg_barchart_picked.selectAll(".text")
+    .remove()
+    .exit()
     .data(data)
     .enter()
     .append("text")

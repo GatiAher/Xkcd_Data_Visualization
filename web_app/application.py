@@ -53,6 +53,7 @@ def picked_word_data():
         dataStore.picked_idx = comic_idx
 
         barchart_data = get_barchart_data(dataStore.picked_idx)
+        # barchart_data = get_barchart_data2(dataStore.picked_idx, dataStore.selected_idx)
         return barchart_data
 
 
@@ -65,6 +66,7 @@ def selected_word_data():
 
         # barchart_data = get_barchart_data(dataStore.selected_idx)
         barchart_data = get_barchart_data2(dataStore.selected_idx, dataStore.picked_idx)
+        # barchart_data = get_barchart_data2(dataStore.picked_idx, dataStore.selected_idx)
         return barchart_data
 
 

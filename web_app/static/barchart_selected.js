@@ -65,54 +65,9 @@ svg_barchart_selected.append("text")
 // DATA DEPENDANT UPDATE //
 ///////////////////////////
 
-// var drawBarchartSelected = function(chart_data) {
-//
-//   data = []
-//   for(let i=0; i<5; i++) {
-//     data.push({"name" : chart_data[0][i].name, "value" : chart_data[0][i].value})
-//   }
-//
-//   console.log("POST", data)
-//
-//   data.forEach(function(d) {
-//     d.value = +d.value;
-//   });
-//
-//   x_barchart_selected.domain([0, d3.max(data, function (d) { return d.value; })]);
-//   y_barchart_selected.domain(data.map(function (d) {return d.name; }));
-//
-//   bars = svg_barchart_selected.selectAll(".bar_selected")
-//     .remove()
-//     .exit()
-//     .data(data)
-//     .enter().append("rect")
-//     .attr("class", "bar_selected")
-//     .attr("y", function (d) { return y_barchart_selected(d.name); })
-//     .attr("height", y_barchart_selected.bandwidth())
-//     .attr("x", 50)
-//     .attr("width", function (d) { return x_barchart_selected(d.value); })
-//
-//
-//   // add value label to end of each bar
-//   svg_barchart_selected.selectAll(".text")
-//     .data(data)
-//     .enter()
-//     .append("text")
-//     .attr("class","label")
-//     .text(function (d) { return d.name; })
-//     //y position of the label is halfway down the bar
-//     .attr("y", function (d) { return y_barchart_selected(d.name) + y_barchart_selected.bandwidth() / 2 + 4; })
-//     //x position is at end of bar - boundary box of text
-//     .attr("x", function (d) {
-//       return x_barchart_selected(d.value) - this.getBBox().width;
-//     });
-//
-//   svg_barchart_selected.select("#axis--y_barchart_selected").call(yAxis_barchart_selected)
-//   svg_barchart_selected.select("#axis--x_barchart_selected").call(xAxis_barchart_selected)
-// }
-
-
 var drawBarchartSelected2 = function(chart_data) {
+
+  console.log("drawBarchartSelected2", chart_data)
 
   let data = []
   for(let i=0; i<5; i++) {

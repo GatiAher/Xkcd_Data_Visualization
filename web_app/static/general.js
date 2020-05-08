@@ -18,6 +18,7 @@ function generalPick(title, altText, imageUrl, sn) {
     .textContent = title;
   // send picked sn_num to backend
   sendPicked(parseInt(sn))
+  sendSelected(sn_nums_store)
 }
 
 function sendPicked(sn) {
@@ -28,7 +29,9 @@ function sendPicked(sn) {
         redrawBarchartPicked);
 }
 
+var sn_nums_store = sn_nums
 function sendSelected(sn_nums) {
+  sn_nums_store = sn_nums
   d3.json("/selected-data")
     .header("Content-Type", "application/json")
     .post(
@@ -41,9 +44,5 @@ function redrawBarchartPicked(err, chart_data) {
 }
 
 function redrawBarchartSelected(err, result) {
-  // TODO: change to drawBarchartSelected2
   drawBarchartSelected2(result)
 }
-
-// var picked_data_tfidf = null;
-// var selected_data_tfidf = null;
