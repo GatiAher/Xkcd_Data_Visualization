@@ -2,6 +2,8 @@
 // GENERAL UPDATE CODE //
 /////////////////////////
 
+var sn_nums_store = []
+
 // general update values when new point is picked
 function generalPick(title, altText, imageUrl, sn) {
   d3.select("#inputPick")
@@ -29,7 +31,6 @@ function sendPicked(sn) {
         redrawBarchartPicked);
 }
 
-var sn_nums_store = []
 function sendSelected(sn_nums) {
   sn_nums_store = sn_nums
   d3.json("/selected-data")

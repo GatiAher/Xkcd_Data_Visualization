@@ -148,13 +148,13 @@ def get_barchart_data2(a_idx, b_idx):
 ########
 
 if __name__ == "__main__":
-    print("comic_data_df: ", comic_data_df.shape)
-    print("tfidf_vectors: ", tfidf_vectors.shape)
-    print("tfidf_feature_names: ", len(tfidf_feature_names))
+    # print("comic_data_df: ", comic_data_df.shape)
+    # print("tfidf_vectors: ", tfidf_vectors.shape)
+    # print("tfidf_feature_names: ", len(tfidf_feature_names))
 
-    app.run(debug=True)
+    # app.run(debug=True)
 
-    # # Make Heroku Use 0.0.0.0, and read the port number from an environment variable
-    # HOST = '0.0.0.0' if 'PORT' in os.environ else '127.0.0.1'
-    # PORT = int(os.environ.get('PORT', 5000))
-    # app.run(host=HOST, port=PORT)
+    # Make Heroku Use 0.0.0.0, and read the port number from an environment variable
+    HOST = '0.0.0.0' if 'PORT' in os.environ else '127.0.0.1'
+    PORT = int(os.environ.get('PORT', 5000))
+    app.run(host=HOST, port=PORT)
