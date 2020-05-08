@@ -140,7 +140,6 @@ def get_barchart_data2(a_idx, b_idx):
     tfidf_dict = [dict(zip(labels, row)) for row in tfidf_zipped]
 
     barchart_data = json.dumps([tfidf_dict])
-    print("BARCHART_DATA: ", barchart_data)
     return barchart_data
 
 
@@ -155,7 +154,7 @@ if __name__ == "__main__":
 
     app.run(debug=True)
 
-    # Make Heroku Use 0.0.0.0, and read the port number from an environment variable
+    # # Make Heroku Use 0.0.0.0, and read the port number from an environment variable
     # HOST = '0.0.0.0' if 'PORT' in os.environ else '127.0.0.1'
     # PORT = int(os.environ.get('PORT', 5000))
     # app.run(host=HOST, port=PORT)

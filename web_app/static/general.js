@@ -29,7 +29,7 @@ function sendPicked(sn) {
         redrawBarchartPicked);
 }
 
-var sn_nums_store = sn_nums
+var sn_nums_store = []
 function sendSelected(sn_nums) {
   sn_nums_store = sn_nums
   d3.json("/selected-data")
