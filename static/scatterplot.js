@@ -26,12 +26,10 @@ var svg = d3.select("#scatterplotDiv")
 //////////
 
 var x = d3.scaleLinear()
-  .range([0, width])
-  .nice();
+  .range([0, width]).nice();
 
 var y = d3.scaleLinear()
-  .range([height, 0])
-  .nice();
+  .range([height, 0]).nice();
 
 var xAxis = d3.axisBottom(x).ticks(10);
 var yAxis = d3.axisLeft(y).ticks(10);

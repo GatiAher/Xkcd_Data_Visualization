@@ -15,9 +15,9 @@ function generalPick(title, altText, imageUrl, sn) {
     .textContent = title;
   document.getElementById("xkcdImageAltText")
     .textContent = altText;
-
   document.getElementById("xkcdBarChartPickedTitle")
     .textContent = title;
+
   // send picked sn_num to backend
   sendPicked(parseInt(sn))
   sendSelected(sn_nums_store)
@@ -41,9 +41,9 @@ function sendSelected(sn_nums) {
 }
 
 function redrawBarchartPicked(err, chart_data) {
-  drawBarchartPicked(chart_data)
+  drawPyramid(chart_data, barchart_picked)
 }
 
-function redrawBarchartSelected(err, result) {
-  drawBarchartSelected2(result)
+function redrawBarchartSelected(err, chart_data) {
+  drawPyramid(chart_data, barchart_selected)
 }

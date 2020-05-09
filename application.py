@@ -52,8 +52,12 @@ def picked_word_data():
         comic_idx = [request.json['sn_num'] - 1]
         dataStore.picked_idx = comic_idx
 
-        barchart_data = get_barchart_data(dataStore.picked_idx)
-        # barchart_data = get_barchart_data2(dataStore.picked_idx, dataStore.selected_idx)
+        # barchart_data = get_barchart_data(dataStore.picked_idx)
+        barchart_data = get_barchart_data2(dataStore.picked_idx, dataStore.selected_idx)
+
+        # fake
+        # barchart_data = get_barchart_data2(dataStore.selected_idx, dataStore.picked_idx)
+
         return barchart_data
 
 
@@ -152,9 +156,9 @@ if __name__ == "__main__":
     # print("tfidf_vectors: ", tfidf_vectors.shape)
     # print("tfidf_feature_names: ", len(tfidf_feature_names))
 
-    # app.run(debug=True)
+    app.run(debug=True)
 
-    # Make Heroku Use 0.0.0.0, and read the port number from an environment variable
-    HOST = '0.0.0.0' if 'PORT' in os.environ else '127.0.0.1'
-    PORT = int(os.environ.get('PORT', 5000))
-    app.run(host=HOST, port=PORT)
+    # # Make Heroku Use 0.0.0.0, and read the port number from an environment variable
+    # HOST = '0.0.0.0' if 'PORT' in os.environ else '127.0.0.1'
+    # PORT = int(os.environ.get('PORT', 5000))
+    # app.run(host=HOST, port=PORT)
