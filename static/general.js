@@ -41,9 +41,9 @@ function sendSelected(sn_nums) {
 }
 
 function redrawBarchartPicked(err, chart_data) {
-  drawPyramid(chart_data, barchart_picked)
+  barchart_picked.draw(chart_data);
 }
 
 function redrawBarchartSelected(err, chart_data) {
-  drawPyramid(chart_data, barchart_selected)
+  barchart_selected.draw(chart_data);
 }
