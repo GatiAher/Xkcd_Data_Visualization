@@ -96,7 +96,7 @@ def get_barchart_data(a_idx, b_idx):
     word_data_a = np.squeeze(np.asarray(word_data_a))
     word_data_b = np.squeeze(np.asarray(word_data_b))
 
-    top_5_word_idxs_a = np.argpartition(word_data_a, -5)[-5:]
+    top_5_word_idxs_a = np.argpartition(word_data_a, -30)[-30:]
     top_5_word_idxs_a = top_5_word_idxs_a[np.argsort(word_data_a[top_5_word_idxs_a])]
 
     top_5_word_vals_a = word_data_a[top_5_word_idxs_a]

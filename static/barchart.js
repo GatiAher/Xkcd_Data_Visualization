@@ -9,10 +9,10 @@ class Barchart extends Chart {
     //////////
 
     this.x = d3.scaleLinear()
-      .range([0, this.width]);
+      .range([0, this.width - this.margin.right]);
 
     this.y = d3.scaleBand()
-      .rangeRound([this.height, 0])
+      .rangeRound([this.height - this.margin.bottom, this.margin.top])
       .padding(0.1);
 
     this.xAxis = d3.axisBottom(this.x).ticks(10);
@@ -21,14 +21,14 @@ class Barchart extends Chart {
     this.svg.append("g")
       .attr("class", "x axis")
       .attr('id', "axis--x" + this.id_label)
-      .attr("transform", "translate(0," + this.height + ")")
+      .attr("transform", "translate(0," + (this.height - this.margin.bottom) + ")")
       .call(this.xAxis);
 
     this.svg.append("g")
       .attr("class", "y_axis")
       .attr('id', "axis--y" + this.id_label)
       // offset to right so ticks are not covered
-      .attr("transform", "translate(30,0)")
+      .attr("transform", "translate(" + (this.margin.left) + ",0)")
       .call(this.yAxis)
   }
 
@@ -39,7 +39,7 @@ class Barchart extends Chart {
     let beta = chart_obj.beta;
 
     let data = []
-    for(let i=0; i<5; i++) {
+    for(let i=0; i<30; i++) {
       let arr = chart_data[0][i]
       data.push({"name":arr.name, [alpha]:arr.value[0], [beta]:arr.value[1]})
     }
@@ -55,7 +55,7 @@ class Barchart extends Chart {
       .attr("class", "bar_" + alpha)
       .attr("y", function (d) { return chart_obj.y(d.name); })
       .attr("height", chart_obj.y.bandwidth())
-      .attr("x", 50)
+      .attr("x", chart_obj.margin.left)
       .attr("width", function (d) { return chart_obj.x(d[alpha]); });
 
     chart_obj.svg.selectAll(".bar_" + beta)
@@ -66,25 +66,25 @@ class Barchart extends Chart {
       .attr("class", "bar_" + beta)
       .attr("y", function (d) { return chart_obj.y(d.name); })
       .attr("height", chart_obj.y.bandwidth())
-      .attr("x", function (d) { return 50 + chart_obj.x(d[alpha]); })
+      .attr("x", function (d) { return chart_obj.margin.left + chart_obj.x(d[alpha]); })
       .attr("width", function (d) { return chart_obj.x(d[beta]); });
 
-    // SAVE
-    // add value label to end of each bar
-    chart_obj.svg.selectAll(".label")
-      .remove()
-      .exit()
-      .data(data)
-      .enter()
-      .append("text")
-      .attr("class","label")
-      .text(function (d) { return d.name; })
-      //y position of the label is halfway down the bar
-      .attr("y", function (d) { return chart_obj.y(d.name) + chart_obj.y.bandwidth() / 2 + 4; })
-      //x position is at end of bar - boundary box of text
-      .attr("x", function (d) {
-        return chart_obj.x(d[alpha]) + chart_obj.x(d[beta]) - this.getBBox().width;
-      });
+    // // SAVE
+    // // add value label to end of each bar
+    // chart_obj.svg.selectAll(".label")
+    //   .remove()
+    //   .exit()
+    //   .data(data)
+    //   .enter()
+    //   .append("text")
+    //   .attr("class","label")
+    //   .text(function (d) { return d.name; })
+    //   //y position of the label is halfway down the bar
+    //   .attr("y", function (d) { return chart_obj.y(d.name) + chart_obj.y.bandwidth() / 2 + 4; })
+    //   //x position is at end of bar - boundary box of text
+    //   .attr("x", function (d) {
+    //     return chart_obj.x(d[alpha]) + chart_obj.x(d[beta]) - this.getBBox().width;
+    //   });
 
     chart_obj.svg.select("#axis--y" + chart_obj.id_label).call(chart_obj.yAxis)
     chart_obj.svg.select("#axis--x" + chart_obj.id_label).call(chart_obj.xAxis)

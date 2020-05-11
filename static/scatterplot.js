@@ -7,10 +7,10 @@ class Scatterplot extends Chart {
     //////////
 
     this.x = d3.scaleLinear()
-      .range([0, this.width]).nice();
+      .range([this.margin.left, this.width - this.margin.right]).nice();
 
     this.y = d3.scaleLinear()
-      .range([this.height, 0]).nice();
+      .range([this.height - this.margin.bottom, this.margin.top]).nice();
 
     this.xAxis = d3.axisBottom(this.x).ticks(10);
     this.yAxis = d3.axisLeft(this.y).ticks(10);
