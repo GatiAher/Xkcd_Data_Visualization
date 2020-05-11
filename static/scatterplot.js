@@ -67,10 +67,10 @@ class Scatterplot extends Chart {
       .call(chart_obj.brush);
 
     // append points
-    chart_obj.scatter.selectAll(".dot")
+    chart_obj.scatter.selectAll(".dot_basic")
       .data(chart_obj.data)
       .enter().append("circle")
-      .attr("class", "dot")
+      .attr("class", "dot_basic")
       .attr("r", 4)
       .attr("cx", function (d) { return chart_obj.x(d.x); })
       .attr("cy", function (d) { return chart_obj.y(d.y); })
@@ -96,13 +96,13 @@ function brushended() {
   } else {
 
       // make the selection, do before zoom changes range of chart
-      scatterplot.scatter.selectAll(".dot").classed("selected", function(d){
+      scatterplot.scatter.selectAll("circle").classed("dot_selected", function(d){
         return isBrushed(s, scatterplot.x(d.x), scatterplot.y(d.y))
       });
 
       // get list of sn of selected comics
       let my_selection = [];
-      scatterplot.scatter.selectAll(".selected")
+      scatterplot.scatter.selectAll(".dot_selected")
         .each(function(d) {
           my_selection.push(d.sn);
         });
@@ -148,7 +148,7 @@ var mouseover = function(d) {
   tooltip
     .html("hover |<br>  " + d.title)
   d3.select(this)
-    .classed("hovered", true);
+    .classed("dot_hovered", true);
 }
 
 // change the tooltip and circle when user leave a circle
@@ -156,7 +156,7 @@ var mouseleave = function(d) {
   tooltip
     .html("hover |<br><br>")
   d3.select(this)
-    .classed("hovered", false);
+    .classed("dot_hovered", false);
 }
 
 // PICKED DATA ON SCATTERPLOT
@@ -164,10 +164,10 @@ var mouseleave = function(d) {
 // change when user clicks a circle
 var click = function(d) {
   // clear previously picked point
-  scatterplot.scatter.selectAll(".picked").classed("picked", false);
+  scatterplot.scatter.selectAll(".dot_picked").classed("dot_picked", false);
   // pick new point
   d3.select(this)
-    .classed("picked", true);
+    .classed("dot_picked", true);
   // update dependant values
   generalPick(d.title, d.altText, d.imageUrl, d.sn)
 }
@@ -176,11 +176,11 @@ var click = function(d) {
 d3.select("#inputPick").on("change", function () {
   var inputData = d3.select(this).property('value');
   // clear previously picked point
-  scatterplot.scatter.selectAll(".picked").classed("picked", false);
+  scatterplot.scatter.selectAll(".dot_picked").classed("dot_picked", false);
   // pick new point
-  var pickedPoint = d3.selectAll(".dot")
+  var pickedPoint = d3.selectAll("circle")
     .filter(function(d) { return d.sn == inputData })
-    .classed("picked", true);
+    .classed("dot_picked", true);
   // update dependant values
   generalPick(pickedPoint.datum().title, pickedPoint.datum().altText, pickedPoint.datum().imageUrl, inputData)
 })

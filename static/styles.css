@@ -1,4 +1,9 @@
-/* whenever this changes, make sure to clean browser cache */
+:root {
+  --basic-color: #4292c6;
+  --hover-color: yellow;
+  --picked-color: red;
+  --selected-color: #f71cff;
+}
 
 body {
   background-color: #96A8C8;
@@ -32,7 +37,7 @@ body {
   /* width: 100%; */
   border-style: solid;
   border-width: 1.5px;
-  border-color: yellow;
+  border-color: var(--hover-color);
   border-radius: 5px;
 }
 
@@ -41,8 +46,6 @@ body {
   position: relative;
   width: 40%;
   padding-bottom: 40%; /* aspect ratio */
-  /* height: 70%;
-  padding-left: 70%; /* aspect ratio */ */
   vertical-align: top;
   overflow: hidden;
 }
@@ -59,35 +62,29 @@ body {
   vertical-align: middle;
 }
 
-.dot {
+.dot_basic {
   opacity: 0.5;
-  fill: #4292c6
+  fill: var(--basic-color);
 }
 
-.selected {
-  fill: #f71cff;
+.dot_selected {
+  fill: var(--selected-color);
 }
 
-.hovered {
+.dot_hovered {
   opacity: 1;
-  fill: yellow;
+  fill: var(--hover-color);
 }
 
-.picked {
+.dot_picked {
   opacity: 1;
-  fill: red;
+  fill: var(--picked-color);
 }
-
-/* svg text.label {
-  fill: white;
-  font-size: 40px;
-  font-weight: bold;
-} */
 
 .bar_picked {
-  fill: red;
+  fill: var(--picked-color);
 }
 
 .bar_selected {
-  fill: #f71cff;
+  fill: var(--selected-color);
 }
