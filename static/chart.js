@@ -7,8 +7,8 @@ class Chart {
     // SVG AND GRAPH DIMENSIONS //
     //////////////////////////////
 
-    this.svgWidth = 900;
-    this.svgHeight = 850;
+    this.svgWidth = 450;
+    this.svgHeight = 425;
     this.margin = { top: 15, right: 25, bottom: 15, left: 60 };
     this.width = this.svgWidth - this.margin.left - this.margin.right;
     this.height = this.svgHeight - this.margin.top - this.margin.bottom;
@@ -24,18 +24,18 @@ class Chart {
       // Class to make it responsive.
       .classed("svg-content-responsive", true);
 
-    this.svg.append("text")
-      .style("text-anchor", "end")
-      .attr("x", this.width)
-      .attr("y", this.height - 8)
-      .text("X Axis");
-
-    this.svg.append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", "1em")
-      .style("text-anchor", "end")
-      .text("Y Axis");
+    // this.svg.append("text")
+    //   .style("text-anchor", "end")
+    //   .attr("x", this.width)
+    //   .attr("y", this.height - 8)
+    //   .text("X Axis");
+    //
+    // this.svg.append("text")
+    //   .attr("transform", "rotate(-90)")
+    //   .attr("y", 6)
+    //   .attr("dy", "1em")
+    //   .style("text-anchor", "end")
+    //   .text("Y Axis");
   }
 
   draw(chart_data) {

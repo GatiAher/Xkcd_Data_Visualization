@@ -71,7 +71,7 @@ class Scatterplot extends Chart {
       .data(chart_obj.data)
       .enter().append("circle")
       .attr("class", "dot")
-      .attr("r", 8)
+      .attr("r", 4)
       .attr("cx", function (d) { return chart_obj.x(d.x); })
       .attr("cy", function (d) { return chart_obj.y(d.y); })
       .attr('sn', function(d) { return d.sn })
