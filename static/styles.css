@@ -39,8 +39,8 @@ body {
 .svg-container {
   display: inline-block;
   position: relative;
-  width: 70%;
-  padding-bottom: 70%; /* aspect ratio */
+  width: 50%;
+  padding-bottom: 50%; /* aspect ratio */
   /* height: 70%;
   padding-left: 70%; /* aspect ratio */ */
   vertical-align: top;
@@ -49,7 +49,7 @@ body {
 .svg-content-responsive {
   display: inline-block;
   position: absolute;
-  top: 20px;
+  top: 0px;
   left: 0px;
 }
 
@@ -78,11 +78,11 @@ body {
   fill: red;
 }
 
-svg text.label {
+/* svg text.label {
   fill: white;
   font-size: 40px;
   font-weight: bold;
-}
+} */
 
 .bar_picked {
   fill: red;

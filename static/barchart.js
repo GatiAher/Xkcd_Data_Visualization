@@ -9,7 +9,7 @@ class Barchart extends Chart {
     //////////
 
     this.x = d3.scaleLinear()
-      .range([0, this.width - this.margin.right]);
+      .range([this.margin.left, this.width - this.margin.right]);
 
     this.y = d3.scaleBand()
       .rangeRound([this.height - this.margin.bottom, this.margin.top])
@@ -44,6 +44,8 @@ class Barchart extends Chart {
       data.push({"name":arr.name, [alpha]:arr.value[0], [beta]:arr.value[1]})
     }
 
+    console.log("data", data)
+
     chart_obj.x.domain([0, d3.max(data, function (d) { return d[alpha] + d[beta]; })]);
     chart_obj.y.domain(data.map(function (d) {return d.name; }));
 
@@ -56,7 +58,7 @@ class Barchart extends Chart {
       .attr("y", function (d) { return chart_obj.y(d.name); })
       .attr("height", chart_obj.y.bandwidth())
       .attr("x", chart_obj.margin.left)
-      .attr("width", function (d) { return chart_obj.x(d[alpha]); });
+      .attr("width", function (d) { return chart_obj.x(d[alpha]) - chart_obj.margin.left; });
 
     chart_obj.svg.selectAll(".bar_" + beta)
       .remove()
@@ -66,8 +68,8 @@ class Barchart extends Chart {
       .attr("class", "bar_" + beta)
       .attr("y", function (d) { return chart_obj.y(d.name); })
       .attr("height", chart_obj.y.bandwidth())
-      .attr("x", function (d) { return chart_obj.margin.left + chart_obj.x(d[alpha]); })
-      .attr("width", function (d) { return chart_obj.x(d[beta]); });
+      .attr("x", function (d) { return chart_obj.x(d[alpha]); })
+      .attr("width", function (d) { return chart_obj.x(d[beta]) - chart_obj.margin.left; });
 
     // // SAVE
     // // add value label to end of each bar
