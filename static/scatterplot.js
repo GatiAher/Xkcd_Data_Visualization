@@ -18,14 +18,14 @@ class Scatterplot extends Chart {
     this.svg.append("g")
       .attr("class", "x axis")
       .attr('id', "axis--x" + this.id_label)
-      .attr("transform", "translate(0," + this.height + ")")
+      .attr("transform", "translate(0," + (this.height - this.margin.bottom) + ")")
       .call(this.xAxis);
 
     this.svg.append("g")
       .attr("class", "y_axis")
       .attr('id', "axis--y" + this.id_label)
       // offset to right so ticks are not covered
-      .attr("transform", "translate(30,0)")
+      .attr("transform", "translate(" + (this.margin.left) + ",0)")
       .call(this.yAxis)
 
     /////////////
