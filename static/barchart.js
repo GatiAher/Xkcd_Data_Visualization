@@ -33,16 +33,29 @@ class Barchart extends Chart {
   draw(chart_data) {
     let  chart_obj = this;
 
+    console.log("BARCHART CHARTDATA: ", chart_data);
+
     let data = []
     let j = 0;
     while(chart_data[0][j]) {
       let arr = chart_data[0][j]
-      data.push({"name":arr.name, "picked":arr.value[0], "selected":arr.value[1]})
+      data.push({"name":arr.name, "picked":arr.value[0], "selected":arr.value[1], "all":arr.value[2]})
       j = j+1;
     }
 
-    chart_obj.x.domain([0, d3.max(data, function (d) { return d.selected; })]);
+    chart_obj.x.domain([0, d3.max(data, function (d) { return d.all; })]);
     chart_obj.y.domain(data.map(function (d) {return d.name; }));
+
+    chart_obj.svg.selectAll(".bar_basic")
+      .remove()
+      .exit()
+      .data(data)
+      .enter().append("rect")
+      .attr("class", "bar_basic")
+      .attr("y", function (d) { return chart_obj.y(d.name); })
+      .attr("height", chart_obj.y.bandwidth())
+      .attr("x", chart_obj.margin.left)
+      .attr("width", function (d) { return chart_obj.x(d.all) - chart_obj.margin.left; });
 
     chart_obj.svg.selectAll(".bar_selected")
       .remove()

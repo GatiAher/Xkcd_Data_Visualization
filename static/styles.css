@@ -88,3 +88,8 @@ body {
 .bar_selected {
   fill: var(--selected-color);
 }
+
+.bar_basic {
+  opacity: 0.5;
+  fill: var(--basic-color);
+}

@@ -91,6 +91,11 @@ def get_barchart_data(picked_idx, selected_idx, sortedBy="selected"):
         word_data_selected = word_data_selected.sum(axis=0)
         word_data_selected = np.squeeze(np.asarray(word_data_selected))
 
+    # TODO: move this out because same result every time
+    word_data_all = tfidf_vectors
+    word_data_all = word_data_all.sum(axis=0)
+    word_data_all = np.squeeze(np.asarray(word_data_all))
+
     if sortedBy == "selected":
         word_data_a = word_data_selected
         word_data_b = word_data_picked
@@ -103,6 +108,7 @@ def get_barchart_data(picked_idx, selected_idx, sortedBy="selected"):
 
     top_5_word_vals_a = word_data_a[top_5_word_idxs_a]
     top_5_word_vals_b = word_data_b[top_5_word_idxs_a]
+    top_5_word_vals_all = word_data_all[top_5_word_idxs_a]
     top_5_words_a = [tfidf_feature_names[i] for i in top_5_word_idxs_a]
 
     if sortedBy == "selected":
@@ -114,7 +120,7 @@ def get_barchart_data(picked_idx, selected_idx, sortedBy="selected"):
 
     # labels = ["word", "tfidf"]
     labels = ["name", "value"]
-    top_5_word_vals = zip(top_5_word_vals_picked, top_5_word_vals_selected)
+    top_5_word_vals = zip(top_5_word_vals_picked, top_5_word_vals_selected, top_5_word_vals_all)
     tfidf_zipped = zip(top_5_words_a, top_5_word_vals)
     tfidf_dict = [dict(zip(labels, row)) for row in tfidf_zipped]
 
