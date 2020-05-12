@@ -34,7 +34,6 @@ class Barchart extends Chart {
     /////////////
 
     this.labels = ["picked", "selected", "all"];
-
   }
 
   update(chart_data) {
@@ -64,32 +63,34 @@ class Barchart extends Chart {
         max_domain_x.push(max_val);
       }
     });
-
     chart_obj.x.domain([0, d3.max(max_domain_x)]);
     chart_obj.y.domain(chart_obj.data.map(function (d) {return d.name; }));
 
-    // redraw bars if their checkbox is selected
+    // redraw bars
+    let len_labels = chart_obj.labels.length-1; // get length of labels-1
     for (const idx in chart_obj.labels) {
-      let group = chart_obj.labels[idx];
-      let checkbox = d3.select("#" + [group] + "_CheckBox");
+      let group = chart_obj.labels[len_labels-idx]; // want in reverse order
       let bars = chart_obj.svg.selectAll(".bar_" + [group])
         .remove()
         .exit();
-      if(checkbox.property("checked")) {
+
+      let checkbox = d3.select("#" + [group] + "_CheckBox");
+      if (checkbox.property("checked")) {
           bars
             .data(chart_obj.data)
             .enter().append("rect")
             .attr("class", "bar_" + [group])
             .attr("y", function (d) { return chart_obj.y(d.name); })
             .attr("height", chart_obj.y.bandwidth())
+            .transition().duration(750)
             .attr("x", chart_obj.margin.left)
             .attr("width", function (d) { return chart_obj.x(d[group]) - chart_obj.margin.left; });
         }
     }
 
     // update axes
-    chart_obj.svg.select("#axis--y" + chart_obj.id_label).call(chart_obj.yAxis)
-    chart_obj.svg.select("#axis--x" + chart_obj.id_label).call(chart_obj.xAxis)
+    chart_obj.svg.select("#axis--y" + chart_obj.id_label).transition().duration(750).call(chart_obj.yAxis)
+    chart_obj.svg.select("#axis--x" + chart_obj.id_label).transition().duration(750).call(chart_obj.xAxis)
   }
 }
 
