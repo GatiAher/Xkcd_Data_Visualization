@@ -1,8 +1,6 @@
 class Barchart extends Chart {
-  constructor(div, id_label, alpha, beta) {
+  constructor(div, id_label) {
     super(div, id_label);
-    this.alpha = alpha;
-    this.beta = beta;
 
     //////////
     // AXES //
@@ -35,125 +33,41 @@ class Barchart extends Chart {
   draw(chart_data) {
     let  chart_obj = this;
 
-    let alpha = chart_obj.alpha;
-    let beta = chart_obj.beta;
-
     let data = []
-    for(let i=0; i<30; i++) {
-      let arr = chart_data[0][i]
-      data.push({"name":arr.name, [alpha]:arr.value[0], [beta]:arr.value[1]})
+    let j = 0;
+    while(chart_data[0][j]) {
+      let arr = chart_data[0][j]
+      data.push({"name":arr.name, "picked":arr.value[0], "selected":arr.value[1]})
+      j = j+1;
     }
 
-    console.log("data", data)
-
-    chart_obj.x.domain([0, d3.max(data, function (d) { return d[alpha] + d[beta]; })]);
+    chart_obj.x.domain([0, d3.max(data, function (d) { return d.selected; })]);
     chart_obj.y.domain(data.map(function (d) {return d.name; }));
 
-    chart_obj.svg.selectAll(".bar_" + alpha)
+    chart_obj.svg.selectAll(".bar_selected")
       .remove()
       .exit()
       .data(data)
       .enter().append("rect")
-      .attr("class", "bar_" + alpha)
+      .attr("class", "bar_selected")
       .attr("y", function (d) { return chart_obj.y(d.name); })
       .attr("height", chart_obj.y.bandwidth())
       .attr("x", chart_obj.margin.left)
-      .attr("width", function (d) { return chart_obj.x(d[alpha]) - chart_obj.margin.left; });
+      .attr("width", function (d) { return chart_obj.x(d.selected) - chart_obj.margin.left; });
 
-    chart_obj.svg.selectAll(".bar_" + beta)
+    chart_obj.svg.selectAll(".bar_picked")
       .remove()
       .exit()
       .data(data)
       .enter().append("rect")
-      .attr("class", "bar_" + beta)
-      .attr("y", function (d) { return chart_obj.y(d.name); })
-      .attr("height", chart_obj.y.bandwidth())
-      .attr("x", function (d) { return chart_obj.x(d[alpha]); })
-      .attr("width", function (d) { return chart_obj.x(d[beta]) - chart_obj.margin.left; });
-
-    // // SAVE
-    // // add value label to end of each bar
-    // chart_obj.svg.selectAll(".label")
-    //   .remove()
-    //   .exit()
-    //   .data(data)
-    //   .enter()
-    //   .append("text")
-    //   .attr("class","label")
-    //   .text(function (d) { return d.name; })
-    //   //y position of the label is halfway down the bar
-    //   .attr("y", function (d) { return chart_obj.y(d.name) + chart_obj.y.bandwidth() / 2 + 4; })
-    //   //x position is at end of bar - boundary box of text
-    //   .attr("x", function (d) {
-    //     return chart_obj.x(d[alpha]) + chart_obj.x(d[beta]) - this.getBBox().width;
-    //   });
-
-    chart_obj.svg.select("#axis--y" + chart_obj.id_label).call(chart_obj.yAxis)
-    chart_obj.svg.select("#axis--x" + chart_obj.id_label).call(chart_obj.xAxis)
-  }
-
-  draw2(chart_data) {
-    let  chart_obj = this;
-
-    let alpha = "picked";
-    let beta = "selected";
-
-    let data = []
-    for(let i=0; i<30; i++) {
-      let arr = chart_data[0][i]
-      data.push({"name":arr.name, [alpha]:arr.value[0], [beta]:arr.value[1]})
-    }
-
-    console.log("data", data)
-
-    chart_obj.x.domain([0, d3.max(data, function (d) { return d[beta]; })]);
-    chart_obj.y.domain(data.map(function (d) {return d.name; }));
-
-    chart_obj.svg.selectAll(".bar_" + beta)
-      .remove()
-      .exit()
-      .data(data)
-      .enter().append("rect")
-      .attr("class", "bar_" + beta)
+      .attr("class", "bar_picked")
       .attr("y", function (d) { return chart_obj.y(d.name); })
       .attr("height", chart_obj.y.bandwidth())
       .attr("x", chart_obj.margin.left)
-      .attr("width", function (d) { return chart_obj.x(d[beta]) - chart_obj.margin.left; });
-
-    chart_obj.svg.selectAll(".bar_" + alpha)
-      .remove()
-      .exit()
-      .data(data)
-      .enter().append("rect")
-      .attr("class", "bar_" + alpha)
-      .attr("y", function (d) { return chart_obj.y(d.name); })
-      .attr("height", chart_obj.y.bandwidth())
-      .attr("x", chart_obj.margin.left)
-      .attr("width", function (d) { return chart_obj.x(d[alpha]) - chart_obj.margin.left; });
-
-    // // SAVE
-    // // add value label to end of each bar
-    // chart_obj.svg.selectAll(".label")
-    //   .remove()
-    //   .exit()
-    //   .data(data)
-    //   .enter()
-    //   .append("text")
-    //   .attr("class","label")
-    //   .text(function (d) { return d.name; })
-    //   //y position of the label is halfway down the bar
-    //   .attr("y", function (d) { return chart_obj.y(d.name) + chart_obj.y.bandwidth() / 2 + 4; })
-    //   //x position is at end of bar - boundary box of text
-    //   .attr("x", function (d) {
-    //     return chart_obj.x(d[alpha]) + chart_obj.x(d[beta]) - this.getBBox().width;
-    //   });
+      .attr("width", function (d) { return chart_obj.x(d.picked) - chart_obj.margin.left; });
 
     chart_obj.svg.select("#axis--y" + chart_obj.id_label).call(chart_obj.yAxis)
     chart_obj.svg.select("#axis--x" + chart_obj.id_label).call(chart_obj.xAxis)
   }
 
 }
-
-var barchart_selected = new Barchart("#barchartSelectedDiv", "_barchart_selected", "selected", "picked");
-var barchart_picked = new Barchart("#barchartPickedDiv", "_barchart_picked", "picked", "selected");
-var barchart_test = new Barchart("#barchartTestDiv", "_barchart_test", "picked", "selected");

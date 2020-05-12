@@ -37,17 +37,8 @@
     </div>
   </div>
 
-  <div id="barchartTestDiv" class="box">
-    <h3>Test</h3>
-  </div>
-
-  <div id="barchartSelectedDiv" class="box">
+  <div id="barchartDiv" class="box">
     <h3>Bar Chart of TFIDF for Top 5 Words in Selected Comics</h3>
-  </div>
-
-  <div id="barchartPickedDiv" class="box">
-    <h3>Bar Chart of TFIDF for Top 5 Words in Picked Comic</h3>
-    <p id="xkcdBarChartPickedTitle"> 221: Random Number </p>
   </div>
 
   <div id="pictureDiv" class="box">
@@ -102,9 +93,10 @@
 
     var scatterplot = new Scatterplot("#scatterplotDiv", "_scatterplot");
     scatterplot.draw(comic_data);
-    // drawScatterplot(comic_data)
 
-    generalPick("221: Random Number", "RFC 1149.5 specifies 4 as the standard IEEE-vetted random number.", "https://www.explainxkcd.com/wiki/images/f/fe/random_number.png", 221)
+    var barchart = new Barchart("#barchartDiv", "_barchart");
+    initialize();
+
   </script>
 
 </body>

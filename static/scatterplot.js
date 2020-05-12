@@ -94,7 +94,6 @@ function brushended() {
       scatterplot.y.domain(d3.extent(scatterplot.data, function (d) { return d.y; })).nice();
 
   } else {
-
       // make the selection, do before zoom changes range of chart
       scatterplot.scatter.selectAll("circle").classed("dot_selected", function(d){
         return isBrushed(s, scatterplot.x(d.x), scatterplot.y(d.y))
@@ -106,7 +105,7 @@ function brushended() {
         .each(function(d) {
           my_selection.push(d.sn);
         });
-      sendSelected(my_selection)
+      generalSelect(my_selection);
 
       // adjust axes to selected data
       scatterplot.x.domain([ scatterplot.x.invert(s[0][0]), scatterplot.x.invert(s[1][0]) ]);

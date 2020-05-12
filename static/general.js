@@ -2,7 +2,26 @@
 // GENERAL UPDATE CODE //
 /////////////////////////
 
-var sn_nums_store = [1, 2, 3];
+var dataStore = {
+  picked_sn:221,
+  selected_sn:[12, 19, 113, 190, 202, 216, 221, 300, 369, 384, 458, 512, 539,
+    602, 718, 773, 849, 899, 904, 944, 1047, 1053, 1129, 1155, 1179, 1189,
+    1213, 1224, 1236, 1254, 1277, 1279, 1310, 1330, 1399, 1597, 1724, 1768,
+    1789, 1804, 1935, 2006, 2016, 2028, 2034, 2059, 2137]
+  };
+
+function initialize() {
+  d3.selectAll("circle")
+    .filter(function(d) { return dataStore.selected_sn.includes(d.sn); })
+    .classed("dot_selected", true);
+  d3.selectAll("circle")
+    // .filter(function(d) { return d.sn == dataStore.pickedn })
+    .filter(function(d) { return d.sn == 221 })
+    .classed("dot_picked", true);
+  generalPick("221: Random Number",
+    "RFC 1149.5 specifies 4 as the standard IEEE-vetted random number.",
+    "https://www.explainxkcd.com/wiki/images/f/fe/random_number.png", 221);
+}
 
 // general update values when new point is picked
 function generalPick(title, altText, imageUrl, sn) {
@@ -15,54 +34,25 @@ function generalPick(title, altText, imageUrl, sn) {
     .textContent = title;
   document.getElementById("xkcdImageAltText")
     .textContent = altText;
-  document.getElementById("xkcdBarChartPickedTitle")
-    .textContent = title;
 
   // send picked sn_num to backend
-  sendPicked(parseInt(sn))
-  sendSelected(sn_nums_store)
-
-  // CHANGED: testing
-  sendRequest(parseInt(sn), sn_nums_store);
+  dataStore.picked_sn = parseInt(sn);
+  sendRequest();
 }
 
-// CHANGED: testing
-function sendRequest(sn, sn_nums) {
-  sn_nums_store = sn_nums;
+function generalSelect(sn_nums) {
+  dataStore.selected_sn = sn_nums;
+  sendRequest()
+}
+
+function sendRequest() {
   d3.json("/data")
     .header("Content-Type", "application/json")
     .post(
-        JSON.stringify({sn_picked:sn, sn_selected:sn_nums}),
-        testing);
+        JSON.stringify({picked_sn:dataStore.picked_sn, selected_sn:dataStore.selected_sn}),
+        reDrawBarchart);
 }
 
-function testing(err, data) {
-  console.log("TEST: ", data);
-  barchart_test.draw2(data);
-}
-
-
-function sendPicked(sn) {
-  d3.json("/picked-data")
-    .header("Content-Type", "application/json")
-    .post(
-        JSON.stringify({sn_num:sn}),
-        redrawBarchartPicked);
-}
-
-function sendSelected(sn_nums) {
-  sn_nums_store = sn_nums
-  d3.json("/selected-data")
-    .header("Content-Type", "application/json")
-    .post(
-        JSON.stringify({sn_nums:sn_nums}),
-        redrawBarchartSelected);
-}
-
-function redrawBarchartPicked(err, chart_data) {
-  barchart_picked.draw(chart_data);
-}
-
-function redrawBarchartSelected(err, chart_data) {
-  barchart_selected.draw(chart_data);
+function reDrawBarchart(err, data) {
+  barchart.draw(data);
 }
