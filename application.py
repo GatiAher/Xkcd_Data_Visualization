@@ -23,10 +23,8 @@ tfidf_vectors = sparse.load_npz("final_data/tfidf_vectors.npz")
 with open("final_data/tfidf_feature_names.txt", 'r') as filehandle:
     tfidf_feature_names = json.load(filehandle)
 
-class DataStore():
-    picked_idx=[]
-    selected_idx=[]
-dataStore=DataStore()
+word_data_all_summed = tfidf_vectors.sum(axis=0)
+word_data_all_summed = np.squeeze(np.asarray(word_data_all_summed))
 
 #######
 # APP #
@@ -51,20 +49,18 @@ def word_data():
     if request.method == 'POST':
 
         picked_idx = [request.json['picked_sn'] - 1]
-        dataStore.picked_idx = picked_idx
 
         selected_idx = request.json['selected_sn']
         selected_idx = [num - 1 for num in selected_idx]
-        dataStore.selected_idx = selected_idx
 
-        barchart_data = get_barchart_data(dataStore.picked_idx, dataStore.selected_idx)
+        barchart_data = get_barchart_data(picked_idx, selected_idx)
         return barchart_data
 
 ###########
 # TESTING #
 ###########
 
-def get_barchart_data(picked_idx, selected_idx, sortedBy="selected"):
+def get_barchart_data(picked_idx, selected_idx):
     """
     Get top words and vales based off of a_idx
     Then for those words get values for b_idx
@@ -75,58 +71,43 @@ def get_barchart_data(picked_idx, selected_idx, sortedBy="selected"):
     transform 'numpy.matrix' to 'numpy.ndarray'
     """
     len_output = 30
-    output_zeros = np.zeros(len_output)
 
-    if len(picked_idx) == 0:
-        word_data_picked = output_zeros
-    else:
-        word_data_picked = tfidf_vectors[picked_idx, :]
-        word_data_picked = word_data_picked.sum(axis=0)
-        word_data_picked = np.squeeze(np.asarray(word_data_picked))
+    word_data_picked = get_summed_tfidf(picked_idx, len_output)
+    word_data_selected = get_summed_tfidf(selected_idx, len_output)
+    word_data_all = get_summed_tfidf([-1], len_output)
 
-    if len(selected_idx) == 0:
-        word_data_selected = output_zeros
-    else:
-        word_data_selected = tfidf_vectors[selected_idx, :]
-        word_data_selected = word_data_selected.sum(axis=0)
-        word_data_selected = np.squeeze(np.asarray(word_data_selected))
+    top_word_idxs_selected = np.argpartition(word_data_selected, -len_output)[-len_output:]
+    top_word_idxs_selected = top_word_idxs_selected[np.argsort(word_data_selected[top_word_idxs_selected])]
 
-    # TODO: move this out because same result every time
-    word_data_all = tfidf_vectors
-    word_data_all = word_data_all.sum(axis=0)
-    word_data_all = np.squeeze(np.asarray(word_data_all))
-
-    if sortedBy == "selected":
-        word_data_a = word_data_selected
-        word_data_b = word_data_picked
-    else:
-        word_data_a = word_data_picked
-        word_data_b = word_data_selected
-
-    top_5_word_idxs_a = np.argpartition(word_data_a, -len_output)[-len_output:]
-    top_5_word_idxs_a = top_5_word_idxs_a[np.argsort(word_data_a[top_5_word_idxs_a])]
-
-    top_5_word_vals_a = word_data_a[top_5_word_idxs_a]
-    top_5_word_vals_b = word_data_b[top_5_word_idxs_a]
-    top_5_word_vals_all = word_data_all[top_5_word_idxs_a]
-    top_5_words_a = [tfidf_feature_names[i] for i in top_5_word_idxs_a]
-
-    if sortedBy == "selected":
-        top_5_word_vals_selected = top_5_word_vals_a
-        top_5_word_vals_picked = top_5_word_vals_b
-    else:
-        top_5_word_vals_picked = top_5_word_vals_a
-        top_5_word_vals_selected = top_5_word_vals_b
+    top_word_vals_selected = word_data_selected[top_word_idxs_selected]
+    top_word_vals_picked = word_data_picked[top_word_idxs_selected]
+    top_word_vals_all = word_data_all[top_word_idxs_selected]
+    top_words_selected = [tfidf_feature_names[i] for i in top_word_idxs_selected]
 
     # labels = ["word", "tfidf"]
     labels = ["name", "value"]
-    top_5_word_vals = zip(top_5_word_vals_picked, top_5_word_vals_selected, top_5_word_vals_all)
-    tfidf_zipped = zip(top_5_words_a, top_5_word_vals)
+    top_word_vals = zip(top_word_vals_picked, top_word_vals_selected, top_word_vals_all)
+    tfidf_zipped = zip(top_words_selected, top_word_vals)
     tfidf_dict = [dict(zip(labels, row)) for row in tfidf_zipped]
 
     barchart_data = json.dumps([tfidf_dict])
     return barchart_data
 
+
+####################
+# HELPER FUNCTIONS #
+####################
+
+def get_summed_tfidf(idx_list, len_output):
+    if len(idx_list) == 0:
+        return np.zeros(len_output)
+    elif idx_list[0] == -1:
+        return word_data_all_summed
+    else:
+        word_data = tfidf_vectors[idx_list, :]
+        word_data = word_data.sum(axis=0)
+        word_data = np.squeeze(np.asarray(word_data))
+        return word_data
 
 ########
 # MAIN #

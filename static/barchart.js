@@ -33,8 +33,6 @@ class Barchart extends Chart {
   draw(chart_data) {
     let  chart_obj = this;
 
-    console.log("BARCHART CHARTDATA: ", chart_data);
-
     let data = []
     let j = 0;
     while(chart_data[0][j]) {
