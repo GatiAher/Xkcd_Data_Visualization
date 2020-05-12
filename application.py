@@ -66,6 +66,21 @@ def selected_word_data():
         barchart_data = get_barchart_data(dataStore.selected_idx, dataStore.picked_idx)
         return barchart_data
 
+@app.route('/data', methods=['POST'])
+def word_data():
+    if request.method == 'POST':
+
+        picked_idx = [request.json['sn_picked'] - 1]
+        dataStore.picked_idx = picked_idx
+
+        selected_idx = request.json['sn_selected']
+        selected_idx = [num - 1 for num in selected_idx]
+        dataStore.selected_idx = selected_idx
+
+        barchart_data = get_barchart_data2(dataStore.picked_idx, dataStore.selected_idx)
+        # barchart_data = get_barchart_data(dataStore.selected_idx, dataStore.picked_idx)
+        return barchart_data
+
 ###########
 # TESTING #
 ###########
@@ -80,6 +95,9 @@ def get_barchart_data(a_idx, b_idx):
     word_data type: 'numpy.matrix'
     transform 'numpy.matrix' to 'numpy.ndarray'
     """
+
+    len_output = 30;
+
     if len(a_idx) == 0:
         word_data_a = tfidf_vectors
     else:
@@ -96,7 +114,7 @@ def get_barchart_data(a_idx, b_idx):
     word_data_a = np.squeeze(np.asarray(word_data_a))
     word_data_b = np.squeeze(np.asarray(word_data_b))
 
-    top_5_word_idxs_a = np.argpartition(word_data_a, -30)[-30:]
+    top_5_word_idxs_a = np.argpartition(word_data_a, -len_output)[-len_output:]
     top_5_word_idxs_a = top_5_word_idxs_a[np.argsort(word_data_a[top_5_word_idxs_a])]
 
     top_5_word_vals_a = word_data_a[top_5_word_idxs_a]
@@ -106,6 +124,64 @@ def get_barchart_data(a_idx, b_idx):
     # labels = ["word", "tfidf"]
     labels = ["name", "value"]
     top_5_word_vals = zip(top_5_word_vals_a, top_5_word_vals_b)
+    tfidf_zipped = zip(top_5_words_a, top_5_word_vals)
+    tfidf_dict = [dict(zip(labels, row)) for row in tfidf_zipped]
+
+    barchart_data = json.dumps([tfidf_dict])
+    return barchart_data
+
+
+def get_barchart_data2(picked_idx, selected_idx, sortedBy="selected"):
+    """
+    Get top words and vales based off of a_idx
+    Then for those words get values for b_idx
+
+    word_data type: 'scipy.sparse.csr.csr_matrix'
+    sum word data so total tfidf value for word
+    word_data type: 'numpy.matrix'
+    transform 'numpy.matrix' to 'numpy.ndarray'
+    """
+    len_output = 30
+    output_zeros = np.zeros(30)
+
+    if len(picked_idx) == 0:
+        word_data_picked = output_zeros
+    else:
+        word_data_picked = tfidf_vectors[picked_idx, :]
+        word_data_picked = word_data_picked.sum(axis=0)
+        word_data_picked = np.squeeze(np.asarray(word_data_picked))
+
+    if len(selected_idx) == 0:
+        word_data_selected = output_zeros
+    else:
+        word_data_selected = tfidf_vectors[selected_idx, :]
+        word_data_selected = word_data_selected.sum(axis=0)
+        word_data_selected = np.squeeze(np.asarray(word_data_selected))
+
+    if sortedBy == "selected":
+        word_data_a = word_data_selected
+        word_data_b = word_data_picked
+    else:
+        word_data_a = word_data_picked
+        word_data_b = word_data_selected
+
+    top_5_word_idxs_a = np.argpartition(word_data_a, -30)[-30:]
+    top_5_word_idxs_a = top_5_word_idxs_a[np.argsort(word_data_a[top_5_word_idxs_a])]
+
+    top_5_word_vals_a = word_data_a[top_5_word_idxs_a]
+    top_5_word_vals_b = word_data_b[top_5_word_idxs_a]
+    top_5_words_a = [tfidf_feature_names[i] for i in top_5_word_idxs_a]
+
+    if sortedBy == "selected":
+        top_5_word_vals_selected = top_5_word_vals_a
+        top_5_word_vals_picked = top_5_word_vals_b
+    else:
+        top_5_word_vals_picked = top_5_word_vals_a
+        top_5_word_vals_selected = top_5_word_vals_b
+
+    # labels = ["word", "tfidf"]
+    labels = ["name", "value"]
+    top_5_word_vals = zip(top_5_word_vals_picked, top_5_word_vals_selected)
     tfidf_zipped = zip(top_5_words_a, top_5_word_vals)
     tfidf_dict = [dict(zip(labels, row)) for row in tfidf_zipped]
 
