@@ -52,11 +52,13 @@ class Scatterplot extends Chart {
     this.idleDelay = 350;
   }
 
-  draw(data) {
+  update(chart_data) {
+    this.data = chart_data;
+    this.draw();
+  }
+
+  draw() {
     let chart_obj = this;
-
-    chart_obj.data = data;
-
     // first set domain based off of data domain
     chart_obj.x.domain(d3.extent(chart_obj.data, function (d) { return d.x; })).nice()
     chart_obj.y.domain(d3.extent(chart_obj.data, function (d) { return d.y; })).nice()

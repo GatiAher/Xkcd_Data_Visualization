@@ -2,10 +2,10 @@
 <html lang="en">
 
 <head>
+  <title>Xkcd Data Visualization</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="static/styles.css">
-  <title>Xkcd Data Visualization</title>
 </head>
 
 <body>
@@ -38,7 +38,15 @@
   </div>
 
   <div id="barchartDiv" class="box">
-    <h3>Bar Chart of TFIDF for Top 5 Words in Selected Comics</h3>
+    <h3>Bar Chart of TFIDF for Top Words in Selected Comics</h3>
+    <div>
+      <input type="checkbox" class="checkboxBarchart" name="picked_CheckBox" id="picked_CheckBox" value="picked" checked>
+      <label for="picked_CheckBox">Picked Comic</label>
+      <input type="checkbox" class="checkboxBarchart" name="selected_CheckBox" id="selected_CheckBox" value="selected" checked>
+      <label for="selected_CheckBox">Selected Comics</label>
+      <input type="checkbox" class="checkboxBarchart" name="all_CheckBox" id="all_CheckBox" value="all" checked>
+      <label for="all_CheckBox">All Comics</label>
+    </div>
   </div>
 
   <div id="pictureDiv" class="box">
@@ -92,11 +100,9 @@
     var comic_data = {{ return_comic_data.comic_data | safe }};
 
     var scatterplot = new Scatterplot("#scatterplotDiv", "_scatterplot");
-    scatterplot.draw(comic_data);
+    scatterplot.update(comic_data);
 
-    var barchart = new Barchart("#barchartDiv", "_barchart");
     initialize();
-
   </script>
 
 </body>

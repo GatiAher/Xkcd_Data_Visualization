@@ -28,57 +28,74 @@ class Barchart extends Chart {
       // offset to right so ticks are not covered
       .attr("transform", "translate(" + (this.margin.left) + ",0)")
       .call(this.yAxis)
+
+    /////////////
+    // SPECIAL //
+    /////////////
+
+    this.labels = ["picked", "selected", "all"];
+
   }
 
-  draw(chart_data) {
-    let  chart_obj = this;
-
+  update(chart_data) {
+    let chart_obj = this;
     let data = []
-    let j = 0;
-    while(chart_data[0][j]) {
-      let arr = chart_data[0][j]
-      data.push({"name":arr.name, "picked":arr.value[0], "selected":arr.value[1], "all":arr.value[2]})
-      j = j+1;
+    for (const idx in chart_data[0]) {
+      let arr = chart_data[0][idx];
+      data.push({"name":arr.name,
+        [chart_obj.labels[0]]:arr.value[0],
+        [chart_obj.labels[1]]:arr.value[1],
+        [chart_obj.labels[2]]:arr.value[2]});
+    }
+    chart_obj.data = data;
+    chart_obj.draw();
+  }
+
+  draw() {
+    let chart_obj = this;
+
+    // calculate max domain x
+    let max_domain_x = [0];
+    d3.selectAll(".checkboxBarchart").each(function(d) {
+      let checkbox = d3.select(this);
+      if(checkbox.property("checked")) {
+        let group = checkbox.property("value");
+        let max_val = d3.max(chart_obj.data, function(d) {return d[group]; });
+        max_domain_x.push(max_val);
+      }
+    });
+
+    chart_obj.x.domain([0, d3.max(max_domain_x)]);
+    chart_obj.y.domain(chart_obj.data.map(function (d) {return d.name; }));
+
+    // redraw bars if their checkbox is selected
+    for (const idx in chart_obj.labels) {
+      let group = chart_obj.labels[idx];
+      let checkbox = d3.select("#" + [group] + "_CheckBox");
+      let bars = chart_obj.svg.selectAll(".bar_" + [group])
+        .remove()
+        .exit();
+      if(checkbox.property("checked")) {
+          bars
+            .data(chart_obj.data)
+            .enter().append("rect")
+            .attr("class", "bar_" + [group])
+            .attr("y", function (d) { return chart_obj.y(d.name); })
+            .attr("height", chart_obj.y.bandwidth())
+            .attr("x", chart_obj.margin.left)
+            .attr("width", function (d) { return chart_obj.x(d[group]) - chart_obj.margin.left; });
+        }
     }
 
-    chart_obj.x.domain([0, d3.max(data, function (d) { return d.all; })]);
-    chart_obj.y.domain(data.map(function (d) {return d.name; }));
-
-    chart_obj.svg.selectAll(".bar_basic")
-      .remove()
-      .exit()
-      .data(data)
-      .enter().append("rect")
-      .attr("class", "bar_basic")
-      .attr("y", function (d) { return chart_obj.y(d.name); })
-      .attr("height", chart_obj.y.bandwidth())
-      .attr("x", chart_obj.margin.left)
-      .attr("width", function (d) { return chart_obj.x(d.all) - chart_obj.margin.left; });
-
-    chart_obj.svg.selectAll(".bar_selected")
-      .remove()
-      .exit()
-      .data(data)
-      .enter().append("rect")
-      .attr("class", "bar_selected")
-      .attr("y", function (d) { return chart_obj.y(d.name); })
-      .attr("height", chart_obj.y.bandwidth())
-      .attr("x", chart_obj.margin.left)
-      .attr("width", function (d) { return chart_obj.x(d.selected) - chart_obj.margin.left; });
-
-    chart_obj.svg.selectAll(".bar_picked")
-      .remove()
-      .exit()
-      .data(data)
-      .enter().append("rect")
-      .attr("class", "bar_picked")
-      .attr("y", function (d) { return chart_obj.y(d.name); })
-      .attr("height", chart_obj.y.bandwidth())
-      .attr("x", chart_obj.margin.left)
-      .attr("width", function (d) { return chart_obj.x(d.picked) - chart_obj.margin.left; });
-
+    // update axes
     chart_obj.svg.select("#axis--y" + chart_obj.id_label).call(chart_obj.yAxis)
     chart_obj.svg.select("#axis--x" + chart_obj.id_label).call(chart_obj.xAxis)
   }
-
 }
+
+var barchart = new Barchart("#barchartDiv", "_barchart");
+
+// d3.selectAll(".checkbox").on("change",barchart.draw);
+d3.selectAll(".checkboxBarchart").on("change", function() {
+  barchart.draw();
+});

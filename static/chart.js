@@ -38,7 +38,12 @@ class Chart {
     //   .text("Y Axis");
   }
 
-  draw(chart_data) {
-    console.log(this.id_label, chart_data);
+  update(chart_data) {
+    console.log("updating data");
+    this.draw();
+  }
+
+  draw() {
+    console.log("drawing data");
   }
 }

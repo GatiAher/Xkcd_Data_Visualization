@@ -15,8 +15,7 @@ function initialize() {
     .filter(function(d) { return dataStore.selected_sn.includes(d.sn); })
     .classed("dot_selected", true);
   d3.selectAll("circle")
-    // .filter(function(d) { return d.sn == dataStore.pickedn })
-    .filter(function(d) { return d.sn == 221 })
+    .filter(function(d) { return d.sn == dataStore.picked_sn })
     .classed("dot_picked", true);
   generalPick("221: Random Number",
     "RFC 1149.5 specifies 4 as the standard IEEE-vetted random number.",
@@ -50,9 +49,9 @@ function sendRequest() {
     .header("Content-Type", "application/json")
     .post(
         JSON.stringify({picked_sn:dataStore.picked_sn, selected_sn:dataStore.selected_sn}),
-        reDrawBarchart);
+        updateBarchart);
 }
 
-function reDrawBarchart(err, data) {
-  barchart.draw(data);
+function updateBarchart(err, data) {
+  barchart.update(data);
 }

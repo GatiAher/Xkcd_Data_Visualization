@@ -89,7 +89,7 @@ body {
   fill: var(--selected-color);
 }
 
-.bar_basic {
+.bar_all {
   opacity: 0.5;
   fill: var(--basic-color);
 }
