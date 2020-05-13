@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Xkcd Data Visualization</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <!-- jQuery library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <!-- Latest compiled JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+  <link rel="stylesheet" href="static/styles.css">
+
+</head>
+
+<body>
+
+  <header>
+      <h1>Xkcd Comic Relationships</h1>
+      <p>Similar comics are clustered together!</p>
+  </header>
+
+  <main>
+
+    <div class="container">
+      <div class="row">
+
+        <div class="col-sm-6">
+          <section>
+            <h3>Scatterplot of TSNE Relations</h3>
+            <div>
+              <label id="inputPickLabel" for="inputPick">pick: 1-{{ max_serial_num }}</label>
+              <input type="number" id="inputPick" name="inputPick" min="1" max={{max_serial_num}} step="1" value="2">
+            </div>
+            <div id="scatterplotDiv"></div>
+            <div id="tooltip"></div>
+          </section>
+        </div>
+
+        <div class="col-sm-6">
+          <section>
+            <h3>Bar Chart of TFIDF for Top Words in Selected Comics</h3>
+            <div>
+              <input type="checkbox" class="checkboxBarchart" name="picked_CheckBox" id="picked_CheckBox" value="picked" checked>
+              <label for="picked_CheckBox">Picked Comic</label>
+              <input type="checkbox" class="checkboxBarchart" name="selected_CheckBox" id="selected_CheckBox" value="selected" checked>
+              <label for="selected_CheckBox">Selected Comics</label>
+              <input type="checkbox" class="checkboxBarchart" name="all_CheckBox" id="all_CheckBox" value="all" checked>
+              <label for="all_CheckBox">All Comics</label>
+            </div>
+            <div id="barchartDiv"></div>
+          </section>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row">
+
+        <div class="col-sm-6">
+          <section id="pictureDiv">
+            <h3>Picked Comic</h3>
+            <p id="xkcdImageTitle"> 221: Random Number </p>
+            <img id="xkcdImage" alt="221: Random Number"
+              src="https://www.explainxkcd.com/wiki/images/f/fe/random_number.png"
+              style='height: 100%; width: 100%; object-fit: contain'>
+            <p id="xkcdImageAltText"> Alt Text </p>
+          </section>
+        </div>
+
+        <div class="col-sm-6">
+          <section>
+            <h3>Instructions</h3>
+            <ul>
+              <li><strong>click and drag on graph:</strong> (color points pink) make a selection of points, list selected comic serial numbers below; zoom into section of map
+              <li><strong>hover on point:</strong> (color points yellow) populate tooltip with comic title
+              <li><strong>click on point / input on text box:</strong> (color points red) display title and comic in bottom panel
+              <li><strong>double click on graph:</strong> zoom out
+            </ul>
+          </section>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- <section id="scatterplotDiv">
+      <h3>Scatterplot of TSNE Relations</h3>
+      <div id="tooltip" class="tooltip">hover |<br><br> </div>
+      <div>
+        <label id="inputPickLabel" for="inputPick">pick: 1-{{ max_serial_num }}</label>
+        <input type="number" id="inputPick" name="inputPick" min="1" max={{max_serial_num}} step="1" value="2">
+      </div>
+    </section> -->
+
+    <!-- <section id="barchartDiv">
+      <h3>Bar Chart of TFIDF for Top Words in Selected Comics</h3>
+      <div>
+        <input type="checkbox" class="checkboxBarchart" name="picked_CheckBox" id="picked_CheckBox" value="picked" checked>
+        <label for="picked_CheckBox">Picked Comic</label>
+        <input type="checkbox" class="checkboxBarchart" name="selected_CheckBox" id="selected_CheckBox" value="selected" checked>
+        <label for="selected_CheckBox">Selected Comics</label>
+        <input type="checkbox" class="checkboxBarchart" name="all_CheckBox" id="all_CheckBox" value="all" checked>
+        <label for="all_CheckBox">All Comics</label>
+      </div>
+    </section> -->
+
+    <!-- <section id="pictureDiv">
+      <h3>Picked Comic</h3>
+      <p id="xkcdImageTitle"> 221: Random Number </p>
+      <img id="xkcdImage" alt="221: Random Number"
+        src="https://www.explainxkcd.com/wiki/images/f/fe/random_number.png"
+        style='height: 100%; width: 100%; object-fit: contain'>
+      <p id="xkcdImageAltText"> Alt Text </p>
+    </section> -->
+
+
+    <section id="explanationDiv">
+      <h6>
+        Background Information on Xkcd Comics
+      </h6>
+      <p>
+        xkcd comics are "A webcomic of romance, sarcasm, math, and language"
+        (xkcd slogan). These comics are licensed under a Creative Commons
+        Attribution-NonCommercial 2.5 License, and their transcripts are available
+        on www.explainxkcd.com (xkcd comic's wiki). This web application uses
+        the first {{max_serial_num}} comics as data source.
+      </p>
+      <h6>
+        Process
+      </h6>
+      <p>
+        <ol>
+          <li>Scrape Comics Transcript, Title, And Alt-Text from explainxkcd.com</li>
+          <li>Clean, lemminize, and Stem Comics</li>
+          <li>Save Comic As Text Vectors of TF-IDF Scores</li>
+          <li>Reduce Feature Space and Perform Latent Semantic Analysis with Truncated SVD</li>
+          <li>Create 2D Embedding of Document Relations With t-SNE</li>
+          <li>Build Interactive Web Application With D3.js and Flask</li>
+        </ol>
+      </p>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>
+      Gati Aher, April 2020 |
+      <a href="https://github.com/GatiAher/Xkcd_Data_Visualization">GitHub Repo</a>
+    </p>
+  </footer>
+
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="static/chart.js"></script>
+  <script src="static/scatterplot.js"></script>
+  <script src="static/barchart.js"></script>
+  <script src="static/general.js"></script>
+  <script>
+    var comic_data = {{ return_comic_data.comic_data | safe }};
+
+    var scatterplot = new Scatterplot("#scatterplotDiv", "_scatterplot");
+    scatterplot.update(comic_data);
+
+    initialize();
+  </script>
+
+</body>
+
+</html>

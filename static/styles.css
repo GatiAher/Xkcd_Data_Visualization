@@ -5,62 +5,6 @@
   --selected-color: #f71cff;
 }
 
-body {
-  background-color: #96A8C8;
-  color: black;
-  padding-left: 2%;
-  padding-right: 2%;
-  padding-top: 1%;
-  padding-bottom: 1%;
-  text-align: center;
-  font-size: 16px;
-  font-variant: small-caps;
-  font-family: Lucida,Helvetica,sans-serif;
-  font-weight: 500;
-}
-
-.box {
-  background: white;
-  border-style: solid;
-  border-width: 1.5px;
-  border-color: #071419;
-  border-radius: 12px;
-  padding: 10px;
-  margin: 5px;
-}
-
-.tooltip {
-  opacity: 1;
-  text-align: left;
-  padding-left: 40px;
-  margin: auto;
-  /* width: 100%; */
-  border-style: solid;
-  border-width: 1.5px;
-  border-color: var(--hover-color);
-  border-radius: 5px;
-}
-
-.svg-container {
-  display: inline-block;
-  position: relative;
-  width: 40%;
-  padding-bottom: 40%; /* aspect ratio */
-  vertical-align: top;
-  overflow: hidden;
-}
-.svg-content-responsive {
-  display: inline-block;
-  position: absolute;
-  top: 0px;
-  left: 0px;
-}
-
-.marginauto {
-  margin: 10px auto 20px;
-  display: block;
-  vertical-align: middle;
-}
 
 .dot_basic {
   opacity: 0.5;
@@ -92,4 +36,69 @@ body {
 .bar_all {
   opacity: 0.5;
   fill: var(--basic-color);
+}
+
+
+
+body {
+  background-color: #96A8C8;
+  color: black;
+  padding-left: 2%;
+  padding-right: 2%;
+  padding-top: 1%;
+  padding-bottom: 1%;
+  text-align: center;
+  font-size: 16px;
+  font-variant: small-caps;
+  font-family: Lucida,Helvetica,sans-serif;
+  font-weight: 500;
+}
+
+.box {
+  background: white;
+  border-style: solid;
+  border-width: 1.5px;
+  border-color: #071419;
+  border-radius: 12px;
+  padding: 10px;
+  margin: 5px;
+}
+
+#tooltip {
+    position: absolute;
+    text-align: center;
+    width: auto;
+    height: auto;
+    padding: 2px;
+    font: 12px sans-serif;
+    background: lightsteelblue;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
+}
+
+.svg-container {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%; /* aspect ratio */
+  vertical-align: top;
+  overflow: hidden;
+}
+.svg-content-responsive {
+  display: inline-block;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+
+.marginauto {
+  margin: 10px auto 20px;
+  display: block;
+  vertical-align: middle;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
 }

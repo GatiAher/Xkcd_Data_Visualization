@@ -142,20 +142,25 @@ function zoom() {
 
 // HOVER DATA ON SCATTERPLOT
 
-var tooltip = d3.select("#tooltip")
+var tooltip = d3.select("#tooltip").style("opacity", 0);
 
 // change the tooltip and circle when user hover over a circle
 var mouseover = function(d) {
-  tooltip
-    .html("hover |<br>  " + d.title)
+  tooltip.transition()
+    .duration(200)
+    .style("opacity", .9)
+  tooltip.html(d.title)
+    .style("left", (d3.mouse(this)[0]) + "px")
+    .style("top", (d3.mouse(this)[1]) + "px");
   d3.select(this)
     .classed("dot_hovered", true);
 }
 
 // change the tooltip and circle when user leave a circle
 var mouseleave = function(d) {
-  tooltip
-    .html("hover |<br><br>")
+  tooltip.transition()
+    .duration(500)
+    .style("opacity", 0)
   d3.select(this)
     .classed("dot_hovered", false);
 }
