@@ -9,7 +9,7 @@ class Chart {
 
     this.svgWidth = 450;
     this.svgHeight = 425;
-    this.margin = { top: 15, right: 25, bottom: 15, left: 60 };
+    this.margin = { top: 15, right: 0, bottom: 15, left: 60 };
     this.width = this.svgWidth - this.margin.left - this.margin.right;
     this.height = this.svgHeight - this.margin.top - this.margin.bottom;
 

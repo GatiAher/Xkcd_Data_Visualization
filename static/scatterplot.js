@@ -142,7 +142,10 @@ function zoom() {
 
 // HOVER DATA ON SCATTERPLOT
 
-var tooltip = d3.select("#tooltip").style("opacity", 0);
+var tooltip = d3.select("#scatterplotDiv")
+  .append("div")
+  .attr("class", "tooltip")
+  .style("opacity", 0);
 
 // change the tooltip and circle when user hover over a circle
 var mouseover = function(d) {
@@ -151,6 +154,7 @@ var mouseover = function(d) {
     .style("opacity", .9)
   tooltip.html(d.title)
     .style("left", (d3.mouse(this)[0]) + "px")
+    // .style("left", (0) + "px")
     .style("top", (d3.mouse(this)[1]) + "px");
   d3.select(this)
     .classed("dot_hovered", true);

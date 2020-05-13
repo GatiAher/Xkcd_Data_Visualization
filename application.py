@@ -39,7 +39,7 @@ def homepage():
     comic_data = comic_data_df.to_dict(orient='records')
     comic_data = json.dumps(comic_data, indent=2)
     return_comic_data = {'comic_data': comic_data}
-    return render_template('index2.html',
+    return render_template('index.html',
             return_comic_data=return_comic_data,
             max_serial_num=comic_data_df.shape[0])
 

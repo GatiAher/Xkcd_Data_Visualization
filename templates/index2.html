@@ -19,7 +19,7 @@
 
 <body>
 
-  <header>
+  <header class="box">
       <h1>Xkcd Comic Relationships</h1>
       <p>Similar comics are clustered together!</p>
   </header>
@@ -27,30 +27,29 @@
   <main>
 
     <div class="container">
-      <div class="row">
+      <div class="row row-no-gutters">
 
         <div class="col-sm-6">
-          <section>
-            <h3>Scatterplot of TSNE Relations</h3>
-            <div>
-              <label id="inputPickLabel" for="inputPick">pick: 1-{{ max_serial_num }}</label>
-              <input type="number" id="inputPick" name="inputPick" min="1" max={{max_serial_num}} step="1" value="2">
-            </div>
+          <section class="box">
+            <h6>Scatterplot of TSNE Relations</h3>
+              <div class="input-group">
+                <span class="input-group-addon">Pick Comic 1-{{max_serial_num}}</span>
+                <input class="form-control" type="number" id="inputPick" min="1" max={{max_serial_num}} step="1">
+              </div>
             <div id="scatterplotDiv"></div>
-            <div id="tooltip"></div>
           </section>
         </div>
 
         <div class="col-sm-6">
-          <section>
-            <h3>Bar Chart of TFIDF for Top Words in Selected Comics</h3>
+          <section class="box">
+            <h6>Bar Chart of TFIDF for Top Words in Selected Comics</h3>
             <div>
               <input type="checkbox" class="checkboxBarchart" name="picked_CheckBox" id="picked_CheckBox" value="picked" checked>
-              <label for="picked_CheckBox">Picked Comic</label>
+              <label for="picked_CheckBox">Picked</label>
               <input type="checkbox" class="checkboxBarchart" name="selected_CheckBox" id="selected_CheckBox" value="selected" checked>
-              <label for="selected_CheckBox">Selected Comics</label>
+              <label for="selected_CheckBox">Selected</label>
               <input type="checkbox" class="checkboxBarchart" name="all_CheckBox" id="all_CheckBox" value="all" checked>
-              <label for="all_CheckBox">All Comics</label>
+              <label for="all_CheckBox">All</label>
             </div>
             <div id="barchartDiv"></div>
           </section>
@@ -60,10 +59,10 @@
     </div>
 
     <div class="container">
-      <div class="row">
+      <div class="row row-no-gutters">
 
         <div class="col-sm-6">
-          <section id="pictureDiv">
+          <section id="pictureDiv" class="box">
             <h3>Picked Comic</h3>
             <p id="xkcdImageTitle"> 221: Random Number </p>
             <img id="xkcdImage" alt="221: Random Number"
@@ -74,7 +73,7 @@
         </div>
 
         <div class="col-sm-6">
-          <section>
+          <section class="box">
             <h3>Instructions</h3>
             <ul>
               <li><strong>click and drag on graph:</strong> (color points pink) make a selection of points, list selected comic serial numbers below; zoom into section of map
@@ -88,38 +87,7 @@
       </div>
     </div>
 
-    <!-- <section id="scatterplotDiv">
-      <h3>Scatterplot of TSNE Relations</h3>
-      <div id="tooltip" class="tooltip">hover |<br><br> </div>
-      <div>
-        <label id="inputPickLabel" for="inputPick">pick: 1-{{ max_serial_num }}</label>
-        <input type="number" id="inputPick" name="inputPick" min="1" max={{max_serial_num}} step="1" value="2">
-      </div>
-    </section> -->
-
-    <!-- <section id="barchartDiv">
-      <h3>Bar Chart of TFIDF for Top Words in Selected Comics</h3>
-      <div>
-        <input type="checkbox" class="checkboxBarchart" name="picked_CheckBox" id="picked_CheckBox" value="picked" checked>
-        <label for="picked_CheckBox">Picked Comic</label>
-        <input type="checkbox" class="checkboxBarchart" name="selected_CheckBox" id="selected_CheckBox" value="selected" checked>
-        <label for="selected_CheckBox">Selected Comics</label>
-        <input type="checkbox" class="checkboxBarchart" name="all_CheckBox" id="all_CheckBox" value="all" checked>
-        <label for="all_CheckBox">All Comics</label>
-      </div>
-    </section> -->
-
-    <!-- <section id="pictureDiv">
-      <h3>Picked Comic</h3>
-      <p id="xkcdImageTitle"> 221: Random Number </p>
-      <img id="xkcdImage" alt="221: Random Number"
-        src="https://www.explainxkcd.com/wiki/images/f/fe/random_number.png"
-        style='height: 100%; width: 100%; object-fit: contain'>
-      <p id="xkcdImageAltText"> Alt Text </p>
-    </section> -->
-
-
-    <section id="explanationDiv">
+    <section id="explanationDiv" class="box">
       <h6>
         Background Information on Xkcd Comics
       </h6>
@@ -147,7 +115,7 @@
 
   </main>
 
-  <footer>
+  <footer class="box">
     <p>
       Gati Aher, April 2020 |
       <a href="https://github.com/GatiAher/Xkcd_Data_Visualization">GitHub Repo</a>
@@ -161,10 +129,8 @@
   <script src="static/general.js"></script>
   <script>
     var comic_data = {{ return_comic_data.comic_data | safe }};
-
     var scatterplot = new Scatterplot("#scatterplotDiv", "_scatterplot");
     scatterplot.update(comic_data);
-
     initialize();
   </script>
 

@@ -64,7 +64,7 @@ body {
   margin: 5px;
 }
 
-#tooltip {
+.tooltip {
     position: absolute;
     text-align: center;
     width: auto;
