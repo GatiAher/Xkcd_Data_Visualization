@@ -112,7 +112,6 @@ class Barchart extends Chart {
 
 var barchart = new Barchart("#barchartDiv", "_barchart");
 
-// d3.selectAll(".checkbox").on("change",barchart.draw);
 d3.selectAll(".checkboxBarchart").on("change", function() {
   barchart.draw();
 });
