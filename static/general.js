@@ -20,6 +20,7 @@ function initialize() {
   generalPick("221: Random Number",
     "RFC 1149.5 specifies 4 as the standard IEEE-vetted random number.",
     "https://www.explainxkcd.com/wiki/images/f/fe/random_number.png", 221);
+  sendRequest(); // BUG: call again to fix incomplete draw barchart
 }
 
 // general update values when new point is picked
