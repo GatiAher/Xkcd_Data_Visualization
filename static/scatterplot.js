@@ -32,10 +32,6 @@ class Scatterplot extends Chart {
     // SPECIAL //
     /////////////
 
-    // disable scroll behavior when brushing
-    d3.select(div)
-      .addEventListener('touchmove', function(e) {e.preventDefault(); }, false);
-
     this.clip = this.svg.append("defs").append("svg:clipPath")
       .attr("id", "clip")
       .append("svg:rect")
@@ -87,6 +83,13 @@ class Scatterplot extends Chart {
   }
 }
 
+//////////////////////////////////////
+// SELECTED BEHAVIOR ON SCATTERPLOT //
+//////////////////////////////////////
+
+// disable scroll behavior when brushing
+document.getElementById("scatterplotDiv")
+  .addEventListener('touchmove', function(e) {e.preventDefault(); }, false);
 
 function brushended() {
   let s = d3.event.selection;
@@ -144,8 +147,11 @@ function zoom() {
     .attr("cy", function (d) { return scatterplot.y(d.y); });
 }
 
-// HOVER DATA ON SCATTERPLOT
+///////////////////////////////////
+// HOVER BEHAVIOR ON SCATTERPLOT //
+///////////////////////////////////
 
+// on hover, display comic title name
 var tooltip = d3.select("#scatterplotDiv")
   .append("div")
   .attr("class", "tooltip")
@@ -173,7 +179,9 @@ var mouseleave = function(d) {
     .classed("dot_hovered", false);
 }
 
-// PICKED DATA ON SCATTERPLOT
+////////////////////////////////////
+// PICKED BEHAVIOR ON SCATTERPLOT //
+////////////////////////////////////
 
 // change when user clicks a circle
 var click = function(d) {
