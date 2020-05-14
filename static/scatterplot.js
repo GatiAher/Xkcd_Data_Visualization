@@ -194,3 +194,6 @@ d3.select("#inputPick").on("change", function () {
   // update dependant values
   generalPick(pickedPoint.datum().title, pickedPoint.datum().altText, pickedPoint.datum().imageUrl, inputData)
 })
+
+document.getElementById("scatterplotDiv")
+  .addEventListener('touchmove', function(e) {e.preventDefault(); }, false);
