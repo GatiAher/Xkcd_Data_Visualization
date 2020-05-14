@@ -1,13 +1,14 @@
 :root {
+  --general-dark-color: #042a2b;
   --basic-color: #5eb1bf;
-  --hover-color: #042a2b;
+  --hover-color: var(--general-dark-color);
   --picked-color: #d84727;
   --selected-color: #ef7b45;
   --body-background-color: #cdedf6;
-  --body-text-color: #042a2b;
+  --body-text-color: var(--general-dark-color);
   --box-background-color: white;
-  --box-border-color: #042a2b;
-  --tooltip-background-color: #042a2b;
+  --box-border-color: var(--general-dark-color);
+  --tooltip-background-color: var(--general-dark-color);
   --tooltip-text-color: white;
 }
 
@@ -44,8 +45,6 @@
   fill: var(--basic-color);
 }
 
-
-
 body {
   background-color: var(--body-background-color);
   color: var(--body-text-color);
@@ -68,20 +67,7 @@ body {
   border-radius: 12px;
   padding: 10px;
   margin: 5px;
-}
-
-.tooltip {
-    position: absolute;
-    text-align: center;
-    width: auto;
-    height: auto;
-    padding: 2px;
-    font: 12px sans-serif;
-    background: var(--tooltip-background-color);
-    border: 0px;
-    border-radius: 8px;
-    pointer-events: none;
-    color: var(--tooltip-text-color);
+  margin-bottom: 10px;
 }
 
 .svg-container {
@@ -99,13 +85,36 @@ body {
   left: 0px;
 }
 
-.marginauto {
-  margin: 10px auto 20px;
-  display: block;
-  vertical-align: middle;
-}
-
 img {
   max-width: 100%;
   height: auto;
+}
+
+.tooltip {
+  position: absolute;
+  width: auto;
+  height: auto;
+  text-align: center;
+  padding: 2px;
+  font: 12px sans-serif;
+  background: var(--tooltip-background-color);
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+  color: var(--tooltip-text-color);
+}
+
+.tooltip-key {
+  position: relative;
+  width: 100px;
+  height: auto;
+  margin: 10px;
+  margin-left: 0px;
+  text-align: center;
+  padding: 2px;
+  font: 12px sans-serif;
+  background: var(--tooltip-background-color);
+  border: 0px;
+  border-radius: 8px;
+  color: var(--tooltip-text-color);
 }

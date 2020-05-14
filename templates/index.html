@@ -17,14 +17,13 @@
 
   <!-- custom stylesheet -->
   <link rel="stylesheet" href="static/styles.css">
-
 </head>
 
 <body>
 
   <header class="box">
-      <h1>Xkcd Comic Relationships</h1>
-      <p>Similar comics are clustered together!</p>
+      <h1>Xkcd Data Visualization</h1>
+      <h4>Similar comics are clustered together!</h4>
   </header>
 
   <main>
@@ -76,13 +75,13 @@
         </div>
 
         <div class="col-sm-6">
-          <section class="box" style="text-align:left;">
-            <h3>Instructions</h3>
-            <ul>
-              <li><h4 style="color:var(--selected-color);">select points</h4> click and drag on scatterplot to make a selection of points and zoom in
-              <li><h4 style="color:var(--hover-color);">hover on point</h4> populate tooltip with comic title
-              <li><h4 style="color:var(--picked-color);">click on point / input on text box:</h4> display title and comic in bottom panel
-              <li><h4>double click on graph:</h4> zoom out
+          <section class="box">
+            <h3>Scatterplot Interactions</h3>
+            <ul style="text-align:left;">
+              <li><div class="tooltip-key">hover on point</div> populate tooltip with comic title</li>
+              <li><h4 style="color:var(--picked-color);">click on point / input serial number</h4> display title and comic in bottom panel</li>
+              <li><h4 style="color:var(--selected-color);">brush points</h4> click and drag on scatterplot to make a selection of points and zoom in</li>
+              <li><h4>double click on graph:</h4> zoom out</li>
             </ul>
           </section>
         </div>
@@ -90,7 +89,16 @@
       </div>
     </div>
 
-    <section id="explanationDiv" class="box">
+    <section id="explanationDiv" class="box" style="text-align:left;">
+      <h3>Process</h3>
+      <ol style="text-align:left;">
+        <li>Scrape Comics Transcript, Title, And Alt-Text from explainxkcd.com</li>
+        <li>Clean Comics (remove stop-words, lemminize and stem words)</li>
+        <li>Save Comic As Text Vectors of TF-IDF (term-frequency x inverse document frequency) Scores</li>
+        <li>Reduce Feature Space and Perform Latent Semantic Analysis with Truncated SVD</li>
+        <li>Create 2D Embedding of Document Relations With t-SNE (scatterplot x and y coordinates)</li>
+        <li>Build Interactive, Reactive Web Application With Bootstrap, D3.js, and Flask</li>
+      </ol>
       <h3>Background Information on Xkcd Comics</h3>
       <p>
         xkcd comics are "A webcomic of romance, sarcasm, math, and language"
@@ -99,15 +107,6 @@
         on www.explainxkcd.com (xkcd comic's wiki). This web application uses
         the first {{max_serial_num}} comics as data source.
       </p>
-      <h3>Process</h3>
-      <ol style="text-align:left;">
-        <li>Scrape Comics Transcript, Title, And Alt-Text from explainxkcd.com</li>
-        <li>Clean, lemminize, and Stem Comics</li>
-        <li>Save Comic As Text Vectors of TF-IDF Scores</li>
-        <li>Reduce Feature Space and Perform Latent Semantic Analysis with Truncated SVD</li>
-        <li>Create 2D Embedding of Document Relations With t-SNE</li>
-        <li>Build Interactive, Reactive Web Application With Bootstrap, D3.js, and Flask</li>
-      </ol>
     </section>
 
   </main>
