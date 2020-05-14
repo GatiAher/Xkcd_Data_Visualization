@@ -1,15 +1,3 @@
-/* :root {
-  --basic-color: #4292c6;
-  --hover-color: yellow;
-  --picked-color: red;
-  --selected-color: #f71cff;
-  --body-background-color: #96A8C8;
-  --body-text-color: black;
-  --box-background-color: white;
-  --box-border-color: #071419;
-  --tooltip-background-color: lightsteelblue;
-} */
-
 :root {
   --basic-color: #5eb1bf;
   --hover-color: #042a2b;
@@ -120,4 +108,11 @@ body {
 img {
   max-width: 100%;
   height: auto;
+}
+
+.lock-screen {
+  height: 100%;
+  overflow: hidden;
+  width: 100%;
+  position: fixed;
 }
