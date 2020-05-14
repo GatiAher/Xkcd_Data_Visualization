@@ -32,6 +32,10 @@ class Scatterplot extends Chart {
     // SPECIAL //
     /////////////
 
+    // disable scroll behavior when brushing
+    d3.select(div)
+      .addEventListener('touchmove', function(e) {e.preventDefault(); }, false);
+
     this.clip = this.svg.append("defs").append("svg:clipPath")
       .attr("id", "clip")
       .append("svg:rect")
@@ -193,7 +197,4 @@ d3.select("#inputPick").on("change", function () {
     .classed("dot_picked", true);
   // update dependant values
   generalPick(pickedPoint.datum().title, pickedPoint.datum().altText, pickedPoint.datum().imageUrl, inputData)
-})
-
-document.getElementById("scatterplotDiv")
-  .addEventListener('touchmove', function(e) {e.preventDefault(); }, false);
+});
