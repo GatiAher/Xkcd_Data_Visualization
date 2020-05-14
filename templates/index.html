@@ -5,6 +5,8 @@
   <title>Xkcd Data Visualization</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Patrick Hand font -->
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Patrick+Hand" />
 
   <!-- Latest compiled and minified CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -13,6 +15,7 @@
   <!-- Latest compiled JavaScript -->
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
+  <!-- custom stylesheet -->
   <link rel="stylesheet" href="static/styles.css">
 
 </head>
@@ -31,18 +34,7 @@
 
         <div class="col-sm-6">
           <section class="box">
-            <h6>Scatterplot of TSNE Relations</h3>
-              <div class="input-group">
-                <span class="input-group-addon">Pick Comic 1-{{max_serial_num}}</span>
-                <input class="form-control" type="number" id="inputPick" min="1" max={{max_serial_num}} step="1">
-              </div>
-            <div id="scatterplotDiv"></div>
-          </section>
-        </div>
-
-        <div class="col-sm-6">
-          <section class="box">
-            <h6>Bar Chart of TFIDF for Top Words in Selected Comics</h3>
+            <h3>TFIDF of Top Words in Selected Comics</h3>
             <div>
               <input type="checkbox" class="checkboxBarchart" name="picked_CheckBox" id="picked_CheckBox" value="picked" checked>
               <label for="picked_CheckBox">Picked</label>
@@ -52,6 +44,17 @@
               <label for="all_CheckBox">All</label>
             </div>
             <div id="barchartDiv"></div>
+          </section>
+        </div>
+
+        <div class="col-sm-6">
+          <section class="box">
+            <h3>TFIDF to LSA to TSNE Comic Relations</h3>
+              <div class="input-group">
+                <span class="input-group-addon">Pick Comic 1-{{max_serial_num}}</span>
+                <input class="form-control" type="number" id="inputPick" min="1" max={{max_serial_num}} step="1">
+              </div>
+            <div id="scatterplotDiv"></div>
           </section>
         </div>
 
@@ -73,12 +76,12 @@
         </div>
 
         <div class="col-sm-6">
-          <section class="box">
+          <section class="box" text-align="center">
             <h3>Instructions</h3>
             <ul>
-              <li><strong>click and drag on graph:</strong> (color points pink) make a selection of points, list selected comic serial numbers below; zoom into section of map
-              <li><strong>hover on point:</strong> (color points yellow) populate tooltip with comic title
-              <li><strong>click on point / input on text box:</strong> (color points red) display title and comic in bottom panel
+              <li><strong style="color:var(--selected-color);">select points</strong> click and drag on scatterplot to make a selection of points and zoom in
+              <li><strong style="color:var(--hover-color);">hover on point</strong> populate tooltip with comic title
+              <li><strong style="color:var(--picked-color);">click on point / input on text box:</strong> display title and comic in bottom panel
               <li><strong>double click on graph:</strong> zoom out
             </ul>
           </section>
@@ -88,9 +91,7 @@
     </div>
 
     <section id="explanationDiv" class="box">
-      <h6>
-        Background Information on Xkcd Comics
-      </h6>
+      <h3>Background Information on Xkcd Comics</h3>
       <p>
         xkcd comics are "A webcomic of romance, sarcasm, math, and language"
         (xkcd slogan). These comics are licensed under a Creative Commons
@@ -98,9 +99,7 @@
         on www.explainxkcd.com (xkcd comic's wiki). This web application uses
         the first {{max_serial_num}} comics as data source.
       </p>
-      <h6>
-        Process
-      </h6>
+      <h3>Process</h3>
       <p>
         <ol>
           <li>Scrape Comics Transcript, Title, And Alt-Text from explainxkcd.com</li>
@@ -108,7 +107,7 @@
           <li>Save Comic As Text Vectors of TF-IDF Scores</li>
           <li>Reduce Feature Space and Perform Latent Semantic Analysis with Truncated SVD</li>
           <li>Create 2D Embedding of Document Relations With t-SNE</li>
-          <li>Build Interactive Web Application With D3.js and Flask</li>
+          <li>Build Interactive, Reactive Web Application With Bootstrap, D3.js, and Flask</li>
         </ol>
       </p>
     </section>
