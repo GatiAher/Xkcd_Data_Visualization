@@ -1,4 +1,4 @@
-:root {
+/* :root {
   --basic-color: #4292c6;
   --hover-color: yellow;
   --picked-color: red;
@@ -8,6 +8,19 @@
   --box-background-color: white;
   --box-border-color: #071419;
   --tooltip-background-color: lightsteelblue;
+} */
+
+:root {
+  --basic-color: #5eb1bf;
+  --hover-color: #042a2b;
+  --picked-color: #d84727;
+  --selected-color: #ef7b45;
+  --body-background-color: #cdedf6;
+  --body-text-color: #042a2b;
+  --box-background-color: white;
+  --box-border-color: #042a2b;
+  --tooltip-background-color: #042a2b;
+  --tooltip-text-color: white;
 }
 
 
@@ -80,6 +93,7 @@ body {
     border: 0px;
     border-radius: 8px;
     pointer-events: none;
+    color: var(--tooltip-text-color);
 }
 
 .svg-container {
