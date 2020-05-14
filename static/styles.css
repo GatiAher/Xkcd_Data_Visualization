@@ -3,6 +3,11 @@
   --hover-color: yellow;
   --picked-color: red;
   --selected-color: #f71cff;
+  --body-background-color: #96A8C8;
+  --body-text-color: black;
+  --box-background-color: white;
+  --box-border-color: #071419;
+  --tooltip-background-color: lightsteelblue;
 }
 
 
@@ -41,8 +46,8 @@
 
 
 body {
-  background-color: #96A8C8;
-  color: black;
+  background-color: var(--body-background-color);
+  color: var(--body-text-color);
   padding-left: 2%;
   padding-right: 2%;
   padding-top: 1%;
@@ -55,10 +60,10 @@ body {
 }
 
 .box {
-  background: white;
+  background: var(--box-background-color);
   border-style: solid;
   border-width: 1.5px;
-  border-color: #071419;
+  border-color: var(--box-border-color);
   border-radius: 12px;
   padding: 10px;
   margin: 5px;
@@ -71,7 +76,7 @@ body {
     height: auto;
     padding: 2px;
     font: 12px sans-serif;
-    background: lightsteelblue;
+    background: var(--tooltip-background-color);
     border: 0px;
     border-radius: 8px;
     pointer-events: none;
