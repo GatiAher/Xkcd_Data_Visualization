@@ -88,7 +88,8 @@ class Scatterplot extends Chart {
 //////////////////////////////////////
 
 // disable scroll behavior when brushing
-document.getElementById("scatterplotDiv")
+// document.getElementById("scatterplotDiv")
+d3.select("#scatterplotDiv")
   .addEventListener('touchmove', function(e) {e.preventDefault(); }, false);
 
 function brushended() {
