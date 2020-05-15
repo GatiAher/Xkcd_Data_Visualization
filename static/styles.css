@@ -118,3 +118,10 @@ img {
   border-radius: 8px;
   color: var(--tooltip-text-color);
 }
+
+.github-icon {
+  height: 1em;
+  width: 1em;
+  margin-left: 0.1em;
+  margin-bottom: 0.25em;
+}
