@@ -1,6 +1,6 @@
 class Barchart extends Chart {
-  constructor(div, id_label) {
-    super(div, id_label);
+  constructor(div_id) {
+    super(div_id);
 
     //////////
     // AXES //
@@ -18,13 +18,13 @@ class Barchart extends Chart {
 
     this.svg.append("g")
       .attr("class", "x axis")
-      .attr('id', "axis--x" + this.id_label)
+      .attr('id', "axis--x-" + this.div_id)
       .attr("transform", "translate(0," + (this.height - this.margin.bottom) + ")")
       .call(this.xAxis);
 
     this.svg.append("g")
       .attr("class", "y_axis")
-      .attr('id', "axis--y" + this.id_label)
+      .attr('id', "axis--y-" + this.div_id)
       // offset to right so ticks are not covered
       .attr("transform", "translate(" + (this.margin.left) + ",0)")
       .call(this.yAxis)
@@ -34,9 +34,12 @@ class Barchart extends Chart {
     /////////////
 
     this.labels = ["picked", "selected", "all"];
+
+    d3.selectAll(".checkboxBarchart").on("change", () => { this.draw(); });
+
   }
 
-  update(chart_data) {
+  update_and_draw(chart_data) {
     let data = []
     for (const idx in chart_data[0]) {
       let arr = chart_data[0][idx];
@@ -102,10 +105,7 @@ class Barchart extends Chart {
     }
 
     // update axes
-    this.svg.select("#axis--y" + this.id_label).transition().duration(750).call(this.yAxis)
-    this.svg.select("#axis--x" + this.id_label).transition().duration(750).call(this.xAxis)
+    this.svg.select("#axis--y-" + this.div_id).transition().duration(750).call(this.yAxis)
+    this.svg.select("#axis--x-" + this.div_id).transition().duration(750).call(this.xAxis)
   }
 }
-
-var barchart = new Barchart("#barchartDiv", "_barchart");
-d3.selectAll(".checkboxBarchart").on("change", () => { barchart.draw(); });

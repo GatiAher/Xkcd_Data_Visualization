@@ -45,14 +45,14 @@
           <section class="box">
             <h3>TFIDF of Top Words in Selected Comics</h3>
             <div>
-              <input type="checkbox" class="checkboxBarchart" name="picked_CheckBox" id="picked_CheckBox" value="picked" checked>
+              <input type="checkbox" class="checkboxBarchart" id="picked_CheckBox" value="picked" checked>
               <label for="picked_CheckBox">Picked</label>
-              <input type="checkbox" class="checkboxBarchart" name="selected_CheckBox" id="selected_CheckBox" value="selected" checked>
+              <input type="checkbox" class="checkboxBarchart" id="selected_CheckBox" value="selected" checked>
               <label for="selected_CheckBox">Selected</label>
-              <input type="checkbox" class="checkboxBarchart" name="all_CheckBox" id="all_CheckBox" value="all" checked>
+              <input type="checkbox" class="checkboxBarchart" id="all_CheckBox" value="all" checked>
               <label for="all_CheckBox">All</label>
             </div>
-            <div id="barchartDiv"></div>
+            <div id="barchart"></div>
           </section>
         </div>
 
@@ -63,7 +63,7 @@
                 <span class="input-group-addon">Pick Comic 1-{{max_serial_num}}</span>
                 <input class="form-control" type="number" id="inputPick" min="1" max={{max_serial_num}} step="1">
               </div>
-            <div id="scatterplotDiv"></div>
+            <div id="scatterplot"></div>
           </section>
         </div>
 
@@ -149,8 +149,12 @@
   <script src="static/general.js"></script>
   <script>
     var comic_data = {{ return_comic_data.comic_data | safe }};
-    var scatterplot = new Scatterplot("#scatterplotDiv", "_scatterplot");
-    scatterplot.update(comic_data);
+
+    var scatterplot = new Scatterplot("scatterplot");
+    scatterplot.update_and_draw(comic_data);
+
+    var barchart = new Barchart("barchart");
+
     initialize();
   </script>
 

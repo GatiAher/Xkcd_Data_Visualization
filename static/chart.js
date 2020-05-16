@@ -1,7 +1,6 @@
 class Chart {
-  constructor(div, id_label) {
-    this.div = div;
-    this.id_label = id_label;
+  constructor(div_id) {
+    this.div_id = div_id;
 
     //////////////////////////////
     // SVG AND GRAPH DIMENSIONS //
@@ -13,7 +12,7 @@ class Chart {
     this.width = this.svgWidth - this.margin.left - this.margin.right;
     this.height = this.svgHeight - this.margin.top - this.margin.bottom;
 
-    this.svg = d3.select(this.div)
+    this.svg = d3.select('#'+this.div_id)
       .append("div")
       // Container class to make it responsive.
       .classed("svg-container", true)
@@ -38,7 +37,7 @@ class Chart {
     //   .text("Y Axis");
   }
 
-  update(chart_data) {
+  update_and_draw(chart_data) {
     console.log("updating data");
     this.draw();
   }

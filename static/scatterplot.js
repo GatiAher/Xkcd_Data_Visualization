@@ -1,6 +1,6 @@
 class Scatterplot extends Chart {
-  constructor(div, id_label) {
-    super(div, id_label);
+  constructor(div_id) {
+    super(div_id);
 
     //////////
     // AXES //
@@ -17,13 +17,13 @@ class Scatterplot extends Chart {
 
     this.svg.append("g")
       .attr("class", "x axis")
-      .attr('id', "axis--x" + this.id_label)
+      .attr('id', "axis--x-" + this.div_id)
       .attr("transform", "translate(0," + (this.height - this.margin.bottom) + ")")
       .call(this.xAxis);
 
     this.svg.append("g")
       .attr("class", "y_axis")
-      .attr('id', "axis--y" + this.id_label)
+      .attr('id', "axis--y-" + this.div_id)
       // offset to right so ticks are not covered
       .attr("transform", "translate(" + (this.margin.left) + ",0)")
       .call(this.yAxis)
@@ -40,12 +40,12 @@ class Scatterplot extends Chart {
       .attr("y", 0);
 
     this.scatter = this.svg.append("g")
-      .attr("id", "scatterplot")
+      .attr("id", "scatter")
       .attr("clip-path", "url(#clip)");
 
-    ////////////////////
-    // BRUSH BEHAVIOR //
-    ////////////////////
+    // prevent scrolling on body when brushing on chart
+    document.getElementById(this.div_id)
+      .addEventListener('touchmove', function(e) {e.preventDefault(); }, false);
 
     this.brush = d3.brush()
       .extent([[0, 0], [this.width, this.height]])
@@ -85,8 +85,8 @@ class Scatterplot extends Chart {
         }
         // zoom
         let tr = this.scatter.transition().duration(750);
-        this.svg.select("#axis--x" + this.id_label).transition(tr).call(this.xAxis);
-        this.svg.select("#axis--y" + this.id_label).transition(tr).call(this.yAxis);
+        this.svg.select("#axis--x-" + this.div_id).transition(tr).call(this.xAxis);
+        this.svg.select("#axis--y-" + this.div_id).transition(tr).call(this.yAxis);
 
         this.scatter.selectAll("circle").transition(tr)
           .attr("cx", (d) => { return this.x(d.x); })
@@ -95,9 +95,29 @@ class Scatterplot extends Chart {
 
     this.idleTimeout = null;
     this.idleDelay = 350;
+
+    // on mouseover on scatter's dots, display comic title name
+    this.tooltip = d3.select("#" + this.div_id)
+      .append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
+
+    // attach listner to inputPick
+    d3.select("#inputPick").on("change", (d, i, nodes) => {
+      let inputData = d3.select(nodes[i]).property('value');
+      // clear previously picked point
+      this.scatter.select(".dot_picked").classed("dot_picked", false);
+      // pick new point
+      let pickedPoint = d3.selectAll("circle")
+        .filter((d) => { return d.sn == inputData })
+        .classed("dot_picked", true)
+        .datum();
+      // update dependant values
+      generalPick(pickedPoint.title, pickedPoint.altText, pickedPoint.imageUrl, inputData)
+    });
   }
 
-  update(chart_data) {
+  update_and_draw(chart_data) {
     this.data = chart_data;
     this.draw();
   }
@@ -121,22 +141,32 @@ class Scatterplot extends Chart {
       .attr("cx", (d) => { return this.x(d.x); })
       .attr("cy", (d) => { return this.y(d.y); })
       .attr('sn', (d) => { return d.sn })
-      .on("mouseover", mouseover)
-      .on("mouseleave", mouseleave)
-      .on("click", click)
+      .on("mouseover", (d, i, nodes) => {
+        d3.select(nodes[i]).classed("dot_hovered", true);
+        this.tooltip.transition().duration(200).style("opacity", .9);
+        this.tooltip.html(d.title)
+          .style("left", d3.mouse(nodes[i])[0]+"px")
+          .style("top", d3.mouse(nodes[i])[1]+"px")
+      })
+      .on("mouseleave", (d, i, nodes) => {
+        d3.select(nodes[i]).classed("dot_hovered", false);
+        this.tooltip.transition().duration(500).style("opacity", 0)
+      })
+
+      .on("click", (d, i, nodes) => {
+        // clear previously picked point
+        this.scatter.select(".dot_picked").classed("dot_picked", false);
+        // pick new point
+        d3.select(nodes[i])
+          .classed("dot_picked", true);
+        // update dependant values
+        generalPick(d.title, d.altText, d.imageUrl, d.sn)
+      });
   }
 }
 
-//////////////////////////////////////
-// SELECTED BEHAVIOR ON SCATTERPLOT //
-//////////////////////////////////////
 
-// disable scroll behavior when brushing
-// d3.select("#scatterplotDiv")
-document.getElementById("scatterplotDiv")
-  .addEventListener('touchmove', function(e) {e.preventDefault(); }, false);
-
-// helper function
+// helper function for brushing
 function isBrushed(brush_coords, cx, cy) {
    let x0 = brush_coords[0][0],
        x1 = brush_coords[1][0],
@@ -145,63 +175,3 @@ function isBrushed(brush_coords, cx, cy) {
   // This return TRUE or FALSE depending on if the points is in the selected area
   return x0 <= cx && cx <= x1 && y0 <= cy && cy <= y1;
 }
-
-///////////////////////////////////
-// HOVER BEHAVIOR ON SCATTERPLOT //
-///////////////////////////////////
-
-// on hover, display comic title name
-var tooltip = d3.select("#scatterplotDiv")
-  .append("div")
-  .attr("class", "tooltip")
-  .style("opacity", 0);
-
-// change the tooltip and circle when user hover over a circle
-var mouseover = function(d) {
-  tooltip.transition()
-    .duration(200)
-    .style("opacity", .9)
-  tooltip.html(d.title)
-    .style("left", (d3.mouse(this)[0]) + "px")
-    // .style("left", (0) + "px")
-    .style("top", (d3.mouse(this)[1]) + "px");
-  d3.select(this)
-    .classed("dot_hovered", true);
-}
-
-// change the tooltip and circle when user leave a circle
-var mouseleave = function(d) {
-  tooltip.transition()
-    .duration(500)
-    .style("opacity", 0)
-  d3.select(this)
-    .classed("dot_hovered", false);
-}
-
-////////////////////////////////////
-// PICKED BEHAVIOR ON SCATTERPLOT //
-////////////////////////////////////
-
-// change when user clicks a circle
-var click = function(d) {
-  // clear previously picked point
-  scatterplot.scatter.selectAll(".dot_picked").classed("dot_picked", false);
-  // pick new point
-  d3.select(this)
-    .classed("dot_picked", true);
-  // update dependant values
-  generalPick(d.title, d.altText, d.imageUrl, d.sn)
-}
-
-// attach listner to inputPick
-d3.select("#inputPick").on("change", function() {
-  var inputData = d3.select(this).property('value');
-  // clear previously picked point
-  scatterplot.scatter.selectAll(".dot_picked").classed("dot_picked", false);
-  // pick new point
-  var pickedPoint = d3.selectAll("circle")
-    .filter(function(d) { return d.sn == inputData })
-    .classed("dot_picked", true);
-  // update dependant values
-  generalPick(pickedPoint.datum().title, pickedPoint.datum().altText, pickedPoint.datum().imageUrl, inputData)
-});

@@ -54,5 +54,5 @@ function sendRequest() {
 }
 
 function updateBarchart(err, data) {
-  barchart.update(data);
+  barchart.update_and_draw(data);
 }
