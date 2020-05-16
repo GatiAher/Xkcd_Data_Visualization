@@ -31,7 +31,6 @@ class Scatterplot extends Chart {
     /////////////
     // SPECIAL //
     /////////////
-
     this.clip = this.svg.append("defs").append("svg:clipPath")
       .attr("id", "clip")
       .append("svg:rect")
@@ -44,9 +43,55 @@ class Scatterplot extends Chart {
       .attr("id", "scatterplot")
       .attr("clip-path", "url(#clip)");
 
+    ////////////////////
+    // BRUSH BEHAVIOR //
+    ////////////////////
+
     this.brush = d3.brush()
       .extent([[0, 0], [this.width, this.height]])
-      .on("end", brushended);
+      .on("end", () => {
+
+        let s = d3.event.selection;
+
+        if (!s) {
+            // if double-click, reset axes
+            if (!this.idleTimeout) {
+              return this.idleTimeout = setTimeout(
+                () => {this.idleTimeout = null; },
+                this.idleDelay);
+            }
+
+            this.x.domain(d3.extent(this.data, (d) => { return d.x; })).nice();
+            this.y.domain(d3.extent(this.data, (d) => { return d.y; })).nice();
+
+        } else {
+            // color selection, do before zoom changes range of chart
+            this.scatter.selectAll("circle").classed("dot_selected", (d) => {
+              return isBrushed(s, this.x(d.x), this.y(d.y))
+            });
+
+            // get list of sn of selected comics, selection logic
+            let my_selection = [];
+            this.scatter.selectAll(".dot_selected")
+              .each( (d) => {
+                my_selection.push(d.sn);
+              });
+            generalSelect(my_selection);
+
+            // adjust axes to selected data
+            this.x.domain([ this.x.invert(s[0][0]), this.x.invert(s[1][0]) ]);
+            this.y.domain([ this.y.invert(s[1][1]), this.y.invert(s[0][1]) ]);
+            this.scatter.select(".brush").call(this.brush.move, null);
+        }
+        // zoom
+        let tr = this.scatter.transition().duration(750);
+        this.svg.select("#axis--x" + this.id_label).transition(tr).call(this.xAxis);
+        this.svg.select("#axis--y" + this.id_label).transition(tr).call(this.yAxis);
+
+        this.scatter.selectAll("circle").transition(tr)
+          .attr("cx", (d) => { return this.x(d.x); })
+          .attr("cy", (d) => { return this.y(d.y); });
+      });
 
     this.idleTimeout = null;
     this.idleDelay = 350;
@@ -58,25 +103,24 @@ class Scatterplot extends Chart {
   }
 
   draw() {
-    let chart_obj = this;
     // first set domain based off of data domain
-    chart_obj.x.domain(d3.extent(chart_obj.data, function (d) { return d.x; })).nice()
-    chart_obj.y.domain(d3.extent(chart_obj.data, function (d) { return d.y; })).nice()
+    this.x.domain(d3.extent(this.data, (d) => { return d.x; })).nice()
+    this.y.domain(d3.extent(this.data, (d) => { return d.y; })).nice()
 
     // append brush before points so tooltips work
-    chart_obj.scatter.append("g")
+    this.scatter.append("g")
       .attr("class", "brush")
-      .call(chart_obj.brush);
+      .call(this.brush);
 
     // append points
-    chart_obj.scatter.selectAll(".dot_basic")
-      .data(chart_obj.data)
+    this.scatter.selectAll(".dot_basic")
+      .data(this.data)
       .enter().append("circle")
       .attr("class", "dot_basic")
       .attr("r", 4)
-      .attr("cx", function (d) { return chart_obj.x(d.x); })
-      .attr("cy", function (d) { return chart_obj.y(d.y); })
-      .attr('sn', function(d) { return d.sn })
+      .attr("cx", (d) => { return this.x(d.x); })
+      .attr("cy", (d) => { return this.y(d.y); })
+      .attr('sn', (d) => { return d.sn })
       .on("mouseover", mouseover)
       .on("mouseleave", mouseleave)
       .on("click", click)
@@ -88,47 +132,11 @@ class Scatterplot extends Chart {
 //////////////////////////////////////
 
 // disable scroll behavior when brushing
-// document.getElementById("scatterplotDiv")
-d3.select("#scatterplotDiv")
+// d3.select("#scatterplotDiv")
+document.getElementById("scatterplotDiv")
   .addEventListener('touchmove', function(e) {e.preventDefault(); }, false);
 
-function brushended() {
-  let s = d3.event.selection;
-
-  if (!s) {
-      // if nothing selected, reset axes
-      if (!scatterplot.idleTimeout) {
-        return scatterplot.idleTimeout = setTimeout(idled, scatterplot.idleDelay);
-      }
-      scatterplot.x.domain(d3.extent(scatterplot.data, function (d) { return d.x; })).nice();
-      scatterplot.y.domain(d3.extent(scatterplot.data, function (d) { return d.y; })).nice();
-
-  } else {
-      // make the selection, do before zoom changes range of chart
-      scatterplot.scatter.selectAll("circle").classed("dot_selected", function(d){
-        return isBrushed(s, scatterplot.x(d.x), scatterplot.y(d.y))
-      });
-
-      // get list of sn of selected comics
-      let my_selection = [];
-      scatterplot.scatter.selectAll(".dot_selected")
-        .each(function(d) {
-          my_selection.push(d.sn);
-        });
-      generalSelect(my_selection);
-
-      // adjust axes to selected data
-      scatterplot.x.domain([ scatterplot.x.invert(s[0][0]), scatterplot.x.invert(s[1][0]) ]);
-      scatterplot.y.domain([ scatterplot.y.invert(s[1][1]), scatterplot.y.invert(s[0][1]) ]);
-      scatterplot.scatter.select(".brush").call(scatterplot.brush.move, null);
-  }
-  zoom();
-}
-
-function idled() {
-  scatterplot.idleTimeout = null;
-}
-
+// helper function
 function isBrushed(brush_coords, cx, cy) {
    let x0 = brush_coords[0][0],
        x1 = brush_coords[1][0],
@@ -136,16 +144,6 @@ function isBrushed(brush_coords, cx, cy) {
        y1 = brush_coords[1][1];
   // This return TRUE or FALSE depending on if the points is in the selected area
   return x0 <= cx && cx <= x1 && y0 <= cy && cy <= y1;
-}
-
-function zoom() {
-  let tr = scatterplot.scatter.transition().duration(750);
-  scatterplot.svg.select("#axis--x" + scatterplot.id_label).transition(tr).call(scatterplot.xAxis);
-  scatterplot.svg.select("#axis--y" + scatterplot.id_label).transition(tr).call(scatterplot.yAxis);
-
-  scatterplot.scatter.selectAll("circle").transition(tr)
-    .attr("cx", function (d) { return scatterplot.x(d.x); })
-    .attr("cy", function (d) { return scatterplot.y(d.y); });
 }
 
 ///////////////////////////////////
@@ -196,7 +194,7 @@ var click = function(d) {
 }
 
 // attach listner to inputPick
-d3.select("#inputPick").on("change", function () {
+d3.select("#inputPick").on("change", function() {
   var inputData = d3.select(this).property('value');
   // clear previously picked point
   scatterplot.scatter.selectAll(".dot_picked").classed("dot_picked", false);
