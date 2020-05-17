@@ -102,8 +102,8 @@ class Scatterplot extends Chart {
       .attr("class", "tooltip")
       .style("opacity", 0);
 
-    // attach listner to inputPick
-    d3.select("#inputPick").on("change", (d, i, nodes) => {
+    // attach listener to form-scatterplot-picked
+    d3.select("#form-scatterplot-picked").on("change", (d, i, nodes) => {
       let inputData = d3.select(nodes[i]).property('value');
       // clear previously picked point
       this.scatter.select(".dot_picked").classed("dot_picked", false);

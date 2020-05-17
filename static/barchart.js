@@ -35,7 +35,9 @@ class Barchart extends Chart {
 
     this.labels = ["picked", "selected", "all"];
 
-    d3.selectAll(".checkboxBarchart").on("change", () => { this.draw(); });
+    d3.selectAll(".checkbox-barchart").on("change", () => {
+      this.draw();
+    });
 
   }
 
@@ -55,7 +57,7 @@ class Barchart extends Chart {
   draw() {
     // calculate max domain x
     let max_domain_x = [0];
-    d3.selectAll(".checkboxBarchart").each((d, i, nodes) => {
+    d3.selectAll(".checkbox-barchart").each((d, i, nodes) => {
       let checkbox = d3.select(nodes[i]);
       if(checkbox.property("checked")) {
         let group = checkbox.property("value");
@@ -67,16 +69,16 @@ class Barchart extends Chart {
     this.y.domain(this.data.map((d) => {return d.name; }));
 
     // redraw bars
-    let len_labels = this.labels.length-1; // get length of labels-1
     for (const idx in this.labels) {
-      let group = this.labels[len_labels-idx]; // want in reverse order
-
-      let unchecked = !d3.select("#" + [group] + "_CheckBox").property("checked");
+      // draw group in reverse order (slice makes new array so original is not modified)
+      let group = this.labels.slice().reverse()[idx];
+      // ex: checkbox-barchart-picked
+      let unchecked = !d3.select("#checkbox-barchart-" + [group]).property("checked");
 
       let bars = this.svg.selectAll(".bar_" + [group])
         .data(this.data);
 
-      // new data
+      // new data (optical illusion animation, bars are inverse)
       bars
         .enter().append("rect")
         .attr("class", "bar_" + [group])

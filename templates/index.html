@@ -45,12 +45,12 @@
           <section class="box">
             <h3>TFIDF of Top Words in Selected Comics</h3>
             <div>
-              <input type="checkbox" class="checkboxBarchart" id="picked_CheckBox" value="picked" checked>
-              <label for="picked_CheckBox">Picked</label>
-              <input type="checkbox" class="checkboxBarchart" id="selected_CheckBox" value="selected" checked>
-              <label for="selected_CheckBox">Selected</label>
-              <input type="checkbox" class="checkboxBarchart" id="all_CheckBox" value="all" checked>
-              <label for="all_CheckBox">All</label>
+              <input type="checkbox" class="checkbox-barchart" id="checkbox-barchart-picked" value="picked" checked>
+              <label for="checkbox-barchart-picked">Picked</label>
+              <input type="checkbox" class="checkbox-barchart" id="checkbox-barchart-selected" value="selected" checked>
+              <label for="checkbox-barchart-selected">Selected</label>
+              <input type="checkbox" class="checkbox-barchart" id="checkbox-barchart-all" value="all" checked>
+              <label for="checkbox-barchart-all">All</label>
             </div>
             <div id="barchart"></div>
           </section>
@@ -61,7 +61,7 @@
             <h3>TFIDF to LSA to TSNE Comic Relations</h3>
               <div class="input-group">
                 <span class="input-group-addon">Pick Comic 1-{{max_serial_num}}</span>
-                <input class="form-control" type="number" id="inputPick" min="1" max={{max_serial_num}} step="1">
+                <input class="form-control" type="number" id="form-scatterplot-picked" min="1" max={{max_serial_num}} step="1">
               </div>
             <div id="scatterplot"></div>
           </section>
