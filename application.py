@@ -49,8 +49,9 @@ def homepage():
 
     return render_template('index.html',
             return_comic_data=return_comic_data,
-            max_serial_num=comic_data_df.shape[0],
-            return_feature_names=return_feature_names)
+            num_comics=comic_data_df.shape[0],
+            return_feature_names=return_feature_names,
+            num_features=len(feature_counts))
 
 
 @app.route('/barchart-data', methods=['POST'])
@@ -78,18 +79,6 @@ def feature_data():
 ####################
 # HELPER FUNCTIONS #
 ####################
-
-# def calc_feature_distribution(feature_idx_list):
-#     # get col of selected features
-#     feature_idx_list = [int(i) for i in feature_idx_list]
-#     selected_features = tfidf_vectors[:, feature_idx_list]
-#
-#     # get comics (rows) where selected features are nonzero
-#     nonzero_comics, _ = selected_features.nonzero()
-#     nonzero_comics = np.unique(nonzero_comics) + 1
-#
-#     feature_data = json.dumps(nonzero_comics.tolist())
-#     return feature_data
 
 def calc_feature_distribution(feature_idx_list):
     # get col of selected features

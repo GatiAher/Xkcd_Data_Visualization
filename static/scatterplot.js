@@ -82,9 +82,7 @@ class Scatterplot extends Chart {
               // get list of sn of selected comics, selection logic
               let brushSelection = [];
               this.scatter.selectAll(".dot-selected")
-                .each( (d) => {
-                  brushSelection.push(d.sn);
-                });
+                .each( (d) => { brushSelection.push(d.sn); });
               generalSelect(brushSelection);
             }
 
@@ -132,11 +130,10 @@ class Scatterplot extends Chart {
     if (this.selectOnSelectMenuFlag) {
       d3.select('#select-featureDistribution')
         .on("change", (d, i, nodes) => {
-
+          // put text on div
           let text = Array.from(nodes[i].querySelectorAll("option:checked"), e=>e.text);
-          document.getElementById('selected-featureDistribution')
-            .textContent = text.join(" ");
-
+          $('#selected-featureDistribution').text(text.join(" "));
+          // send values (feature idx) to backend
           let values = Array.from(nodes[i].querySelectorAll("option:checked"), e=>e.value);
           requestFeatureDistribution(values);
         });

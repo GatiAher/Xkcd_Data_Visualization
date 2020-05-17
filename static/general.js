@@ -10,7 +10,7 @@ var dataStore = {
     1789, 1804, 1935, 2006, 2016, 2028, 2034, 2059, 2137]
   };
 
-function initialize() {
+function initializeValues() {
   // initial coloring of selected dots
   scatterplot.scatter.selectAll("circle")
     .filter(function(d) { return dataStore.selected_sn.includes(d.sn); })
@@ -19,10 +19,11 @@ function initialize() {
   scatterplot.scatter.selectAll("circle")
     .filter(function(d) { return d.sn == dataStore.picked_sn })
     .classed("dot-picked", true);
-  // initial state of general elements
+  // initial state of pick elements
   generalPick("221: Random Number",
     "RFC 1149.5 specifies 4 as the standard IEEE-vetted random number.",
     "https://www.explainxkcd.com/wiki/images/f/fe/random_number.png", 221);
+  // initial state of select elements
   generalSelect(dataStore.selected_sn);
   requestBarchartData(); // BUG: call again to fix incomplete draw barchart
 }
@@ -30,21 +31,17 @@ function initialize() {
 // general update values when new point is picked
 function generalPick(title, altText, imageUrl, sn) {
   scatterplot.form.property('value', parseInt(sn));
-  d3.select("#xkcdImage")
-    .attr("src", imageUrl)
-    .attr("alt", title);
-  document.getElementById("xkcdImageTitle")
-    .textContent = title;
-  document.getElementById("xkcdImageAltText")
-    .textContent = altText;
+  $("#xkcdImage").attr("src", imageUrl).attr("alt", title);
+  $("#xkcdImageTitle").text(title);
+  $("#xkcdImageAltText").text(altText);
   // send picked sn_num to backend
   dataStore.picked_sn = parseInt(sn);
   requestBarchartData();
 }
 
 function generalSelect(sn_nums) {
-  document.getElementById("checkbox-barchart-selected-label")
-    .textContent = "Selected (" + sn_nums.length + ")";
+  $("#checkbox-barchart-selected-label")
+    .text("Selected (" + sn_nums.length + ")");
   dataStore.selected_sn = sn_nums;
   requestBarchartData()
 }
@@ -79,11 +76,9 @@ function updateFeatureDistribution(err, data) {
   single_list = data[0].single.map(x=>+x);
   both_list = data[0].both.map(x=>+x);
 
-  document.getElementById("overlapnum-featureDistribution")
-    .textContent = "Overlapped: " + both_list.length;
+  $("#overlapnum-featureDistribution")
+    .text("Overlapped: " + both_list.length);
 
-  console.log("both_list len", both_list.length);
-  
   // deselect previous
   featureScatterplot.scatter.selectAll("circle")
     .classed("dot-single-feature", false)

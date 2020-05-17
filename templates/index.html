@@ -42,26 +42,27 @@
       <div class="row row-no-gutters">
 
         <div class="col-sm-6">
-          <section class="box" id="featureDistributionMenu" style="padding: 20px;">
+          <section class="box" id="featureDistributionMenu" style="padding-left: 20px;">
             <h3>Feature Distribution Menu</h3>
+            <strong>Select a feature to see the distribution of all the comics with that feature</strong>.
             <div style="display: flex;">
               <div style="flex: auto;">
-                <select id="select-featureDistribution" size="24" multiple></select>
+                <h3>{{num_features}} Features</h3>
+                <select id="select-featureDistribution" size="22" multiple></select>
               </div>
               <div style="flex: auto;">
                 <div style="padding-left: 20px;">
                   <h3>Make Multiple Selections</h3>
                   <p style="text-align: left;">
-                    <strong>Select a feature to see its distribution</strong>.
-                    <br><br>
                     To select more than one, you may control-click (Windows) or command-click (Mac).
                     <br><br>
                     To select consecutive, you may shift-click.
                   </p>
-                  <h3>List of Selected Features</h3>
-                  <div style="text-align: left;" id="selected-featureDistribution"></div>
+                  <h3>Selected Features:</h3>
+                  <div style="text-align: left;" id="selected-featureDistribution" class="box"></div>
                   <h3 id="overlapnum-featureDistribution">Overlapped: 0</h3>
-                  <button type="button" class="btn btn-secondary btn-sm" onclick="clearSelection()">Clear Selection</button>
+                  <br>
+                  <button type="button" class="btn btn-secondary" onclick="clearSelection()">Clear Selection</button>
                 </div>
               </div>
             </div>
@@ -90,7 +91,7 @@
               <input type="checkbox" class="checkbox-barchart" id="checkbox-barchart-selected" value="selected" checked>
               <label for="checkbox-barchart-selected" id="checkbox-barchart-selected-label">Selected ()</label>
               <input type="checkbox" class="checkbox-barchart" id="checkbox-barchart-all" value="all" checked>
-              <label for="checkbox-barchart-all">All ({{max_serial_num}})</label>
+              <label for="checkbox-barchart-all">All ({{num_comics}})</label>
             </div>
             <div id="chart-barchart"></div>
           </section>
@@ -100,8 +101,8 @@
           <section class="box" id="scatterplot">
             <h3>TFIDF to LSA to TSNE Comic Relations</h3>
             <div class="input-group">
-              <span class="input-group-addon">Pick Comic 1-{{max_serial_num}}</span>
-              <input class="form-control" type="number" id="form-scatterplot-picked" min="1" max={{max_serial_num}} step="1">
+              <span class="input-group-addon">Pick Comic 1-{{num_comics}}</span>
+              <input class="form-control" type="number" id="form-scatterplot-picked" min="1" max={{num_comics}} step="1">
             </div>
             <div id="chart-scatterplot"></div>
           </section>
@@ -167,7 +168,7 @@
         (xkcd slogan). These comics are licensed under a Creative Commons
         Attribution-NonCommercial 2.5 License, and their transcripts are available
         on www.explainxkcd.com (xkcd comic's wiki). This web application uses
-        the first {{max_serial_num}} comics as data source.
+        the first {{num_comics}} comics as data source.
       </p>
     </section>
 
@@ -188,20 +189,18 @@
   <script src="static/barchart.js"></script>
   <script src="static/general.js"></script>
   <script>
+
     var comic_data = {{ return_comic_data.comic_data | safe }};
     var feature_names = {{ return_feature_names.feature_names | safe }};
 
     // add features to feature distribution menu
     for (const idx in feature_names) {
-      let feature = feature_names[idx];
-      $('#select-featureDistribution').append($('<option>', {value:idx, text:feature}));
+      $('#select-featureDistribution').append($('<option>', {value:idx, text:feature_names[idx]}));
     }
 
     var featureScatterplot = new Scatterplot("featureDistribution",
-                                              selectOnBrushFlag=false,
-                                              pickOnClickFlag=true,
-                                              pickOnFormFlag=false,
-                                              selectOnSelectMenuFlag=true);
+                            selectOnBrushFlag=false, pickOnClickFlag=true,
+                            pickOnFormFlag=false, selectOnSelectMenuFlag=true);
     featureScatterplot.updateAndDraw(comic_data);
 
     var scatterplot = new Scatterplot("scatterplot");
@@ -209,7 +208,8 @@
 
     var barchart = new Barchart("barchart");
 
-    initialize();
+    initializeValues();
+
   </script>
 
 </body>
