@@ -42,6 +42,34 @@
       <div class="row row-no-gutters">
 
         <div class="col-sm-6">
+          <!-- <section class="box" id="barchart">
+            <h3>TFIDF of Top Words in Selected Comics</h3>
+            <div>
+              <input type="checkbox" class="checkbox-barchart" id="checkbox-barchart-picked" value="picked" checked>
+              <label for="checkbox-barchart-picked">Picked</label>
+              <input type="checkbox" class="checkbox-barchart" id="checkbox-barchart-selected" value="selected" checked>
+              <label for="checkbox-barchart-selected">Selected</label>
+              <input type="checkbox" class="checkbox-barchart" id="checkbox-barchart-all" value="all" checked>
+              <label for="checkbox-barchart-all">All</label>
+            </div>
+            <div id="chart-barchart"></div>
+          </section> -->
+        </div>
+
+        <div class="col-sm-6">
+          <section class="box" id="featureScatterplot">
+            <h3>Feature Distribution</h3>
+            <div id="chart-featureScatterplot"></div>
+          </section>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row row-no-gutters">
+
+        <div class="col-sm-6">
           <section class="box" id="barchart">
             <h3>TFIDF of Top Words in Selected Comics</h3>
             <div>
@@ -149,6 +177,14 @@
   <script src="static/general.js"></script>
   <script>
     var comic_data = {{ return_comic_data.comic_data | safe }};
+
+    featureScatterplot
+
+    var featureScatterplot = new Scatterplot("featureScatterplot",
+      selectOnBrushFlag=false,
+      pickOnClickFlag=false,
+      pickOnFormFlag=false);
+    featureScatterplot.updateAndDraw(comic_data);
 
     var scatterplot = new Scatterplot("scatterplot");
     scatterplot.updateAndDraw(comic_data);

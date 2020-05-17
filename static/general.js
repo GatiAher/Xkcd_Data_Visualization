@@ -12,11 +12,11 @@ var dataStore = {
 
 function initialize() {
   // initial coloring of selected dots
-  d3.selectAll("circle")
+  scatterplot.scatter.selectAll("circle")
     .filter(function(d) { return dataStore.selected_sn.includes(d.sn); })
     .classed("dot-selected", true);
   // initial coloring of picked dot
-  d3.selectAll("circle")
+  scatterplot.scatter.selectAll("circle")
     .filter(function(d) { return d.sn == dataStore.picked_sn })
     .classed("dot-picked", true);
   // initial state of general elements
@@ -28,8 +28,7 @@ function initialize() {
 
 // general update values when new point is picked
 function generalPick(title, altText, imageUrl, sn) {
-  d3.select("#form-scatterplot-picked")
-    .property('value', parseInt(sn));
+  scatterplot.form.property('value', parseInt(sn));
   d3.select("#xkcdImage")
     .attr("src", imageUrl)
     .attr("alt", title);

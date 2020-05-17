@@ -1,6 +1,13 @@
 class Scatterplot extends Chart {
-  constructor(customId) {
+  constructor(customId,
+      selectOnBrushFlag=true,
+      pickOnClickFlag=true,
+      pickOnFormFlag=true) {
     super(customId);
+
+    this.selectOnBrushFlag = selectOnBrushFlag;
+    this.pickOnClickFlag = pickOnClickFlag;
+    this.pickOnFormFlag = pickOnFormFlag;
 
     //////////
     // AXES //
@@ -63,18 +70,21 @@ class Scatterplot extends Chart {
             this.y.domain(d3.extent(this.data, (d) => { return d.y; })).nice();
 
         } else {
-            // color selection, do before zoom changes range of chart
-            this.scatter.selectAll("circle").classed("dot-selected", (d) => {
-              return isBrushed(s, this.x(d.x), this.y(d.y))
-            });
 
-            // get list of sn of selected comics, selection logic
-            let brushSelection = [];
-            this.scatter.selectAll(".dot-selected")
-              .each( (d) => {
-                brushSelection.push(d.sn);
+            if (this.selectOnBrushFlag) {
+              // color selection, do before zoom changes range of chart
+              this.scatter.selectAll("circle").classed("dot-selected", (d) => {
+                return isBrushed(s, this.x(d.x), this.y(d.y))
               });
-            generalSelect(brushSelection);
+
+              // get list of sn of selected comics, selection logic
+              let brushSelection = [];
+              this.scatter.selectAll(".dot-selected")
+                .each( (d) => {
+                  brushSelection.push(d.sn);
+                });
+              generalSelect(brushSelection);
+            }
 
             // adjust axes to selected data
             this.x.domain([ this.x.invert(s[0][0]), this.x.invert(s[1][0]) ]);
@@ -100,19 +110,22 @@ class Scatterplot extends Chart {
       .attr("class", "tooltip")
       .style("opacity", 0);
 
-    // attach listener
-    d3.select("#form-"+ this.customId +"-picked").on("change", (d, i, nodes) => {
-      let inputData = d3.select(nodes[i]).property('value');
-      // clear previously picked point
-      this.scatter.select(".dot-picked").classed("dot-picked", false);
-      // pick new point
-      let pickedPoint = d3.selectAll("circle")
-        .filter((d) => { return d.sn == inputData })
-        .classed("dot-picked", true)
-        .datum();
-      // update dependant values
-      generalPick(pickedPoint.title, pickedPoint.altText, pickedPoint.imageUrl, inputData)
-    });
+    if (this.pickOnFormFlag) {
+      // attach listener
+      this.form = d3.select("#form-"+ this.customId +"-picked")
+        .on("change", (d, i, nodes) => {
+          let inputData = d3.select(nodes[i]).property('value');
+          // clear previously picked point
+          this.scatter.select(".dot-picked").classed("dot-picked", false);
+          // pick new point
+          let pickedPoint = d3.selectAll("circle")
+            .filter((d) => { return d.sn == inputData })
+            .classed("dot-picked", true)
+            .datum();
+          // update dependant values
+          generalPick(pickedPoint.title, pickedPoint.altText, pickedPoint.imageUrl, inputData)
+        });
+    }
   }
 
   updateAndDraw(chartData) {
@@ -131,7 +144,7 @@ class Scatterplot extends Chart {
       .call(this.brush);
 
     // append points
-    this.scatter.selectAll(".dot-basic")
+    let dots = this.scatter.selectAll(".dot-basic")
       .data(this.data)
       .enter().append("circle")
       .attr("class", "dot-basic")
@@ -149,17 +162,19 @@ class Scatterplot extends Chart {
       .on("mouseleave", (d, i, nodes) => {
         d3.select(nodes[i]).classed("dot-hovered", false);
         this.tooltip.transition().duration(500).style("opacity", 0)
-      })
-
-      .on("click", (d, i, nodes) => {
-        // clear previously picked point
-        this.scatter.select(".dot-picked").classed("dot-picked", false);
-        // pick new point
-        d3.select(nodes[i])
-          .classed("dot-picked", true);
-        // update dependant values
-        generalPick(d.title, d.altText, d.imageUrl, d.sn)
       });
+
+      if (this.pickOnClickFlag) {
+        dots.on("click", (d, i, nodes) => {
+          // clear previously picked point
+          this.scatter.select(".dot-picked").classed("dot-picked", false);
+          // pick new point
+          d3.select(nodes[i])
+            .classed("dot-picked", true);
+          // update dependant values
+          generalPick(d.title, d.altText, d.imageUrl, d.sn)
+        });
+      }
   }
 }
 
