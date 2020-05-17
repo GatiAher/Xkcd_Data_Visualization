@@ -13,34 +13,34 @@
 }
 
 
-.dot_basic {
+.dot-basic {
   opacity: 0.5;
   fill: var(--basic-color);
 }
 
-.dot_selected {
+.dot-selected {
   fill: var(--selected-color);
 }
 
-.dot_hovered {
+.dot-hovered {
   opacity: 1;
   fill: var(--hover-color);
 }
 
-.dot_picked {
+.dot-picked {
   opacity: 1;
   fill: var(--picked-color);
 }
 
-.bar_picked {
+.bar-picked {
   fill: var(--picked-color);
 }
 
-.bar_selected {
+.bar-selected {
   fill: var(--selected-color);
 }
 
-.bar_all {
+.bar-all {
   opacity: 0.5;
   fill: var(--basic-color);
 }

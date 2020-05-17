@@ -1,6 +1,6 @@
 class Scatterplot extends Chart {
-  constructor(div_id) {
-    super(div_id);
+  constructor(customId) {
+    super(customId);
 
     //////////
     // AXES //
@@ -16,14 +16,12 @@ class Scatterplot extends Chart {
     this.yAxis = d3.axisLeft(this.y).ticks(10);
 
     this.svg.append("g")
-      .attr("class", "x axis")
-      .attr('id', "axis--x-" + this.div_id)
+      .attr('id', "axis--x-" + this.customId)
       .attr("transform", "translate(0," + (this.height - this.margin.bottom) + ")")
       .call(this.xAxis);
 
     this.svg.append("g")
-      .attr("class", "y_axis")
-      .attr('id', "axis--y-" + this.div_id)
+      .attr('id', "axis--y-" + this.customId)
       // offset to right so ticks are not covered
       .attr("transform", "translate(" + (this.margin.left) + ",0)")
       .call(this.yAxis)
@@ -44,7 +42,7 @@ class Scatterplot extends Chart {
       .attr("clip-path", "url(#clip)");
 
     // prevent scrolling on body when brushing on chart
-    document.getElementById(this.div_id)
+    document.getElementById("chart-"+this.customId)
       .addEventListener('touchmove', function(e) {e.preventDefault(); }, false);
 
     this.brush = d3.brush()
@@ -66,17 +64,17 @@ class Scatterplot extends Chart {
 
         } else {
             // color selection, do before zoom changes range of chart
-            this.scatter.selectAll("circle").classed("dot_selected", (d) => {
+            this.scatter.selectAll("circle").classed("dot-selected", (d) => {
               return isBrushed(s, this.x(d.x), this.y(d.y))
             });
 
             // get list of sn of selected comics, selection logic
-            let my_selection = [];
-            this.scatter.selectAll(".dot_selected")
+            let brushSelection = [];
+            this.scatter.selectAll(".dot-selected")
               .each( (d) => {
-                my_selection.push(d.sn);
+                brushSelection.push(d.sn);
               });
-            generalSelect(my_selection);
+            generalSelect(brushSelection);
 
             // adjust axes to selected data
             this.x.domain([ this.x.invert(s[0][0]), this.x.invert(s[1][0]) ]);
@@ -85,8 +83,8 @@ class Scatterplot extends Chart {
         }
         // zoom
         let tr = this.scatter.transition().duration(750);
-        this.svg.select("#axis--x-" + this.div_id).transition(tr).call(this.xAxis);
-        this.svg.select("#axis--y-" + this.div_id).transition(tr).call(this.yAxis);
+        this.svg.select("#axis--x-" + this.customId).transition(tr).call(this.xAxis);
+        this.svg.select("#axis--y-" + this.customId).transition(tr).call(this.yAxis);
 
         this.scatter.selectAll("circle").transition(tr)
           .attr("cx", (d) => { return this.x(d.x); })
@@ -97,28 +95,28 @@ class Scatterplot extends Chart {
     this.idleDelay = 350;
 
     // on mouseover on scatter's dots, display comic title name
-    this.tooltip = d3.select("#" + this.div_id)
+    this.tooltip = d3.select("#chart-" + this.customId)
       .append("div")
       .attr("class", "tooltip")
       .style("opacity", 0);
 
-    // attach listener to form-scatterplot-picked
-    d3.select("#form-scatterplot-picked").on("change", (d, i, nodes) => {
+    // attach listener
+    d3.select("#form-"+ this.customId +"-picked").on("change", (d, i, nodes) => {
       let inputData = d3.select(nodes[i]).property('value');
       // clear previously picked point
-      this.scatter.select(".dot_picked").classed("dot_picked", false);
+      this.scatter.select(".dot-picked").classed("dot-picked", false);
       // pick new point
       let pickedPoint = d3.selectAll("circle")
         .filter((d) => { return d.sn == inputData })
-        .classed("dot_picked", true)
+        .classed("dot-picked", true)
         .datum();
       // update dependant values
       generalPick(pickedPoint.title, pickedPoint.altText, pickedPoint.imageUrl, inputData)
     });
   }
 
-  update_and_draw(chart_data) {
-    this.data = chart_data;
+  updateAndDraw(chartData) {
+    this.data = chartData;
     this.draw();
   }
 
@@ -133,32 +131,32 @@ class Scatterplot extends Chart {
       .call(this.brush);
 
     // append points
-    this.scatter.selectAll(".dot_basic")
+    this.scatter.selectAll(".dot-basic")
       .data(this.data)
       .enter().append("circle")
-      .attr("class", "dot_basic")
+      .attr("class", "dot-basic")
       .attr("r", 4)
       .attr("cx", (d) => { return this.x(d.x); })
       .attr("cy", (d) => { return this.y(d.y); })
       .attr('sn', (d) => { return d.sn })
       .on("mouseover", (d, i, nodes) => {
-        d3.select(nodes[i]).classed("dot_hovered", true);
+        d3.select(nodes[i]).classed("dot-hovered", true);
         this.tooltip.transition().duration(200).style("opacity", .9);
         this.tooltip.html(d.title)
           .style("left", d3.mouse(nodes[i])[0]+"px")
           .style("top", d3.mouse(nodes[i])[1]+"px")
       })
       .on("mouseleave", (d, i, nodes) => {
-        d3.select(nodes[i]).classed("dot_hovered", false);
+        d3.select(nodes[i]).classed("dot-hovered", false);
         this.tooltip.transition().duration(500).style("opacity", 0)
       })
 
       .on("click", (d, i, nodes) => {
         // clear previously picked point
-        this.scatter.select(".dot_picked").classed("dot_picked", false);
+        this.scatter.select(".dot-picked").classed("dot-picked", false);
         // pick new point
         d3.select(nodes[i])
-          .classed("dot_picked", true);
+          .classed("dot-picked", true);
         // update dependant values
         generalPick(d.title, d.altText, d.imageUrl, d.sn)
       });
@@ -167,11 +165,11 @@ class Scatterplot extends Chart {
 
 
 // helper function for brushing
-function isBrushed(brush_coords, cx, cy) {
-   let x0 = brush_coords[0][0],
-       x1 = brush_coords[1][0],
-       y0 = brush_coords[0][1],
-       y1 = brush_coords[1][1];
+function isBrushed(brushCoords, cx, cy) {
+   let x0 = brushCoords[0][0],
+       x1 = brushCoords[1][0],
+       y0 = brushCoords[0][1],
+       y1 = brushCoords[1][1];
   // This return TRUE or FALSE depending on if the points is in the selected area
   return x0 <= cx && cx <= x1 && y0 <= cy && cy <= y1;
 }

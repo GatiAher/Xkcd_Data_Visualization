@@ -44,7 +44,7 @@ def homepage():
             max_serial_num=comic_data_df.shape[0])
 
 
-@app.route('/data', methods=['POST'])
+@app.route('/barchart-data', methods=['POST'])
 def word_data():
     if request.method == 'POST':
 

@@ -1,6 +1,6 @@
 class Barchart extends Chart {
-  constructor(div_id) {
-    super(div_id);
+  constructor(customId) {
+    super(customId);
 
     //////////
     // AXES //
@@ -17,14 +17,12 @@ class Barchart extends Chart {
     this.yAxis = d3.axisLeft(this.y).ticks(0);
 
     this.svg.append("g")
-      .attr("class", "x axis")
-      .attr('id', "axis--x-" + this.div_id)
+      .attr('id', "axis--x-" + this.customId)
       .attr("transform", "translate(0," + (this.height - this.margin.bottom) + ")")
       .call(this.xAxis);
 
     this.svg.append("g")
-      .attr("class", "y_axis")
-      .attr('id', "axis--y-" + this.div_id)
+      .attr('id', "axis--y-" + this.customId)
       // offset to right so ticks are not covered
       .attr("transform", "translate(" + (this.margin.left) + ",0)")
       .call(this.yAxis)
@@ -35,16 +33,16 @@ class Barchart extends Chart {
 
     this.labels = ["picked", "selected", "all"];
 
-    d3.selectAll(".checkbox-barchart").on("change", () => {
+    d3.selectAll(".checkbox-" + this.customId).on("change", () => {
       this.draw();
     });
 
   }
 
-  update_and_draw(chart_data) {
+  updateAndDraw(chartData) {
     let data = []
-    for (const idx in chart_data[0]) {
-      let arr = chart_data[0][idx];
+    for (const idx in chartData[0]) {
+      let arr = chartData[0][idx];
       data.push({"name":arr.name,
         [this.labels[0]]:arr.value[0],
         [this.labels[1]]:arr.value[1],
@@ -56,16 +54,16 @@ class Barchart extends Chart {
 
   draw() {
     // calculate max domain x
-    let max_domain_x = [0];
-    d3.selectAll(".checkbox-barchart").each((d, i, nodes) => {
+    let maxDomainXList = [0];
+    d3.selectAll(".checkbox-" + this.customId).each((d, i, nodes) => {
       let checkbox = d3.select(nodes[i]);
       if(checkbox.property("checked")) {
         let group = checkbox.property("value");
-        let max_val = d3.max(this.data, (d) => {return d[group]; });
-        max_domain_x.push(max_val);
+        let maxVal = d3.max(this.data, (d) => {return d[group]; });
+        maxDomainXList.push(maxVal);
       }
     });
-    this.x.domain([0, d3.max(max_domain_x)]);
+    this.x.domain([0, d3.max(maxDomainXList)]);
     this.y.domain(this.data.map((d) => {return d.name; }));
 
     // redraw bars
@@ -73,15 +71,15 @@ class Barchart extends Chart {
       // draw group in reverse order (slice makes new array so original is not modified)
       let group = this.labels.slice().reverse()[idx];
       // ex: checkbox-barchart-picked
-      let unchecked = !d3.select("#checkbox-barchart-" + [group]).property("checked");
+      let unchecked = !d3.select("#checkbox-"+ this.customId + "-" + [group]).property("checked");
 
-      let bars = this.svg.selectAll(".bar_" + [group])
+      let bars = this.svg.selectAll(".bar-" + [group])
         .data(this.data);
 
       // new data (optical illusion animation, bars are inverse)
       bars
         .enter().append("rect")
-        .attr("class", "bar_" + [group])
+        .attr("class", "bar-" + [group])
         .attr("y", (d) => { return this.y(d.name); })
         .attr("height", (d) => { return this.y.bandwidth(); })
         .attr("x", (d) => {
@@ -107,7 +105,7 @@ class Barchart extends Chart {
     }
 
     // update axes
-    this.svg.select("#axis--y-" + this.div_id).transition().duration(750).call(this.yAxis)
-    this.svg.select("#axis--x-" + this.div_id).transition().duration(750).call(this.xAxis)
+    this.svg.select("#axis--y-" + this.customId).transition().duration(750).call(this.yAxis)
+    this.svg.select("#axis--x-" + this.customId).transition().duration(750).call(this.xAxis)
   }
 }

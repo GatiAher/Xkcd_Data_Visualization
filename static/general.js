@@ -11,21 +11,24 @@ var dataStore = {
   };
 
 function initialize() {
+  // initial coloring of selected dots
   d3.selectAll("circle")
     .filter(function(d) { return dataStore.selected_sn.includes(d.sn); })
-    .classed("dot_selected", true);
+    .classed("dot-selected", true);
+  // initial coloring of picked dot
   d3.selectAll("circle")
     .filter(function(d) { return d.sn == dataStore.picked_sn })
-    .classed("dot_picked", true);
+    .classed("dot-picked", true);
+  // initial state of general elements
   generalPick("221: Random Number",
     "RFC 1149.5 specifies 4 as the standard IEEE-vetted random number.",
     "https://www.explainxkcd.com/wiki/images/f/fe/random_number.png", 221);
-  sendRequest(); // BUG: call again to fix incomplete draw barchart
+  requestBarchartData(); // BUG: call again to fix incomplete draw barchart
 }
 
 // general update values when new point is picked
 function generalPick(title, altText, imageUrl, sn) {
-  d3.select("#inputPick")
+  d3.select("#form-scatterplot-picked")
     .property('value', parseInt(sn));
   d3.select("#xkcdImage")
     .attr("src", imageUrl)
@@ -34,25 +37,27 @@ function generalPick(title, altText, imageUrl, sn) {
     .textContent = title;
   document.getElementById("xkcdImageAltText")
     .textContent = altText;
-
   // send picked sn_num to backend
   dataStore.picked_sn = parseInt(sn);
-  sendRequest();
+  requestBarchartData();
 }
 
 function generalSelect(sn_nums) {
   dataStore.selected_sn = sn_nums;
-  sendRequest()
+  requestBarchartData()
 }
 
-function sendRequest() {
-  d3.json("/data")
+function requestBarchartData() {
+  d3.json("/barchart-data")
     .header("Content-Type", "application/json")
     .post(
-        JSON.stringify({picked_sn:dataStore.picked_sn, selected_sn:dataStore.selected_sn}),
+        JSON.stringify(
+          {picked_sn:dataStore.picked_sn,
+          selected_sn:dataStore.selected_sn}
+        ),
         updateBarchart);
 }
 
 function updateBarchart(err, data) {
-  barchart.update_and_draw(data);
+  barchart.updateAndDraw(data);
 }
