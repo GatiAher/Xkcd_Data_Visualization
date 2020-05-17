@@ -205,13 +205,9 @@ function isBrushed(brushCoords, cx, cy) {
   return x0 <= cx && cx <= x1 && y0 <= cy && cy <= y1;
 }
 
-// helper funtion for populating select menu
-function addOptionToSelect(sel, txt, val) {
-    var opt = document.createElement('option');
-    opt.appendChild( document.createTextNode(txt) );
 
-    if ( typeof val === 'string' ) {
-        opt.value = val;
-    }
-    sel.appendChild(opt);
+function clearSelection() {
+  $("#select-featureDistribution option:selected").prop("selected", false);
+  $('#selected-featureDistribution').text("");
+  requestFeatureDistribution([]);
 }

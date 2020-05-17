@@ -61,6 +61,7 @@
                   <h3>List of Selected Features</h3>
                   <div style="text-align: left;" id="selected-featureDistribution"></div>
                   <h3 id="overlapnum-featureDistribution">Overlapped: 0</h3>
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="clearSelection()">Clear Selection</button>
                 </div>
               </div>
             </div>
@@ -191,10 +192,9 @@
     var feature_names = {{ return_feature_names.feature_names | safe }};
 
     // add features to feature distribution menu
-    var featureDistributionMenu = document.getElementById('select-featureDistribution')
     for (const idx in feature_names) {
       let feature = feature_names[idx];
-      addOptionToSelect(featureDistributionMenu, feature, idx);
+      $('#select-featureDistribution').append($('<option>', {value:idx, text:feature}));
     }
 
     var featureScatterplot = new Scatterplot("featureDistribution",
