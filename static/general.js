@@ -26,6 +26,12 @@ function initializeValues() {
   // initial state of select elements
   generalSelect(dataStore.selected_sn);
   requestBarchartData(); // BUG: call again to fix incomplete draw barchart
+  // initial state of feature selection menu
+  $("#select-featureDistribution").val(["3301", "3849"]);
+  $('#selected-featureDistribution').text("number (200), random (71)");
+  requestFeatureDistribution(["3301", "3849"]);
+
+
 }
 
 // general update values when new point is picked

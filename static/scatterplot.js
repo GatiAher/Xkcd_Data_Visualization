@@ -132,7 +132,7 @@ class Scatterplot extends Chart {
         .on("change", (d, i, nodes) => {
           // put text on div
           let text = Array.from(nodes[i].querySelectorAll("option:checked"), e=>e.text);
-          $('#selected-featureDistribution').text(text.join(" "));
+          $('#selected-featureDistribution').text(text.join(", "));
           // send values (feature idx) to backend
           let values = Array.from(nodes[i].querySelectorAll("option:checked"), e=>e.value);
           requestFeatureDistribution(values);
