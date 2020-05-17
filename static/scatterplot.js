@@ -1,13 +1,15 @@
 class Scatterplot extends Chart {
   constructor(customId,
-      selectOnBrushFlag=true,
-      pickOnClickFlag=true,
-      pickOnFormFlag=true) {
+              selectOnBrushFlag=true,
+              pickOnClickFlag=true,
+              pickOnFormFlag=true,
+              selectOnSelectMenuFlag=false) {
     super(customId);
 
     this.selectOnBrushFlag = selectOnBrushFlag;
     this.pickOnClickFlag = pickOnClickFlag;
     this.pickOnFormFlag = pickOnFormFlag;
+    this.selectOnSelectMenuFlag = selectOnSelectMenuFlag;
 
     //////////
     // AXES //
@@ -126,6 +128,20 @@ class Scatterplot extends Chart {
           generalPick(pickedPoint.title, pickedPoint.altText, pickedPoint.imageUrl, inputData)
         });
     }
+
+    if (this.selectOnSelectMenuFlag) {
+      d3.select('#select-featureDistribution')
+        .on("change", (d, i, nodes) => {
+
+          let text = Array.from(nodes[i].querySelectorAll("option:checked"), e=>e.text);
+          document.getElementById('selected-featureDistribution')
+            .textContent = text.join(" ");
+
+          let values = Array.from(nodes[i].querySelectorAll("option:checked"), e=>e.value);
+          requestFeatureDistribution(values);
+        });
+    }
+
   }
 
   updateAndDraw(chartData) {
@@ -167,7 +183,7 @@ class Scatterplot extends Chart {
       if (this.pickOnClickFlag) {
         dots.on("click", (d, i, nodes) => {
           // clear previously picked point
-          this.scatter.select(".dot-picked").classed("dot-picked", false);
+          d3.selectAll(".dot-picked").classed("dot-picked", false);
           // pick new point
           d3.select(nodes[i])
             .classed("dot-picked", true);
@@ -187,4 +203,15 @@ function isBrushed(brushCoords, cx, cy) {
        y1 = brushCoords[1][1];
   // This return TRUE or FALSE depending on if the points is in the selected area
   return x0 <= cx && cx <= x1 && y0 <= cy && cy <= y1;
+}
+
+// helper funtion for populating select menu
+function addOptionToSelect(sel, txt, val) {
+    var opt = document.createElement('option');
+    opt.appendChild( document.createTextNode(txt) );
+
+    if ( typeof val === 'string' ) {
+        opt.value = val;
+    }
+    sel.appendChild(opt);
 }

@@ -23,6 +23,10 @@ tfidf_vectors = sparse.load_npz("final_data/tfidf_vectors.npz")
 with open("final_data/tfidf_feature_names.txt", 'r') as filehandle:
     tfidf_feature_names = json.load(filehandle)
 
+_, feature_counts = tfidf_vectors.nonzero();
+_, feature_counts = np.unique(feature_counts, return_counts=True)
+feature_counts = ["{} ({})".format(name, count) for name, count in zip(tfidf_feature_names, feature_counts)]
+
 word_data_all_summed = tfidf_vectors.sum(axis=0)
 word_data_all_summed = np.squeeze(np.asarray(word_data_all_summed))
 
@@ -39,13 +43,18 @@ def homepage():
     comic_data = comic_data_df.to_dict(orient='records')
     comic_data = json.dumps(comic_data, indent=2)
     return_comic_data = {'comic_data': comic_data}
+
+    feature_names = json.dumps(feature_counts)
+    return_feature_names = {'feature_names': feature_names}
+
     return render_template('index.html',
             return_comic_data=return_comic_data,
-            max_serial_num=comic_data_df.shape[0])
+            max_serial_num=comic_data_df.shape[0],
+            return_feature_names=return_feature_names)
 
 
 @app.route('/barchart-data', methods=['POST'])
-def word_data():
+def barchart_data():
     if request.method == 'POST':
 
         picked_idx = [request.json['picked_sn'] - 1]
@@ -53,14 +62,58 @@ def word_data():
         selected_idx = request.json['selected_sn']
         selected_idx = [num - 1 for num in selected_idx]
 
-        barchart_data = get_barchart_data(picked_idx, selected_idx)
+        barchart_data = calc_barchart_data(picked_idx, selected_idx)
         return barchart_data
 
-###########
-# TESTING #
-###########
+@app.route('/feature-data', methods=['POST'])
+def feature_data():
+    if request.method == 'POST':
 
-def get_barchart_data(picked_idx, selected_idx):
+        feature_idx_list = request.json['feature_idx_list']
+
+        feature_data = calc_feature_distribution(feature_idx_list)
+
+        return feature_data
+
+####################
+# HELPER FUNCTIONS #
+####################
+
+# def calc_feature_distribution(feature_idx_list):
+#     # get col of selected features
+#     feature_idx_list = [int(i) for i in feature_idx_list]
+#     selected_features = tfidf_vectors[:, feature_idx_list]
+#
+#     # get comics (rows) where selected features are nonzero
+#     nonzero_comics, _ = selected_features.nonzero()
+#     nonzero_comics = np.unique(nonzero_comics) + 1
+#
+#     feature_data = json.dumps(nonzero_comics.tolist())
+#     return feature_data
+
+def calc_feature_distribution(feature_idx_list):
+    # get col of selected features
+    feature_idx_list = [int(i) for i in feature_idx_list]
+    selected_features = tfidf_vectors[:, feature_idx_list]
+
+    # get comics (rows) where selected features are nonzero
+    nonzero_comics, _ = selected_features.nonzero()
+    nonzero_comics, comic_counts = np.unique(nonzero_comics, return_counts=True)
+    nonzero_comics = nonzero_comics + 1
+
+    single = []
+    both = []
+    for idx,comic_sn in enumerate(nonzero_comics):
+        if comic_counts[idx] > 1:
+            both.append(str(comic_sn))
+        else:
+            single.append(str(comic_sn))
+
+    feature_dict = dict(single=single, both=both)
+    feature_data = json.dumps([feature_dict])
+    return feature_data
+
+def calc_barchart_data(picked_idx, selected_idx):
     """
     Get top words and vales based off of a_idx
     Then for those words get values for b_idx
@@ -92,11 +145,6 @@ def get_barchart_data(picked_idx, selected_idx):
 
     barchart_data = json.dumps([tfidf_dict])
     return barchart_data
-
-
-####################
-# HELPER FUNCTIONS #
-####################
 
 def get_summed_tfidf(idx_list, len_output):
     if len(idx_list) == 0:

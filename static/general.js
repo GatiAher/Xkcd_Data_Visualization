@@ -23,6 +23,7 @@ function initialize() {
   generalPick("221: Random Number",
     "RFC 1149.5 specifies 4 as the standard IEEE-vetted random number.",
     "https://www.explainxkcd.com/wiki/images/f/fe/random_number.png", 221);
+  generalSelect(dataStore.selected_sn);
   requestBarchartData(); // BUG: call again to fix incomplete draw barchart
 }
 
@@ -42,6 +43,8 @@ function generalPick(title, altText, imageUrl, sn) {
 }
 
 function generalSelect(sn_nums) {
+  document.getElementById("checkbox-barchart-selected-label")
+    .textContent = "Selected (" + sn_nums.length + ")";
   dataStore.selected_sn = sn_nums;
   requestBarchartData()
 }
@@ -59,4 +62,39 @@ function requestBarchartData() {
 
 function updateBarchart(err, data) {
   barchart.updateAndDraw(data);
+}
+
+function requestFeatureDistribution(feature_idx_list) {
+  d3.json("/feature-data")
+    .header("Content-Type", "application/json")
+    .post(
+        JSON.stringify(
+          {feature_idx_list:feature_idx_list}
+        ),
+        updateFeatureDistribution);
+}
+
+function updateFeatureDistribution(err, data) {
+
+  single_list = data[0].single.map(x=>+x);
+  both_list = data[0].both.map(x=>+x);
+
+  document.getElementById("overlapnum-featureDistribution")
+    .textContent = "Overlapped: " + both_list.length;
+
+  console.log("both_list len", both_list.length);
+  
+  // deselect previous
+  featureScatterplot.scatter.selectAll("circle")
+    .classed("dot-single-feature", false)
+    .classed("dot-both-feature", false);
+
+  // select new
+  featureScatterplot.scatter.selectAll("circle")
+    .filter(function(d) { return single_list.includes(d.sn); })
+    .classed("dot-single-feature", true);
+
+  featureScatterplot.scatter.selectAll("circle")
+    .filter(function(d) { return both_list.includes(d.sn); })
+    .classed("dot-both-feature", true);
 }
