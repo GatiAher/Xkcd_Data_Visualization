@@ -198,20 +198,21 @@
       $('#select-featureDistribution').append($('<option>', {value:idx, text:feature_names[idx]}));
     }
 
-    // initial state of feature selection menu
-    $("#select-featureDistribution").val(["3301", "3849"]);
-    $('#selected-featureDistribution').text("number (200), random (71)");
-    requestFeatureDistribution(["3301", "3849"]);
-
     var featureScatterplot = new Scatterplot("featureDistribution",
                             selectOnBrushFlag=false, pickOnClickFlag=true,
                             pickOnFormFlag=false, selectOnSelectMenuFlag=true);
     featureScatterplot.updateAndDraw(comic_data);
 
+
     var scatterplot = new Scatterplot("scatterplot");
     scatterplot.updateAndDraw(comic_data);
 
     var barchart = new Barchart("barchart");
+
+    // initial state of feature selection menu
+    $("#select-featureDistribution").val(["3301", "3849"]);
+    $('#selected-featureDistribution').text("number (200), random (71)");
+    requestFeatureDistribution(["3301", "3849"]);
 
     // initial coloring of selected dots
     scatterplot.scatter.selectAll("circle")
@@ -232,8 +233,6 @@
     generalSelect(dataStore.selected_sn);
 
     requestBarchartData(); // BUG: call again to fix incomplete draw barchart
-
-    // initializeValues();
 
   </script>
 
