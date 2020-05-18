@@ -201,14 +201,16 @@
     var featureScatterplot = new Scatterplot("featureDistribution",
                             selectOnBrushFlag=false, pickOnClickFlag=true,
                             pickOnFormFlag=false, selectOnSelectMenuFlag=true);
+    featureScatterplot.updateAndDraw(comic_data);
 
     var scatterplot = new Scatterplot("scatterplot");
+    scatterplot.updateAndDraw(comic_data);
 
     var barchart = new Barchart("barchart");
 
-    $(document).ready(function(){
-      initializeValues(comic_data, feature_names);
-    });
+    // $(document).ready(function(){
+    initializeValues(comic_data, feature_names);
+    // });
 
   </script>
 

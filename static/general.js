@@ -17,7 +17,7 @@ function initializeValues(comic_data, feature_names) {
   // }
 
   // draw scatterplot
-  featureScatterplot.updateAndDraw(comic_data);
+  // featureScatterplot.updateAndDraw(comic_data);
 
   // // initial state of feature selection menu
   // $("#select-featureDistribution").val(["3301", "3849"]);
@@ -25,7 +25,7 @@ function initializeValues(comic_data, feature_names) {
   // requestFeatureDistribution(["3301", "3849"]);
 
   // draw scatterplot
-  scatterplot.updateAndDraw(comic_data);
+  // scatterplot.updateAndDraw(comic_data);
 
   // initial coloring of selected dots
   scatterplot.scatter.selectAll("circle")
