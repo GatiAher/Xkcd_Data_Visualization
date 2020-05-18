@@ -201,10 +201,3 @@ function isBrushed(brushCoords, cx, cy) {
   // This return TRUE or FALSE depending on if the points is in the selected area
   return x0 <= cx && cx <= x1 && y0 <= cy && cy <= y1;
 }
-
-
-function clearSelection() {
-  $("#select-featureDistribution option:selected").prop("selected", false);
-  $('#selected-featureDistribution').text("");
-  requestFeatureDistribution([]);
-}
