@@ -11,10 +11,10 @@ var dataStore = {
   };
 
 function initializeValues(comic_data, feature_names) {
-  // add features to feature distribution menu
-  for (const idx in feature_names) {
-    $('#select-featureDistribution').append($('<option>', {value:idx, text:feature_names[idx]}));
-  }
+  // // add features to feature distribution menu
+  // for (const idx in feature_names) {
+  //   $('#select-featureDistribution').append($('<option>', {value:idx, text:feature_names[idx]}));
+  // }
 
   // draw scatterplot
   featureScatterplot.updateAndDraw(comic_data);
