@@ -198,6 +198,11 @@
       $('#select-featureDistribution').append($('<option>', {value:idx, text:feature_names[idx]}));
     }
 
+    // initial state of feature selection menu
+    $("#select-featureDistribution").val(["3301", "3849"]);
+    $('#selected-featureDistribution').text("number (200), random (71)");
+    requestFeatureDistribution(["3301", "3849"]);
+
     var featureScatterplot = new Scatterplot("featureDistribution",
                             selectOnBrushFlag=false, pickOnClickFlag=true,
                             pickOnFormFlag=false, selectOnSelectMenuFlag=true);
