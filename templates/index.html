@@ -22,6 +22,8 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <!-- jQuery library -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <!-- popper.min.js for Popovers -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
   <!-- Latest compiled JavaScript -->
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
@@ -43,8 +45,32 @@
 
         <div class="col-sm-6">
           <section class="box" id="featureDistributionMenu" style="padding-left: 20px;">
-            <h3>Feature Distribution Menu</h3>
-            <strong>Select a feature to see the distribution of all the comics with that feature</strong>.
+            <h3>
+              Feature Distribution Menu
+              <button type="button" data-container="body" data-toggle="popover" data-placement="bottom"
+                      title="Feature Distribution Menu"
+                      data-content='
+                      <strong>select a feature to see the distribution of all the comics with that feature</strong>
+                      <ul style="text-align:center;">
+                        <li>
+                          <h4>selection list</h4>
+                          <p>select feature by clicking</p>
+                        </li>
+                        <li>
+                          <h4>select multiple</h4>
+                          <p>windows: ctrl+click</p>
+                          <p>mac: cmd+click</p>
+                        </li>
+                        <li>
+                          <h4>select consecutive</h4>
+                          <p>on pc: shift+click</p>
+                        </li>
+                      </ul>
+                      '
+                      data-html="true">
+                <img src="static/glyphicons/info.svg" class="info-icon">
+              </button>
+            </h3>
             <div style="display: flex;">
               <div style="flex: auto;">
                 <h3>{{num_features}} Features</h3>
@@ -52,15 +78,9 @@
               </div>
               <div style="flex: auto;">
                 <div style="padding-left: 20px;">
-                  <h3>Make Multiple Selections</h3>
-                  <p style="text-align: left;">
-                    To select more than one, you may control-click (Windows) or command-click (Mac).
-                    <br><br>
-                    To select consecutive, you may shift-click.
-                  </p>
                   <h3>Selected Features:</h3>
                   <div style="text-align: left;" id="selected-featureDistribution" class="box"></div>
-                  <h3 id="overlapnum-featureDistribution">Overlapped: 0</h3>
+                  <h3 id="overlapnum-featureDistribution">comics containing multiple of the selected features: </h3>
                   <br>
                   <button id="button-clear-featureDistribution" type="button">Clear Selection</button>
                 </div>
@@ -71,7 +91,46 @@
 
         <div class="col-sm-6">
           <section class="box" id="featureDistribution">
-            <h3>Feature Distribution</h3>
+            <h3>Feature Distribution
+              <button type="button" data-container="body" data-toggle="popover" data-placement="bottom"
+                      title="Feature Distribution"
+                      data-content='
+                      <strong>tsne-embedding of comic relations where similar comics are closer together</strong>
+                      <ul style="text-align:center;">
+                        <li>
+                          <div class="tooltip-key">hover on point</div>
+                          <p>populate tooltip with comic title</p>
+                        </li>
+                        <li>
+                          <h4>color: orange</h4>
+                          <p>comic has one of the selected features</p>
+                        </li>
+                        <li>
+                          <h4>color: black</h4>
+                          <p>comic has multiple of the selected features</p>
+                        </li>
+                        <li>
+                          <h4>color: blue</h4>
+                          <p>comic has none of the selected features</p>
+                        </li>
+                        <li>
+                          <h4>color: red</h4>
+                          <p>comic picked on click, show details in picked comic panel</p>
+                        </li>
+                        <li>
+                          <h4>brush points</h4>
+                          <p>click and drag on scatterplot to zoom in</p>
+                        </li>
+                        <li>
+                          <h4>double / triple click on graph</h4>
+                          <p>zoom out</p>
+                        </li>
+                      </ul>
+                      '
+                      data-html="true">
+                <img src="static/glyphicons/info.svg" class="info-icon">
+              </button>
+            </h3>
             <div id="chart-featureDistribution"></div>
           </section>
         </div>
@@ -84,7 +143,34 @@
 
         <div class="col-sm-6">
           <section class="box" id="barchart">
-            <h3>TFIDF of Top Words in Selected Comics</h3>
+            <h3>TFIDF of Top Words in Selected Comics
+              <button type="button" data-container="body" data-toggle="popover" data-placement="bottom"
+                      title="TFIDF of Top Words in Selected Comics"
+                      data-content='
+                      <strong>compare selected comic&#39s most important words & summed TFIDF (importance) scores</strong>
+                      <ul style="text-align:center;">
+                        <li>
+                          <h4>color: red</h4>
+                          <p>picked comic&#39s TFIDF value</p>
+                        </li>
+                        <li>
+                          <h4>color: orange</h4>
+                          <p>selected comic group&#39s summed TFIDF value</p>
+                        </li>
+                        <li>
+                          <h4>color: blue</h4>
+                          <p>word&#39s total TFIDF score</p>
+                        </li>
+                        <li>
+                          <h4>checkbox</h4>
+                          <p>hide/show group&#39s TFIDF bar, adjust axis</p>
+                        </li>
+                      </ul>
+                      '
+                      data-html="true">
+                <img src="static/glyphicons/info.svg" class="info-icon">
+              </button>
+            </h3>
             <div>
               <input type="checkbox" class="checkbox-barchart" id="checkbox-barchart-picked" value="picked" checked>
               <label for="checkbox-barchart-picked">Picked (1)</label>
@@ -99,7 +185,46 @@
 
         <div class="col-sm-6">
           <section class="box" id="scatterplot">
-            <h3>TFIDF to LSA to TSNE Comic Relations</h3>
+            <h3>TFIDF to LSA to TSNE Comic Relations
+              <button type="button" data-container="body" data-toggle="popover" data-placement="bottom"
+                      title="TFIDF to LSA to TSNE Comic Relations"
+                      data-content='
+                      <strong>tsne-embedding of comic relations where similar comics are closer together</strong>
+                      <ul style="text-align:center;">
+                        <li>
+                          <div class="tooltip-key">hover on point</div>
+                          <p>populate tooltip with comic serial number and title</p>
+                        </li>
+                        <li>
+                          <h4>color: red</h4>
+                          <p>comic picked on click, show details in picked comic panel</p>
+                        </li>
+                        <li>
+                          <h4>color: orange</h4>
+                          <p>comic selected on brush, brush empty area to clear</p>
+                        </li>
+                        <li>
+                          <h4>color: blue</h4>
+                          <p>unselected comic</p>
+                        </li>
+                        <li>
+                          <h4>input area</h4>
+                          <p>pick specific comic by serial number</p>
+                        </li>
+                        <li>
+                          <h4>brush points</h4>
+                          <p>click and drag on scatterplot to select and zoom in</p>
+                        </li>
+                        <li>
+                          <h4>double / triple click on graph</h4>
+                          <p>zoom out</p>
+                        </li>
+                      </ul>
+                      '
+                      data-html="true">
+                <img src="static/glyphicons/info.svg" class="info-icon">
+              </button>
+            </h3>
             <div class="input-group">
               <span class="input-group-addon">Pick Comic 1-{{num_comics}}</span>
               <input class="form-control" type="number" id="form-scatterplot-picked" min="1" max={{num_comics}} step="1">
@@ -116,7 +241,14 @@
 
         <div class="col-sm-6">
           <section id="pictureDiv" class="box">
-            <h3>Picked Comic</h3>
+            <h3>Picked Comic Info
+              <button type="button" data-container="body" data-toggle="popover" data-placement="bottom"
+                      title="Picked Comic Info"
+                      data-content='<strong>see picked comic&#39s title, image, and alt-text</strong>'
+                      data-html="true">
+                <img src="static/glyphicons/info.svg" class="info-icon">
+              </button>
+            </h3>
             <p id="xkcdImageTitle"> 221: Random Number </p>
             <img id="xkcdImage" alt="221: Random Number"
               src="https://www.explainxkcd.com/wiki/images/f/fe/random_number.png"
@@ -232,13 +364,19 @@
     // initial state of select elements
     generalSelect(dataStore.selected_sn);
 
-    requestBarchartData(); // BUG: call again to fix incomplete draw barchart
+    // BUG: call again to fix incomplete draw barchart
+    requestBarchartData();
 
     // add clear feature to clear selection button
     $("#button-clear-featureDistribution").click(function(){
       $("#select-featureDistribution option:selected").prop("selected", false);
       $('#selected-featureDistribution').text("");
       requestFeatureDistribution([]);
+    });
+
+    // initialize all popovers
+    $(function () {
+      $('[data-toggle="popover"]').popover()
     });
 
   </script>

@@ -59,7 +59,7 @@ function updateFeatureDistribution(err, data) {
   both_list = data[0].both.map(x=>+x);
 
   $("#overlapnum-featureDistribution")
-    .text("Overlapped: " + both_list.length);
+    .text("comics containing multiple of the selected features: " + both_list.length);
 
   // deselect previous
   featureScatterplot.scatter.selectAll("circle")
