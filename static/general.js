@@ -19,10 +19,10 @@ function initializeValues(comic_data, feature_names) {
   // draw scatterplot
   featureScatterplot.updateAndDraw(comic_data);
 
-  // initial state of feature selection menu
-  $("#select-featureDistribution").val(["3301", "3849"]);
-  $('#selected-featureDistribution').text("number (200), random (71)");
-  requestFeatureDistribution(["3301", "3849"]);
+  // // initial state of feature selection menu
+  // $("#select-featureDistribution").val(["3301", "3849"]);
+  // $('#selected-featureDistribution').text("number (200), random (71)");
+  // requestFeatureDistribution(["3301", "3849"]);
 
   // draw scatterplot
   scatterplot.updateAndDraw(comic_data);
