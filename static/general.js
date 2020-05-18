@@ -10,7 +10,7 @@ var dataStore = {
     1789, 1804, 1935, 2006, 2016, 2028, 2034, 2059, 2137]
   };
 
-function initializeValues(comic_data, feature_names) {
+function initializeValues() {
   // // add features to feature distribution menu
   // for (const idx in feature_names) {
   //   $('#select-featureDistribution').append($('<option>', {value:idx, text:feature_names[idx]}));
