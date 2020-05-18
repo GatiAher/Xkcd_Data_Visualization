@@ -193,22 +193,18 @@
     var comic_data = {{ return_comic_data.comic_data | safe }};
     var feature_names = {{ return_feature_names.feature_names | safe }};
 
-    // add features to feature distribution menu
-    for (const idx in feature_names) {
-      $('#select-featureDistribution').append($('<option>', {value:idx, text:feature_names[idx]}));
-    }
 
     var featureScatterplot = new Scatterplot("featureDistribution",
                             selectOnBrushFlag=false, pickOnClickFlag=true,
                             pickOnFormFlag=false, selectOnSelectMenuFlag=true);
-    featureScatterplot.updateAndDraw(comic_data);
 
     var scatterplot = new Scatterplot("scatterplot");
-    scatterplot.updateAndDraw(comic_data);
 
     var barchart = new Barchart("barchart");
 
-    initializeValues();
+    $(document).ready(function(){
+      initializeValues(comic_data, feature_names);
+    });
 
   </script>
 

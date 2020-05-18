@@ -10,28 +10,42 @@ var dataStore = {
     1789, 1804, 1935, 2006, 2016, 2028, 2034, 2059, 2137]
   };
 
-function initializeValues() {
-  // initial coloring of selected dots
-  scatterplot.scatter.selectAll("circle")
-    .filter(function(d) { return dataStore.selected_sn.includes(d.sn); })
-    .classed("dot-selected", true);
-  // initial coloring of picked dot
-  scatterplot.scatter.selectAll("circle")
-    .filter(function(d) { return d.sn == dataStore.picked_sn })
-    .classed("dot-picked", true);
-  // initial state of pick elements
-  generalPick("221: Random Number",
-    "RFC 1149.5 specifies 4 as the standard IEEE-vetted random number.",
-    "https://www.explainxkcd.com/wiki/images/f/fe/random_number.png", 221);
-  // initial state of select elements
-  generalSelect(dataStore.selected_sn);
-  requestBarchartData(); // BUG: call again to fix incomplete draw barchart
+function initializeValues(comic_data, feature_names) {
+  // add features to feature distribution menu
+  for (const idx in feature_names) {
+    $('#select-featureDistribution').append($('<option>', {value:idx, text:feature_names[idx]}));
+  }
+
+  // draw scatterplot
+  featureScatterplot.updateAndDraw(comic_data);
+
   // initial state of feature selection menu
   $("#select-featureDistribution").val(["3301", "3849"]);
   $('#selected-featureDistribution').text("number (200), random (71)");
   requestFeatureDistribution(["3301", "3849"]);
 
+  // draw scatterplot
+  scatterplot.updateAndDraw(comic_data);
 
+  // initial coloring of selected dots
+  scatterplot.scatter.selectAll("circle")
+    .filter(function(d) { return dataStore.selected_sn.includes(d.sn); })
+    .classed("dot-selected", true);
+
+  // initial coloring of picked dot
+  scatterplot.scatter.selectAll("circle")
+    .filter(function(d) { return d.sn == dataStore.picked_sn })
+    .classed("dot-picked", true);
+
+  // initial state of pick elements
+  generalPick("221: Random Number",
+    "RFC 1149.5 specifies 4 as the standard IEEE-vetted random number.",
+    "https://www.explainxkcd.com/wiki/images/f/fe/random_number.png", 221);
+
+  // initial state of select elements
+  generalSelect(dataStore.selected_sn);
+
+  requestBarchartData(); // BUG: call again to fix incomplete draw barchart
 }
 
 // general update values when new point is picked
