@@ -27,25 +27,25 @@ function initializeValues() {
   // draw scatterplot
   // scatterplot.updateAndDraw(comic_data);
 
-  // initial coloring of selected dots
-  scatterplot.scatter.selectAll("circle")
-    .filter(function(d) { return dataStore.selected_sn.includes(d.sn); })
-    .classed("dot-selected", true);
-
-  // initial coloring of picked dot
-  scatterplot.scatter.selectAll("circle")
-    .filter(function(d) { return d.sn == dataStore.picked_sn })
-    .classed("dot-picked", true);
-
-  // initial state of pick elements
-  generalPick("221: Random Number",
-    "RFC 1149.5 specifies 4 as the standard IEEE-vetted random number.",
-    "https://www.explainxkcd.com/wiki/images/f/fe/random_number.png", 221);
-
-  // initial state of select elements
-  generalSelect(dataStore.selected_sn);
-
-  requestBarchartData(); // BUG: call again to fix incomplete draw barchart
+  // // initial coloring of selected dots
+  // scatterplot.scatter.selectAll("circle")
+  //   .filter(function(d) { return dataStore.selected_sn.includes(d.sn); })
+  //   .classed("dot-selected", true);
+  //
+  // // initial coloring of picked dot
+  // scatterplot.scatter.selectAll("circle")
+  //   .filter(function(d) { return d.sn == dataStore.picked_sn })
+  //   .classed("dot-picked", true);
+  //
+  // // initial state of pick elements
+  // generalPick("221: Random Number",
+  //   "RFC 1149.5 specifies 4 as the standard IEEE-vetted random number.",
+  //   "https://www.explainxkcd.com/wiki/images/f/fe/random_number.png", 221);
+  //
+  // // initial state of select elements
+  // generalSelect(dataStore.selected_sn);
+  //
+  // requestBarchartData(); // BUG: call again to fix incomplete draw barchart
 }
 
 // general update values when new point is picked
