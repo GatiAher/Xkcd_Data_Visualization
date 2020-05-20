@@ -24,6 +24,7 @@ Users can select multiple features and see their full distribution over the t-sn
 Users can drag and click to select and zoom on scatterplot. On brush event, the barchart is populated with summed TFIDF values of comic picked on click, comics selected by brush, and total TFIDF value of top 30 values.
 
 **Selected Comic Panel**
+
 ![alt text][xkcd-data-panel3]
 
 See what comic you have clicked on in order to visually compare comics.
