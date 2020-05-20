@@ -55,6 +55,7 @@
                         <li>
                           <h4>selection list</h4>
                           <p>select feature by clicking</p>
+                          <p>on pc, search by typing first letter or using find tool on menu</p>
                         </li>
                         <li>
                           <h4>select multiple</h4>
@@ -258,51 +259,29 @@
         </div>
 
         <div class="col-sm-6">
-          <section class="box">
-            <h3>Scatterplot Interactions</h3>
-            <ul style="text-align:left;">
-              <li>
-                <div class="tooltip-key">hover on point</div>
-                <p>populate tooltip with comic title</p>
-              </li>
-              <li>
-                <h4 style="color:var(--picked-color);">click on point / input serial number</h4>
-                <p>display title and comic in bottom panel</p>
-              </li>
-              <li>
-                <h4 style="color:var(--selected-color);">brush points</h4>
-                <p>click and drag on scatterplot to make a selection of points and zoom in</p>
-              </li>
-              <li>
-                <h4>double click on graph:</h4>
-                <p>zoom out</p>
-              </li>
-            </ul>
+          <section class="box" style="text-align:left;">
+            <h3>Process</h3>
+            <ol style="text-align:left;">
+              <li>scrape comics transcript, title, and alt-text from explainxkcd.com</li>
+              <li>clean data by removing domain-specific stop-words (e.g. character names), lemminize and stem words (e.g. “chocolates”, “chocolatey”, “choco” all count as the root word, “chocolate”)</li>
+              <li>represent each of the {{num_comics}} comic as a {{num_features}}-dim text vector of term-frequency x inverse document frequency (tf-idf) scores</li>
+              <li>reduce the effects of synonymy and polysemy, and reduce the feature space from 7000 unique words to 50 feature by perform latent semantic analysis with truncated svd</li>
+              <li>create 2d embedding of document relations with t-sne that shows similar comics located closer together</li>
+              <li>build interactive, reactive data analysis web application with d3.js, bootstrap, and flask</li>
+            </ol>
+            <h3>Background Information on Xkcd Comics</h3>
+            <p>
+              xkcd comics are "A webcomic of romance, sarcasm, math, and language"
+              (xkcd slogan). These comics are licensed under a Creative Commons
+              Attribution-NonCommercial 2.5 License, and their transcripts are available
+              on www.explainxkcd.com (xkcd comic's wiki). This web application uses
+              the first {{num_comics}} comics as data source.
+            </p>
           </section>
         </div>
 
       </div>
     </div>
-
-    <section id="explanationDiv" class="box" style="text-align:left;">
-      <h3>Process</h3>
-      <ol style="text-align:left;">
-        <li>Scrape Comics Transcript, Title, And Alt-Text from explainxkcd.com</li>
-        <li>Clean Comics (remove stop-words, lemminize and stem words)</li>
-        <li>Save Comic As Text Vectors of TF-IDF (term-frequency x inverse document frequency) Scores</li>
-        <li>Reduce Feature Space and Perform Latent Semantic Analysis with Truncated SVD</li>
-        <li>Create 2D Embedding of Document Relations With t-SNE (scatterplot x and y coordinates)</li>
-        <li>Build Interactive, Reactive Web Application With Bootstrap, D3.js, and Flask</li>
-      </ol>
-      <h3>Background Information on Xkcd Comics</h3>
-      <p>
-        xkcd comics are "A webcomic of romance, sarcasm, math, and language"
-        (xkcd slogan). These comics are licensed under a Creative Commons
-        Attribution-NonCommercial 2.5 License, and their transcripts are available
-        on www.explainxkcd.com (xkcd comic's wiki). This web application uses
-        the first {{num_comics}} comics as data source.
-      </p>
-    </section>
 
   </main>
 
