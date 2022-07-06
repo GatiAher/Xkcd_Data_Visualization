@@ -21,7 +21,7 @@ itsdangerous==1.1.0
 jinja2==2.11.1
 joblib==0.14.1
 kiwisolver==1.1.0
-lxml==4.5.0
+lxml==4.9.1
 markupsafe==1.1.1
 matplotlib==3.2.1
 murmurhash==1.0.2
